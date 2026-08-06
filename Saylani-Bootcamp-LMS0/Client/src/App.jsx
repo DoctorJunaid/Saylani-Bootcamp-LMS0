@@ -16,6 +16,13 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+import SideNavBar from "./components/sideNavbar";
+
+function App() {
+  return (
+    <>
+      <SideNavBar />
+    </>
   );
 }
 
