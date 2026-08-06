@@ -1,13 +1,11 @@
+import SideNavBar from "./components/sideNavbar";
 
 function App() {
-
   return (
     <>
- <h1 class="text-3xl font-bold underline">
-    Test Tailewindcss
-  </h1>
+      <SideNavBar />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
