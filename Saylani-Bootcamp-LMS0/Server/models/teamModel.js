@@ -8,7 +8,11 @@ const teamSchema = new mongoose.Schema({
   projectId: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Project' 
-  }
+  },
+  members: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Student'
+  }]
 }, { timestamps: true });
 
 // Note: To get the number of members (as required in requirements), 
