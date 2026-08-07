@@ -1,3 +1,20 @@
+import { createStudent } from "../services/student.Service.js";
+
+export const createStudentController = async (req, res)=>{
+     try {  
+    const student = await createStudent(req.body);
+    // 201 Created - New resource created=> POST, PUT
+    res.status(201).json({message:"Student Created successfully", student
+    });
+
+     }
+      catch (error) 
+      {
+         res.status(500).json({
+            message:error.message
+         });
+     }   
+}
 // 9. Student Controller ke functions
 
 // Student module ke liye minimum CRUD:
