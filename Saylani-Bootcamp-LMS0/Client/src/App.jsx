@@ -1,7 +1,8 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import StudentsList from './pages/students/StudentsList';
-import AttendanceList from './pages/attendance/AttendanceList';
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import StudentsList from "./pages/students/StudentsList";
+import AttendanceList from "./pages/attendance/AttendanceList";
+import Task from "./pages/task/Task";
 
 function App() {
   return (
@@ -13,16 +14,10 @@ function App() {
           <Route index element={<Navigate to="/students" replace />} />
           <Route path="students" element={<StudentsList />} />
           <Route path="attendance" element={<AttendanceList />} />
+          <Route path="task" element={<Task />} />
         </Route>
       </Routes>
     </BrowserRouter>
-import SideNavBar from "./components/sideNavbar";
-
-function App() {
-  return (
-    <>
-      <SideNavBar />
-    </>
   );
 }
 
