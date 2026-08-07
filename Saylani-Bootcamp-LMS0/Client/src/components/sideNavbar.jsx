@@ -20,7 +20,7 @@ export default function SideNavBar() {
   const [active, setActive] = useState("Dashboard");
 
   return (
-    <aside className="flex h-screen w-64 flex-col bg-slate-700 text-slate-200">
+    <aside className="flex h-screen w-64 flex-col bg-primary text-slate-200">
       {/* Brand */}
       <div className="px-6 pb-6 pt-7">
         <h1 className="text-lg font-bold leading-tight text-white">
