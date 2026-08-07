@@ -1,0 +1,8 @@
+/* Typography utilities for buttons, headings, and paragraphs */
+
+@theme {
+  --color-primary: #2563eb;
+  --color-secondary: #10b981;
+  --color-heading: #0f172a;
+  --color-paragraph: #475569;
+}
