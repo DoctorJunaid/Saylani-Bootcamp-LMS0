@@ -1,1 +1,402 @@
 @import "tailwindcss";
+
+/* ===========================================================
+   🎨 DESIGN SYSTEM VARIABLES
+   ===========================================================
+
+   IMPORTANT TEAM NOTE
+
+   ❌ Kabhi bhi direct color mat likho.
+      Example:
+      background: #00639b;
+
+   ✅ Hamesha variable use karo.
+      Example:
+      background: var(--color-primary);
+
+   Is se agar future me color change hoga to sirf yahan change karna hoga.
+
+=========================================================== */
+
+@theme {
+
+  /* ===========================================================
+      PRIMARY COLORS
+
+      Kis liye?
+      → Main Buttons
+      → Active Links
+      → Important Icons
+      → Focus States
+
+      Example:
+      Login Button
+      Register Button
+      Save Button
+      Submit Button
+  =========================================================== */
+
+  --color-primary: #00639b;
+  --color-on-primary: #ffffff;
+
+  --color-primary-container: #29a9ff;
+  --color-on-primary-container: #003b60;
+
+
+  /* ===========================================================
+      SECONDARY COLORS
+
+      Kis liye?
+
+      → Secondary Buttons
+      → Badges
+      → Alternative Actions
+
+      Example:
+
+      Cancel Button
+      Back Button
+      View Details
+  =========================================================== */
+
+  --color-secondary: #565e74;
+  --color-on-secondary: #ffffff;
+
+
+  /* ===========================================================
+      BACKGROUND COLORS
+
+      Kis liye?
+
+      body
+      page background
+      cards
+      sections
+
+      Example
+
+      body
+      dashboard
+      login page
+      profile page
+  =========================================================== */
+
+  --color-background: #f7f9fb;
+
+  --color-surface: #ffffff;
+
+  --color-surface-low: #f2f4f6;
+
+  --color-surface-container: #eceef0;
+
+  --color-surface-high: #e6e8ea;
+
+  --color-surface-highest: #e0e3e5;
+
+
+  /* ===========================================================
+      TEXT COLORS
+
+      Kis liye?
+
+      Main Heading
+      Paragraph
+      Small Text
+
+      Example
+
+      h1
+      h2
+      p
+      span
+  =========================================================== */
+
+  --color-text: #191c1e;
+
+  --color-text-muted: #3f4852;
+
+
+  /* ===========================================================
+      BORDER COLORS
+
+      Kis liye?
+
+      Inputs
+      Cards
+      Tables
+      Sections
+
+      Example
+
+      border
+      input
+      textarea
+  =========================================================== */
+
+  --color-border: #bec7d3;
+
+  --color-outline: #6f7883;
+
+
+  /* ===========================================================
+      STATUS COLORS
+
+      Kis liye?
+
+      Success
+      Error
+      Warning
+
+      Example
+
+      Success Message
+      Error Toast
+      Warning Alert
+  =========================================================== */
+
+  --color-success: #22c55e;
+
+  --color-warning: #f59e0b;
+
+  --color-error: #ba1a1a;
+
+
+
+  /* ===========================================================
+      FONT FAMILY
+
+      Kis liye?
+
+      Puri Website me ye fonts use hongi.
+
+      Sans = Normal Text
+
+      Mono = Code / IDs
+  =========================================================== */
+
+  --font-sans: "Geist", sans-serif;
+
+  --font-mono: "JetBrains Mono", monospace;
+
+
+
+  /* ===========================================================
+      FONT SIZE
+
+      Kis liye?
+
+      text-xs
+
+      Small Labels
+
+      text-sm
+
+      Small Paragraph
+
+      text-base
+
+      Normal Text
+
+      text-lg
+
+      Large Paragraph
+
+      text-xl
+
+      Section Heading
+
+      text-2xl
+
+      Main Heading
+
+      text-3xl
+
+      Hero Heading
+  =========================================================== */
+
+  --text-xs: 12px;
+
+  --text-sm: 14px;
+
+  --text-base: 16px;
+
+  --text-lg: 18px;
+
+  --text-xl: 24px;
+
+  --text-2xl: 32px;
+
+  --text-3xl: 48px;
+
+
+
+  /* ===========================================================
+      FONT WEIGHT
+
+      Kis liye?
+
+      Regular Text
+
+      Medium
+
+      Semi Bold
+
+      Bold
+  =========================================================== */
+
+  --font-weight-normal: 400;
+
+  --font-weight-medium: 500;
+
+  --font-weight-semibold: 600;
+
+  --font-weight-bold: 700;
+
+
+
+  /* ===========================================================
+      SPACING
+
+      IMPORTANT
+
+      Team me koi bhi
+
+      padding:20px
+
+      margin:13px
+
+      mat likhe.
+
+      Sirf ye spacing use karni hai.
+
+      Example
+
+      Card Padding
+
+      p-md
+
+      Section Gap
+
+      p-xl
+
+      Button
+
+      px-lg
+      py-sm
+  =========================================================== */
+
+  --spacing-xs: 4px;
+
+  --spacing-sm: 8px;
+
+  --spacing-md: 16px;
+
+  --spacing-lg: 24px;
+
+  --spacing-xl: 32px;
+
+  --spacing-2xl: 48px;
+
+  --spacing-3xl: 64px;
+
+
+
+  /* ===========================================================
+      BORDER RADIUS
+
+      Kis liye?
+
+      Buttons
+
+      Inputs
+
+      Cards
+
+      Images
+
+      Example
+
+      rounded
+
+      rounded-lg
+
+      rounded-full
+  =========================================================== */
+
+  --radius-sm: 2px;
+
+  --radius: 4px;
+
+  --radius-md: 6px;
+
+  --radius-lg: 8px;
+
+  --radius-xl: 12px;
+
+  --radius-full: 9999px;
+
+
+
+  /* ===========================================================
+      CONTAINER SIZE
+
+      Kis liye?
+
+      Website ka maximum width.
+
+      Example
+
+      Main Layout
+
+      Dashboard
+
+      Landing Page
+  =========================================================== */
+
+  --container: 1280px;
+
+  --sidebar-width: 280px;
+
+  --header-height: 72px;
+
+
+
+  /* ===========================================================
+      SHADOW
+
+      Kis liye?
+
+      Cards
+
+      Modal
+
+      Popup
+
+      Dropdown
+  =========================================================== */
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.05);
+
+  --shadow-md: 0 8px 32px rgb(0 0 0 / 0.04);
+
+
+
+  /* ===========================================================
+      TRANSITION
+
+      Kis liye?
+
+      Hover
+
+      Button Animation
+
+      Card Hover
+
+      Sidebar Open Close
+  =========================================================== */
+
+  --duration-fast: 150ms;
+
+  --duration-normal: 300ms;
+
+}
