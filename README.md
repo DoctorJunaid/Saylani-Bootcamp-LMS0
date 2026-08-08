@@ -98,8 +98,8 @@ This enterprise application was built by **Team A** at SMIT Bootcamp under the e
 | Name | Role | GitHub Profile |
 | :--- | :--- | :--- |
 | **Ibrahim Khan** | 👨‍🏫 Instructor / Teacher | [@Ibrahimkhan432](https://github.com/Ibrahimkhan432) |
+| **Sana Ullah** | ⚙️ Team Lead & Backend Developer | [@sanaullah-7](https://github.com/sanaullah-7) |
 | **Muhammad Junaid** | 💻 Full Stack Developer | [@DoctorJunaid](https://github.com/DoctorJunaid) |
-| **Sana Ullah** | ⚙️ Backend Developer | [@sanaullah-7](https://github.com/sanaullah-7) |
 | **Bahadar Ali** | 🎨 Frontend Developer | [@syedBahadarKhan](https://github.com/syedBahadarKhan) |
 | **Shayan Ahmad** | 🎨 Frontend Developer | [@shayan368](https://github.com/shayan368) |
 | **Idrees Ud Din** | 🎨 Frontend Developer | [@idreestech1](https://github.com/idreestech1) |
