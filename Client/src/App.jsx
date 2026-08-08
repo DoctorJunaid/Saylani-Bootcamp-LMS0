@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import StudentsList from "./pages/students/StudentsList";
 import AttendanceList from "./pages/attendance/AttendanceList";
 import Task from "./pages/task/Task";
+import Team from './pages/Team/Team'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="students" element={<StudentsList />} />
           <Route path="attendance" element={<AttendanceList />} />
           <Route path="task" element={<Task />} />
+          <Route path="team" element={<Team />} />
         </Route>
       </Routes>
     </BrowserRouter>
