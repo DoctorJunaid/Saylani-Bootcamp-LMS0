@@ -1,16 +1,18 @@
 import express from "express";
 import { connectDB } from "./config/db.js";
 import configDotenv from "dotenv";
-import taskRoutes from "./routes/taskRoutes.js";
 import studentRoutes from "./routes/student.Routes.js";
-import teamRoutes from "./routes/teamRoutes.js";
+import taskRoutes from "./routes/task.Routes.js";
+import teamRoutes from "./routes/team.Routes.js";
 configDotenv.config();
 
 const app = express();
 app.use(express.json());
 
 // Routes
-app.use("/api", studentRoutes)
+app.use("/api/student", studentRoutes)
+app.use("/api/tasks", taskRoutes);
+app.use("/api/teams", teamRoutes);
 
 const PORT = process.env.PORT;
 connectDB();
@@ -20,8 +22,6 @@ app.get("/", (req, res) => {
 })
 
 
-app.use("/api/tasks", taskRoutes);
-app.use("/api/teams", teamRoutes);
 
 app.listen(PORT, ()=>{
   console.log(`Server Running on PORT http://localhost:${PORT}`)

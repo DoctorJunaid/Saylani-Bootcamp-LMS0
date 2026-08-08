@@ -21,8 +21,9 @@ export const createStudentController = async (req, res)=>{
 
 // GET ALL STUDENTS
 export const getStudentController = async (req , res)=>{
-    try {
-        const students = await getStudents();
+    try {                                 
+        //  const { search } = req.query;  // Query = URL ke ? ke baad bheji hui information.
+        const students = await getStudents(req.query);
         res.status(200).json({
             message:"Students fetched Sucessfully",
             students,
@@ -55,8 +56,8 @@ export const getStudentByIdController = async (req, res)=>{
 export const updateStudentController = async (req, res)=>{
     try {
         //  console.log("PARAMS:", studentId);
-        //  console.log("BODY:", req.body);
-        // const {studentId} = req.params.id;
+        //  console.log("BODY:", req.body); for error checking
+        
         const student = await updateStudent(req.params.id, req.body);
         res.status(200).json({
             message:"Student Updated Sucessfully!",
@@ -86,21 +87,6 @@ export const deleteStudentController = async (req , res)=>{
         })
     }
 }
-// 9. Student Controller ke functions
-
-// Student module ke liye minimum CRUD:
-
-// createStudent()
-// getStudents()
-// getStudentById()
-// updateStudent()
-// deleteStudent()
-// Student.find()
-// Student.findOne()
-// Student.create()
-// Student.findById()
-// Student.findByIdAndUpdate()
-// Student.findByIdAndDelete()
 
 // Aur search:
 
