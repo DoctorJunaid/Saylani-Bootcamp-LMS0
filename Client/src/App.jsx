@@ -8,7 +8,7 @@ import Team from '../src/pages/TeamPage/Team'
 function App() {
   return (
     <>
-      <SideNavBar />
+      {/* <SideNavBar /> */}
     <BrowserRouter>
       <Routes>
         {/* We use DashboardLayout to wrap the modules */}
@@ -22,8 +22,8 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+</>
   );
 }
 
-</>)}
 export default App;
