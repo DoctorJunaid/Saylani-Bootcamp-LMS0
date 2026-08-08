@@ -10,16 +10,28 @@ import {
 
 const router = express.Router();
 
-router.route("/")
-    .get(getTasks)
-    .post(createTask);
+// Get all tasks
+// GET /api/tasks
+router.get("/", getTasks);
 
-router.route("/student/:studentId")
-    .get(getTasksByStudent);
+// Create task
+// POST /api/tasks
+router.post("/", createTask);
 
-router.route("/:id")
-    .get(getTask)
-    .put(updateTask)
-    .delete(deleteTask);
+// Get tasks by student ID
+// GET /api/tasks/student/:studentId
+router.get("/student/:studentId", getTasksByStudent);
+
+// Get single task by ID
+// GET /api/tasks/:id
+router.get("/:id", getTask);
+
+// Update task by ID
+// PUT /api/tasks/:id
+router.put("/:id", updateTask);
+
+// Delete task by ID
+// DELETE /api/tasks/:id
+router.delete("/:id", deleteTask);
 
 export default router;
