@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import StudentsList from "./pages/students/StudentsList";
 import AttendanceList from "./pages/attendance/AttendanceList";
 import Task from "./pages/task/Task";
-import Team from './pages/Team/Team'
+import Team from '../src/pages/TeamPage/Team'
 
 function App() {
   return (
