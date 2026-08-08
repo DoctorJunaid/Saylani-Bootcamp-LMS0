@@ -1,3 +1,14 @@
+import express from "express"
+import { createStudentController } from "../controllers/student.controller.js";
+
+
+
+const studentRoutes = express.Router();
+
+studentRoutes.post("/", createStudentController);
+
+export default studentRoutes;
+
 // POST
 //    ↓
 // createStudent

@@ -2,10 +2,14 @@ import express from "express";
 import { connectDB } from "./config/db.js";
 import configDotenv from "dotenv";
 import taskRoutes from "./routes/taskRoutes.js";
+import studentRoutes from "./routes/student.Routes.js"
 configDotenv.config()
 
 const app = express();
 app.use(express.json());
+
+// Routes
+app.use("/api", studentRoutes)
 
 const PORT = process.env.PORT;
 connectDB();
