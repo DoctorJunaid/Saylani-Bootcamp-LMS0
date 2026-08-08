@@ -1,3 +1,4 @@
+
 import Student from "../models/student.Model.js";
 
 // CREATE STUDENT
@@ -23,11 +24,32 @@ export const createStudent =  async (studentData)=>{
 }
 
 
-// GET ALL Student 
-export const getStudents = async()=>{
-    const student = await Student.find();
+// GET ALL Student              Parameter = function ko bahar se milne wali value ka naam.
+export const getStudents = async({search})=>{
 
-    return student;
+     let students ;
+
+    // If search exists
+    if(search){
+         students  = await Student.find({
+            //$or: At least one of these conditions should match.
+            $or:[{
+                name:{
+                    $regex: search, //MongoDB, is text/pattern ko field ke andar search karo.
+                    $options: "i" //Capital/small letters ka difference ignore karo.
+                }},
+            {
+                rollNumber: Number(search),
+            }],
+        });
+    }
+    // If no search
+    else{
+
+         students = await Student.find();
+    }
+     
+    return students;
 };
 
 
@@ -59,8 +81,10 @@ export const updateStudent = async(studentId, studentData)=>{
      }
      }
                                 // Student ki ID se student ko find karo auuska data update karo.
-     const  student = await Student.findByIdAndUpdate(studentId, {rollNumber, name , course, batch},
-        {new: true, runValidators: true}
+     const  student = await Student.findByIdAndUpdate(studentId, {rollNumber, name , course, batch},{
+         new: true,//Update ke baad updated student return karo. 
+         runValidators: true
+        }
      );
 
      if(!student){
