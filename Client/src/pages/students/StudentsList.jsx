@@ -23,6 +23,7 @@ const courseOptions = [
 
 const StudentsList = () => {
   return (
+    <>
     <div className="flex flex-col gap-6">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -62,6 +63,8 @@ const StudentsList = () => {
         <Pagination />
       </div>
     </div>
+    <h1>test the student page</h1>
+    </>
   );
 };
 
