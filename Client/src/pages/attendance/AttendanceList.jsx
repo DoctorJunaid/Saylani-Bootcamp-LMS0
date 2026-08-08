@@ -8,6 +8,7 @@ const AttendanceList = () => {
         This is the placeholder for the Attendance tracking. We will build the calendar and tracking functionality here.
       </p>
       <p>testing</p>
+      <p>test again</p>
     </div>
   );
 };
