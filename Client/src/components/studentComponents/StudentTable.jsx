@@ -1,5 +1,7 @@
 import React from 'react';
-import { Pencil, MoreHorizontal } from 'lucide-react';
+import { Pencil ,Eye } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
 
 const mockStudents = [
   { id: 1, rollNo: '123456', name: 'Ayesha Khan', initials: 'A', avatarBg: 'bg-[#e0f2fe]', avatarText: 'text-[#0284c7]', course: 'Full Stack Development', batch: 'Batch-07', team: 'Team Alpha', teamBg: 'bg-[#e0f2fe]', teamText: 'text-[#0284c7]', attendance: 67, tasksCount: '2/3', tasksPercentage: 0, tasksTarget: '0/1' },
@@ -95,14 +97,13 @@ const StudentTable = () => {
 
               {/* Actions */}
               <td className="px-4 py-4 text-right">
-                <div className="flex items-center justify-end gap-2 text-[var(--color-text-muted)]">
+                <div className="flex items-center justify-end gap-4 text-[var(--color-text-muted)]">
                   <button className="flex items-center gap-1 hover:text-[var(--color-primary)] transition-colors text-xs font-medium">
                     <Pencil className="h-3.5 w-3.5" />
-                    <span>Edit</span>
                   </button>
-                  <button className="hover:text-[var(--color-primary)] transition-colors">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </button>
+                  <Link to={`/students/${student.id}`} className="hover:text-[var(--color-primary)] transition-colors">
+                    <Eye className="h-4 w-4" />
+                  </Link>
                 </div>
               </td>
             </tr>

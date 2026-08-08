@@ -4,6 +4,7 @@ import DashboardLayout from "./components/DashboardLayout";
 import Login from "./pages/login/login";
 import Dashboard from "./pages/dashboard/dashboard";
 import StudentsList from "./pages/students/StudentsList";
+import StudentProfile from "./pages/students/StudentProfile";
 import AttendanceList from "./pages/attendance/AttendanceList";
 import Task from "./pages/task/Task";
 import Team from "./pages/TeamPage/Team";
@@ -17,6 +18,7 @@ function App() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="students" element={<StudentsList />} />
+          <Route path="students/:id" element={<StudentProfile />} />
           <Route path="attendance" element={<AttendanceList />} />
           <Route path="teams" element={<Team />} />
           <Route path="tasks" element={<Task />} />
