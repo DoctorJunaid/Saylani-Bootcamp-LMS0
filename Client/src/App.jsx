@@ -1,27 +1,30 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import DashboardLayout from "./components/DashboardLayout";
+import Login from "./pages/login/login";
+import Dashboard from "./pages/dashboard/dashboard";
 import StudentsList from "./pages/students/StudentsList";
 import AttendanceList from "./pages/attendance/AttendanceList";
 import Task from "./pages/task/Task";
+import Team from "./pages/TeamPage/Team";
 
 function App() {
   return (
-    <>
-      <SideNavBar />
     <BrowserRouter>
       <Routes>
-        {/* We use DashboardLayout to wrap the modules */}
-        <Route path="/">
-          {/* Redirect the base URL to /students since the dashboard is out of scope */}
-          <Route index element={<Navigate to="/students" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route element={<DashboardLayout />}>
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
           <Route path="students" element={<StudentsList />} />
           <Route path="attendance" element={<AttendanceList />} />
-          <Route path="task" element={<Task />} />
+          <Route path="teams" element={<Team />} />
+          <Route path="tasks" element={<Task />} />
         </Route>
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
   );
 }
 
-</>)}
 export default App;
