@@ -1,5 +1,6 @@
 import Student from "../models/student.Model.js";
 
+// CREATE STUDENT
 export const createStudent =  async (studentData)=>{
     const {rollNumber, name , course, batch} = studentData;
 
@@ -19,4 +20,63 @@ export const createStudent =  async (studentData)=>{
     const student = await Student.create({rollNumber, name, course, batch});
 
     return student
+}
+
+
+// GET ALL Student 
+export const getStudents = async()=>{
+    const student = await Student.find();
+
+    return student;
+};
+
+
+// GET Single student by id
+export const getStudentById = async (studentId)=>{
+    const student = await Student.findById(studentId);
+
+    if(!student){
+        throw new Error("Student not found!")
+    };
+    
+    return student;
+}
+
+
+//Update Student 
+export const updateStudent = async(studentId, studentData)=>{
+    const {rollNumber, name, course, batch} = studentData;
+    
+    // Check duplicate roll number
+   if (rollNumber)
+    {
+    const existStudent = await Student.findOne({rollNumber,
+          //$ne means not equal.
+        _id:{$ne: studentId}//Aisa student dhoondo jiska _id hamare current student ke _id ke barabar na ho
+        })
+        if(existStudent){
+        throw new Error("Roll number already exists");
+     }
+     }
+                                // Student ki ID se student ko find karo auuska data update karo.
+     const  student = await Student.findByIdAndUpdate(studentId, {rollNumber, name , course, batch},
+        {new: true, runValidators: true}
+     );
+
+     if(!student){
+        throw new Error("Student not found!")
+     }
+
+     return student;     
+}
+
+
+// Delete Student
+export const deleteStudent = async (studendId)=>{
+    const student = await Student.findByIdAndDelete(studendId);
+    
+    if(!student){
+         throw new Error("Student not found!")
+    }
+    return student;
 }
