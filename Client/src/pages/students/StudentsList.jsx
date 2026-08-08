@@ -5,6 +5,7 @@ import Input from '../../components/Input';
 import Select from '../../components/Select';
 import DataTable from '../../components/DataTable';
 import Pagination from '../../components/Pagination';
+import SideNavBar from '../../components/sideNavbar';
 
 // Dummy data based on the provided Figma design
 const MOCK_STUDENTS = [
@@ -23,6 +24,8 @@ const courseOptions = [
 
 const StudentsList = () => {
   return (
+    <>
+    <SideNavBar/>
     <div className="flex flex-col gap-6">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -62,6 +65,8 @@ const StudentsList = () => {
         <Pagination />
       </div>
     </div>
+    <h1>test the student page</h1>
+    </>
   );
 };
 

@@ -6,6 +6,8 @@ import Task from "./pages/task/Task";
 
 function App() {
   return (
+    <>
+      <SideNavBar />
     <BrowserRouter>
       <Routes>
         {/* We use DashboardLayout to wrap the modules */}
@@ -21,4 +23,5 @@ function App() {
   );
 }
 
+</>)}
 export default App;
