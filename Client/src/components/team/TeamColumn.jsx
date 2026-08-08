@@ -1,18 +1,18 @@
 import TeamCard from "./TeamCard";
-
 const TeamColumn = ({ title, count, teams }) => {
 
-  const getColor = () => {
-    if (title === "IN PROGRESS") return "#004AC6";
-    if (title === "UNDER REVIEW") return "#16A34A";
-    return "#9CA3AF"; // NOT STARTED
-  };
+
+const getColor = () => {
+  if (title === "IN PROGRESS") return "var(--color-primary)";
+  if (title === "UNDER REVIEW") return "var(--color-success)";
+  return "var(--color-text-muted)"; // NOT STARTED
+};
 
   return (
-    <div className="-[952px] h-[323px] bg-[#F8FAFC] flex flex-col"> 
+    <div>
 
       {/* 🔥 Header with Dot */}
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-[var(--spacing-sm)] mb-[var(--spacing-md)]">
         
         {/* Dot */}
         <span
@@ -21,25 +21,25 @@ const TeamColumn = ({ title, count, teams }) => {
         ></span>
 
         {/* Title */}
-        <h2 className="text-sm font-semibold text-gray-700">
+        <h2 className="text-[var(--text-sm)] font-[var(--font-weight-semibold)] text-[var(--color-text)] leading-[var(--leading-tight)]">
           {title}
         </h2>
 
         {/* Count */}
-        <span className="text-xs text-gray-400">
+        <span className="text-[var(--text-xs)] text-[var(--color-text-muted)]">
           ({count})
         </span>
 
       </div>
 
       {/* Cards */}
-      <div className="space-y-4">
-        {teams.map((team, index) => (
+      <div className="flex flex-col gap-[var(--spacing-md)]">
+        {teams?.map((team, index) => (
           <TeamCard key={index} {...team} />
         ))}
       </div>
 
-    </div>  
+    </div>
   );
 };
 

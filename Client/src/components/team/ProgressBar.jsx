@@ -1,14 +1,22 @@
 const ProgressBar = ({ progress, color }) => {
+  const getColor = () => {
+      if (color === "success") return "var(--color-success)";
+      return "var(--color-primary)";
+    };
+
   return (
-    <div className="w-full bg-gray-200 h-2 rounded-full">
-      <div
-        className={`h-2 rounded-full ${
-          color === "green" ? "bg-[#16A34A]" : "bg-[#004AC6]"
-        }`}
-        style={{ width: `${progress}%` }}
-      ></div>
-    </div>
-  );
-};
+    <div className="w-full h-2 bg-[var(--color-border)] rounded-full overflow-hidden">
+      
+        <div
+          className="h-full rounded-full transition-all duration-[var(--duration-normal)]"
+          style={{
+            width: `${progress}%`,
+            backgroundColor: getColor(),
+          }}
+        ></div>
+
+      </div>
+    );
+  };
 
 export default ProgressBar;
