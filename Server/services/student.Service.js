@@ -59,7 +59,7 @@ export const getStudentById = async (studentId)=>{
 
     if(!student){
         throw new Error("Student not found!")
-    };
+    }
     
     return student;
 }
