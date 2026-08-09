@@ -7,6 +7,7 @@ import StudentsList from "./pages/students/StudentsList";
 import AttendanceList from "./pages/attendance/AttendanceList";
 import Task from "./pages/task/Task";
 import Team from "./pages/TeamPage/Team";
+import TeamDetails from "./pages/TeamPage/TeamDeatils";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="students" element={<StudentsList />} />
           <Route path="attendance" element={<AttendanceList />} />
           <Route path="teams" element={<Team />} />
+          <Route path="/team/:id" element={<TeamDetails />} />
           <Route path="tasks" element={<Task />} />
         </Route>
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

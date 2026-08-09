@@ -5,8 +5,10 @@ const Teams = () => {
   const data = {
     notStarted: [
       {
+        id:1,
+        teamName: "Team Alpha",
         title: "Data Pipeline Optimization",
-        sprint: "Capstone",
+        deadline: "Aug 30, 2025",
         progress: 10,
         status: "Not Started",
         members: [
@@ -17,8 +19,10 @@ const Teams = () => {
     ],
     inProgress: [
       {
+        id:2,
+        teamName: "Team Alpha",
         title: "E-commerce API Refactor",
-        sprint: "Sprint 3",
+        deadline: "Aug 30, 2025",
         progress: 65,
         status: "In Progress",
          members: [
@@ -30,8 +34,10 @@ const Teams = () => {
     ],
     review: [
       {
+        id:3,
+        teamName: "Tech Titans",
         title: "Authentication Microservice",
-        sprint: "Sprint 2",
+        deadline: "Aug 30, 2025",
         progress: 90,
         status: "Under Review",
         members: [
