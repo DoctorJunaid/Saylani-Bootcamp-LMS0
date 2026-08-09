@@ -1,4 +1,5 @@
 import { Outlet, useLocation } from "react-router-dom";
+import { Plus, CalendarCheck, UsersRound, ClipboardList } from "lucide-react";
 import SideNavBar from "./sideNavbar";
 import TopBar from "./TopBar";
 
@@ -15,6 +16,7 @@ const topBarConfig = {
     showNotification: true,
     showButton: true,
     buttonText: "Add Student",
+    buttonIcon: Plus,
     onButtonClick: () => alert("Add Student clicked"),
   },
   "/attendance": {
@@ -23,6 +25,7 @@ const topBarConfig = {
     showNotification: true,
     showButton: true,
     buttonText: "Take Attendance",
+    buttonIcon: CalendarCheck,
     onButtonClick: () => alert("Take Attendance clicked"),
   },
   "/teams": {
@@ -31,6 +34,7 @@ const topBarConfig = {
     showNotification: false,
     showButton: true,
     buttonText: "Create Team",
+    buttonIcon: UsersRound,
     onButtonClick: () => alert("Create Team clicked"),
   },
   "/tasks": {
@@ -39,6 +43,7 @@ const topBarConfig = {
     showNotification: true,
     showButton: true,
     buttonText: "New Task",
+    buttonIcon: ClipboardList,
     onButtonClick: () => alert("New Task clicked"),
   },
 };
