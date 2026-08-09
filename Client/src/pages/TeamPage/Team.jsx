@@ -1,4 +1,4 @@
-import TeamHeader from "../../components/team/TeamHeader";
+// import TeamHeader from "../../components/team/TeamHeader";
 import TeamColumn from "../../components/team/TeamColumn";
 
 const Teams = () => {
@@ -59,7 +59,7 @@ const Teams = () => {
     <div className="w-full min-h-screen bg-[var(--color-background)] p-[var(--spacing-lg)]">
       
       {/* Header */}
-      <TeamHeader />
+      {/* <TeamHeader /> */}
 
       {/* Columns */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[var(--spacing-lg)] mt-[var(--spacing-lg)]">
