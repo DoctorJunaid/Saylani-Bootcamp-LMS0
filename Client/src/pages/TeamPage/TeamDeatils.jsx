@@ -1,5 +1,5 @@
 ﻿import { useLocation, useNavigate } from "react-router-dom";
-import ProgressBar from "../../components/team/ProgressBar";
+
 
 const TeamDetails = () => {
   const navigate = useNavigate();
