@@ -1,6 +1,7 @@
 import ProgressBar from "./ProgressBar";
-const TeamCard = ({ title, sprint, progress, status, members }) => {
-
+import { useNavigate } from "react-router-dom";
+const TeamCard = ({id, teamName, title, sprint, deadline, progress, status, members }) => {
+const navigate = useNavigate();
 const isInProgress = status === "In Progress";
 const isReview = status === "Under Review";
 const isNotStarted = status === "Not Started";
@@ -20,10 +21,26 @@ const isNotStarted = status === "Not Started";
         {sprint}
       </span>
 
+         <p className="text-[var(--text-lg)] font-[var(--font-weight-semibold)] text-[var(--color-text-muted)]">
+            {teamName}
+        </p>
       {/* Title */}
-      <h3 className="text-[var(--text-lg)] leading-[25px] font-[var(--font-weight-semibold)] text-[var(--color-text)]">
-        {title}
-      </h3>
+      <div className="bg-[var(--color-surface-low)] 
+            border border-[var(--color-border)] 
+            rounded-[var(--radius-lg)] 
+            px-[var(--spacing-md)] py-[var(--spacing-sm)]">
+
+          {/* Title */}
+        <h3 className="text-[var(--text-base)] font-[var(--font-weight-medium)] text-[var(--color-text)]">
+  {title}
+</h3>
+
+          {/* Deadline */}
+          <p className="text-[var(--text-sm)] text-[var(--color-text-muted)] mt-[2px]">
+            Deadline {deadline}
+          </p>
+
+      </div>
 
      
       <div className={`${isNotStarted ? "invisible" : ""} mt-[var(--spacing-sm)]`}>
@@ -53,10 +70,21 @@ const isNotStarted = status === "Not Started";
           ))}
         </div>
 
-        {/* Status */}
-        <span className="text-[var(--text-xs)] text-[var(--color-text-muted)]">
-          {status}
-        </span>
+       
+        <button
+         onClick={() => navigate(`/team/${id}`, { state: { team: { id, teamName, title, sprint, deadline, progress, status, members } } })}
+         className="
+          text-[var(--text-xs)] 
+          font-[var(--font-weight-medium)]
+          text-[var(--color-primary)] 
+          border border-[var(--color-primary)]
+          px-[var(--spacing-sm)] py-[2px]
+          rounded-[var(--radius-md)]
+          transition-all duration-[var(--duration-fast)]
+          hover:bg-[var(--color-primary)] hover:text-[var(--color-on-primary)]
+        ">
+          View Team
+        </button>
 
       </div>
 
