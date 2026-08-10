@@ -12,9 +12,14 @@ const Teams = () => {
         progress: 10,
         status: "Not Started",
         members: [
-        "https://i.pravatar.cc/40?img=1",
-        "https://i.pravatar.cc/40?img=2",
-      ]
+          "https://i.pravatar.cc/40?img=1",
+          "https://i.pravatar.cc/40?img=2",
+        ],
+        projects: [
+          { title: "Data model audit", completed: true },
+          { title: "ETL pipeline", completed: true },
+          { title: "Reporting dashboard", completed: false },
+        ],
       },
     ],
     inProgress: [
@@ -25,11 +30,16 @@ const Teams = () => {
         deadline: "Aug 30, 2025",
         progress: 65,
         status: "In Progress",
-         members: [
-        "https://i.pravatar.cc/40?img=3",
-        "https://i.pravatar.cc/40?img=4",
-        "https://i.pravatar.cc/40?img=5",
-      ]
+        members: [
+          "https://i.pravatar.cc/40?img=3",
+          "https://i.pravatar.cc/40?img=4",
+          "https://i.pravatar.cc/40?img=5",
+        ],
+        projects: [
+          { title: "API v1", completed: true },
+          { title: "Inventory sync", completed: false },
+          { title: "Payments flow", completed: false },
+        ],
       },
     ],
     review: [
@@ -41,9 +51,14 @@ const Teams = () => {
         progress: 90,
         status: "Under Review",
         members: [
-        "https://i.pravatar.cc/40?img=6",
-        "https://i.pravatar.cc/40?img=7",
-      ]
+          "https://i.pravatar.cc/40?img=6",
+          "https://i.pravatar.cc/40?img=7",
+        ],
+        projects: [
+          { title: "OAuth integration", completed: true },
+          { title: "JWT refresh", completed: true },
+          { title: "SSO setup", completed: false },
+        ],
       },
     ],
   };
