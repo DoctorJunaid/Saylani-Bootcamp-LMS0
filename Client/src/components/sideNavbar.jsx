@@ -44,7 +44,7 @@ export default function SideNavBar() {
     >
       {/* Logo + collapse toggle */}
       <div
-        className={`flex h-26 items-center border-b border-surface-high px-md transition-all duration-normal ${
+        className={`flex h-21 items-center border-b border-surface-high px-md transition-all duration-normal ${
           collapsed ? "justify-center" : "justify-between"
         }`}
       >
@@ -53,7 +53,7 @@ export default function SideNavBar() {
             <img
               src="/logo.png"
               alt="SMIT logo"
-              className="h-24 w-auto max-w-[160px] object-contain block transition-all duration-200"
+              className="h-16 w-auto max-w-[160px] object-contain block transition-all duration-200"
             />
           </div>
         )}
