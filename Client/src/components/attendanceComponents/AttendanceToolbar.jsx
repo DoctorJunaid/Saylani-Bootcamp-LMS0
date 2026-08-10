@@ -1,8 +1,8 @@
 import React from 'react';
-import { Search, Download } from 'lucide-react';
+import { Search, Download, ClipboardCheck } from 'lucide-react';
 import CustomSelect from '../CustomSelect';
 
-const AttendanceToolbar = ({ searchQuery, onSearchChange, onDownloadCsv }) => {
+const AttendanceToolbar = ({ searchQuery, onSearchChange, onDownloadCsv, onTakeAttendanceClick }) => {
   return (
     <div className="flex flex-col xl:flex-row items-center justify-between gap-4 py-4 w-full">
       
@@ -35,13 +35,22 @@ const AttendanceToolbar = ({ searchQuery, onSearchChange, onDownloadCsv }) => {
           options={['Weekly', 'Monthly']}
         />
 
+        {/* Take Attendance Button */}
+        <button 
+          onClick={onTakeAttendanceClick}
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] hover:opacity-90 text-[var(--color-on-primary)] text-sm font-medium rounded-lg transition-colors shadow-sm w-full sm:w-auto"
+        >
+          <ClipboardCheck className="h-4 w-4" />
+          Take Attendance
+        </button>
+
         {/* Download CSV Button */}
         <button 
           onClick={onDownloadCsv}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] hover:opacity-90 text-[var(--color-on-primary)] text-sm font-medium rounded-lg transition-colors shadow-sm w-full sm:w-auto"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-low)] text-[var(--color-text)] text-sm font-medium rounded-lg transition-colors shadow-sm w-full sm:w-auto"
         >
           <Download className="h-4 w-4" />
-          Download CSV
+          Export CSV
         </button>
 
       </div>
