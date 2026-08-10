@@ -10,7 +10,6 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (e) => {
-    console.log("LOGIN BUTTON CLICKED");
     e.preventDefault();
     setIsLoading(true);
     try {
