@@ -16,7 +16,7 @@ export default function Login() {
 
         const data = await loginAdmin(email, password);
 
-        toast.success("Login successfully!")
+        toast.success("Login successfully!",{position:"top-center"  })
         navigate("/dashboard")
     } 
     catch (error) 
