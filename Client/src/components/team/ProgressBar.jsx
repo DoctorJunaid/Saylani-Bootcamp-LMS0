@@ -1,7 +1,7 @@
 const ProgressBar = ({ progress, color }) => {
   const getColor = () => {
-      if (color === "success") return "var(--color-success)";
-      return "var(--color-primary)";
+      if (color === "success") return "#16a34a";
+      return "#2563eb";
     };
 
   return (
