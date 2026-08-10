@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -51,7 +51,7 @@ export default function SideNavBar() {
         {!collapsed && (
           <div className="flex items-center overflow-hidden">
             <img
-              src="/logo.jpg"
+              src="/logo.png"
               alt="SMIT logo"
               className="h-24 w-auto max-w-[160px] object-contain block transition-all duration-200"
             />
@@ -115,8 +115,8 @@ export default function SideNavBar() {
 
       {/* Logout */}
       <div className="border-t border-surface-high px-sm py-md">
-        <button
-          type="button"
+        <Link
+          to="/login"
           className={`group relative flex w-full items-center rounded-lg py-2.5 text-sm text-error transition-colors duration-fast hover:bg-error/10 ${
             collapsed ? "justify-center px-sm" : "gap-sm px-md"
           }`}
@@ -129,7 +129,7 @@ export default function SideNavBar() {
               Logout
             </div>
           )}
-        </button>
+        </Link>
       </div>
     </aside>
   );
