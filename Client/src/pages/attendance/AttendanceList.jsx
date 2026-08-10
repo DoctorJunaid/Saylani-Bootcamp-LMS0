@@ -126,7 +126,6 @@ const AttendanceList = () => {
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           onDownloadCsv={handleDownloadCsv}
-          onTakeAttendanceClick={() => setIsTakeAttendanceModalOpen(true)}
         />
 
         {/* Table Container */}
