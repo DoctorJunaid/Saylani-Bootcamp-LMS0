@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Pencil ,Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import EditStudentModal from './EditStudentModal';
 
 
 const mockStudents = [
@@ -25,8 +26,10 @@ const ProgressBar = ({ percentage, colorClass }) => (
 );
 
 const StudentTable = () => {
+  const [editingStudent, setEditingStudent] = useState(null);
+
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto relative">
       <table className="w-full text-left whitespace-nowrap">
         <thead>
           <tr className="border-b border-[var(--color-border)]">
@@ -98,7 +101,10 @@ const StudentTable = () => {
               {/* Actions */}
               <td className="px-4 py-4 text-right">
                 <div className="flex items-center justify-end gap-4 text-[var(--color-text-muted)]">
-                  <button className="flex items-center gap-1 hover:text-[var(--color-primary)] transition-colors text-xs font-medium">
+                  <button 
+                    onClick={() => setEditingStudent(student)}
+                    className="flex items-center gap-1 hover:text-[var(--color-primary)] transition-colors text-xs font-medium"
+                  >
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
                   <Link to={`/students/${student.id}`} className="hover:text-[var(--color-primary)] transition-colors">
@@ -110,6 +116,14 @@ const StudentTable = () => {
           ))}
         </tbody>
       </table>
+
+      {/* Edit Modal */}
+      {editingStudent && (
+        <EditStudentModal 
+          student={editingStudent} 
+          onClose={() => setEditingStudent(null)} 
+        />
+      )}
     </div>
   );
 };
