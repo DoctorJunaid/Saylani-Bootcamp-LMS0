@@ -2,15 +2,17 @@ import express from "express";
 import { connectDB } from "./config/db.js";
 import configDotenv from "dotenv";
 import studentRoutes from "./routes/student.Routes.js";
-import projectRoutes from "./routes/projectRoutes.js";
+import projectRoutes from "./routes/project.Routes.js";
 import taskRoutes from "./routes/task.Routes.js";
 import teamRoutes from "./routes/team.Routes.js";
-configDotenv.config();
+import adminRouter from "./routes/admin.Routes.js";
+
 
 const app = express();
 app.use(express.json());
 
 // Routes
+app.use("/api/admin", adminRouter)
 app.use("/api/student", studentRoutes)
 app.use("/api/tasks", taskRoutes);
 app.use("/api/teams", teamRoutes);
