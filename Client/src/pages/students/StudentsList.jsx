@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import StudentToolbar from '../../components/studentComponents/StudentToolbar';
 import StudentTable from '../../components/studentComponents/StudentTable';
 import StudentPagination from '../../components/studentComponents/StudentPagination';
+import AddStudentModal from '../../components/studentComponents/AddStudentModal';
 
 const StudentsList = () => {
+  const [isAddStudentModalOpen, setIsAddStudentModalOpen] = useState(false);
+
+  // Listen for 'Add Student' click from the DashboardLayout TopBar
+  useEffect(() => {
+    const handleOpenModal = () => setIsAddStudentModalOpen(true);
+    window.addEventListener('openAddStudent', handleOpenModal);
+    return () => window.removeEventListener('openAddStudent', handleOpenModal);
+  }, []);
+
   return (
     <div className="min-h-screen bg-[var(--color-background)] p-[var(--spacing-lg)] lg:p-[var(--spacing-xl)]">
       
@@ -17,6 +27,11 @@ const StudentsList = () => {
         <StudentPagination />
 
       </div>
+
+      {/* Add Student Modal */}
+      {isAddStudentModalOpen && (
+        <AddStudentModal onClose={() => setIsAddStudentModalOpen(false)} />
+      )}
     </div>
   );
 };
