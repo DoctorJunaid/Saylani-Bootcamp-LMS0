@@ -9,10 +9,12 @@ import AttendanceList from "./pages/attendance/AttendanceList";
 import Task from "./pages/task/Task";
 import Team from "./pages/TeamPage/Team";
 import TeamDetails from "./pages/TeamPage/TeamDeatils";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-right" reverseOrder={false} />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route element={<DashboardLayout />}>
