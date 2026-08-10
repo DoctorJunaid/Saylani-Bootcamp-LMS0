@@ -26,12 +26,6 @@ const TaskHeader = () => {
             Timeline
           </button>
         </div>
-
-        {/* Primary Action */}
-        <Button className="gap-2 shrink-0">
-          <LuPlus className="h-4 w-4" />
-          New Task
-        </Button>
       </div>
     </div>
   );
