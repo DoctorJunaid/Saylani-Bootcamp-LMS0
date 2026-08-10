@@ -1,4 +1,4 @@
-
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -7,53 +7,104 @@ import {
   UsersRound,
   ClipboardList,
   LogOut,
+  ChevronLeft,
 } from "lucide-react";
 
 const NAV_ITEMS = [
-  { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-  { label: "Students", icon: Users, path: "/students" },
-  { label: "Attendance", icon: CalendarDays, path: "/attendance" },
-  { label: "Teams & Projects", icon: UsersRound, path: "/teams" },
-  { label: "Tasks", icon: ClipboardList, path: "/tasks" },
+  {
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    path: "/dashboard",
+    tone: "text-primary",
+  },
+  { label: "Students", icon: Users, path: "/students", tone: "text-secondary" },
+  {
+    label: "Attendance",
+    icon: CalendarDays,
+    path: "/attendance",
+    tone: "text-warning",
+  },
+  {
+    label: "Teams & Projects",
+    icon: UsersRound,
+    path: "/teams",
+    tone: "text-success",
+  },
+  { label: "Tasks", icon: ClipboardList, path: "/tasks", tone: "text-error" },
 ];
 
 export default function SideNavBar() {
+  const [collapsed, setCollapsed] = useState(false);
+
   return (
-    <aside className="flex h-screen w-64 flex-col bg-slate-900 text-slate-200 font-plus-jakarta-sans">
-      <div className="px-6 pb-6 pt-7">
-        <h1 className="text-lg font-bold leading-tight text-white">
-          Bootcamp LMS
-        </h1>
-        <p className="mt-1 text-sm text-slate-300">Administrator Console</p>
+    <aside
+      className={`relative flex h-screen flex-col border-r border-border bg-surface font-sans transition-all duration-normal ease-in-out ${
+        collapsed ? "w-20" : "w-64"
+      }`}
+    >
+      {/* Logo + collapse toggle */}
+      <div
+        className={`flex h-26 items-center border-b border-surface-high px-md transition-all duration-normal ${
+          collapsed ? "justify-center" : "justify-between"
+        }`}
+      >
+        {!collapsed && (
+          <div className="flex items-center overflow-hidden">
+            <img
+              src="/logo.jpg"
+              alt="SMIT logo"
+              className="h-24 w-auto max-w-[160px] object-contain block transition-all duration-200"
+            />
+          </div>
+        )}
+
+        <button
+          type="button"
+          onClick={() => setCollapsed((prev) => !prev)}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-text-muted transition-colors duration-fast hover:bg-surface-low hover:text-text cursor-pointer"
+        >
+          <ChevronLeft
+            size={18}
+            strokeWidth={2}
+            className={`transition-transform duration-normal ease-in-out ${
+              collapsed ? "rotate-180" : ""
+            }`}
+          />
+        </button>
       </div>
 
-      <nav className="flex-1">
-        <ul>
-          {NAV_ITEMS.map(({ label, icon: Icon, path }) => (
-            <li key={label}>
+      {/* Nav items */}
+      <nav className="flex-1 overflow-y-auto py-sm">
+        <ul className="flex flex-col gap-xs px-sm">
+          {NAV_ITEMS.map(({ label, icon: Icon, path, tone }) => (
+            <li key={label} className="relative">
               <NavLink
                 to={path}
                 className={({ isActive }) =>
                   [
-                    "group relative flex w-full items-center gap-3 border-l-4 py-3 pl-5 pr-4 text-left text-sm transition-colors duration-150",
+                    "group relative flex items-center rounded-lg py-2.5 text-sm transition-colors duration-fast",
+                    collapsed ? "justify-center px-sm" : "gap-sm px-md",
                     isActive
-                      ? "border-emerald-400 bg-slate-800/60 text-emerald-400 font-medium"
-                      : "border-transparent text-slate-300 hover:bg-slate-800/30 hover:text-slate-100",
+                      ? "bg-primary-container/15 font-medium text-primary"
+                      : "text-text-muted hover:bg-surface-low hover:text-text",
                   ].join(" ")
                 }
               >
                 {({ isActive }) => (
                   <>
                     <Icon
-                      size={18}
+                      size={20}
                       strokeWidth={2}
-                      className={
-                        isActive
-                          ? "text-emerald-400"
-                          : "text-slate-300 group-hover:text-slate-100"
-                      }
+                      className={`shrink-0 ${isActive ? "text-primary" : tone}`}
                     />
-                    <span>{label}</span>
+                    {!collapsed ? (
+                      <span className="whitespace-nowrap">{label}</span>
+                    ) : (
+                      <div className="pointer-events-none absolute left-full ml-3 hidden rounded-md bg-gray-900 px-2.5 py-1 text-xs font-medium text-white shadow-md group-hover:block z-50 whitespace-nowrap">
+                        {label}
+                      </div>
+                    )}
                   </>
                 )}
               </NavLink>
@@ -62,13 +113,22 @@ export default function SideNavBar() {
         </ul>
       </nav>
 
-      <div className="px-2 pb-6">
+      {/* Logout */}
+      <div className="border-t border-surface-high px-sm py-md">
         <button
           type="button"
-          className="flex w-full items-center gap-3 rounded-md px-4 py-3 text-left text-sm text-red-400 transition-colors duration-150 hover:bg-red-500/50 hover:text-red-50"
+          className={`group relative flex w-full items-center rounded-lg py-2.5 text-sm text-error transition-colors duration-fast hover:bg-error/10 ${
+            collapsed ? "justify-center px-sm" : "gap-sm px-md"
+          }`}
         >
-          <LogOut size={18} strokeWidth={2} />
-          <span>Logout</span>
+          <LogOut size={20} strokeWidth={2} className="shrink-0" />
+          {!collapsed ? (
+            <span className="whitespace-nowrap">Logout</span>
+          ) : (
+            <div className="pointer-events-none absolute left-full ml-3 hidden rounded-md bg-gray-900 px-2.5 py-1 text-xs font-medium text-white shadow-md group-hover:block z-50 whitespace-nowrap">
+              Logout
+            </div>
+          )}
         </button>
       </div>
     </aside>
