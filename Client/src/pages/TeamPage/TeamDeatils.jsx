@@ -1,8 +1,8 @@
-﻿import { useLocation, useNavigate } from "react-router-dom";
+﻿import { useLocation } from "react-router-dom";
 
 
 const TeamDetails = () => {
-  const navigate = useNavigate();
+  
   const location = useLocation();
   const team = location.state?.team;
 
