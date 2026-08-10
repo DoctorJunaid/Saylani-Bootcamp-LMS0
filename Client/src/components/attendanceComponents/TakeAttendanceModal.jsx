@@ -75,14 +75,20 @@ const TakeAttendanceModal = ({ students, onClose, onSave }) => {
     }
   }, [activeIndex]);
 
-  const markAllPresent = () => {
-    setDraft((prev) => {
-      const newState = { ...prev };
-      students.forEach((s) => {
-        newState[s.id] = 'P';
+  const isAllPresent = students.length > 0 && students.every(s => draft[s.id] === 'P');
+
+  const handleToggleAll = () => {
+    if (isAllPresent) {
+      setDraft({});
+    } else {
+      setDraft((prev) => {
+        const newState = { ...prev };
+        students.forEach((s) => {
+          newState[s.id] = 'P';
+        });
+        return newState;
       });
-      return newState;
-    });
+    }
   };
 
   const handleSave = () => {
@@ -123,11 +129,20 @@ const TakeAttendanceModal = ({ students, onClose, onSave }) => {
           
           <div className="flex items-center gap-4">
             <button 
-              onClick={markAllPresent}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-surface-low)] hover:bg-[var(--color-surface-high)] text-[var(--color-text)] text-sm font-medium rounded-lg transition-colors border border-[var(--color-border)]"
+              onClick={handleToggleAll}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-surface-low)] hover:bg-[var(--color-surface-high)] text-[var(--color-text)] text-sm font-medium rounded-lg transition-colors border border-[var(--color-border)] min-w-[140px] justify-center"
             >
-              <CheckCircle2 className="h-4 w-4 text-[#16a34a]" />
-              Mark all present
+              {isAllPresent ? (
+                <>
+                  <X className="h-4 w-4 text-[var(--color-text-muted)]" />
+                  Unmark all present
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="h-4 w-4 text-[#16a34a]" />
+                  Mark all present
+                </>
+              )}
             </button>
             <button 
               onClick={onClose}
