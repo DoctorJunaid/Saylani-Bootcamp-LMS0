@@ -1,4 +1,4 @@
-    import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import Admin from "../models/admin.Model.js";
     // "Protect" (Authorization) means "What are you allowed to do?
     export const protectAdmin = async(req , res, next)=>{//req=> Client se jo request aayi hai. res=>Backend client ko jo jawab dega. 
