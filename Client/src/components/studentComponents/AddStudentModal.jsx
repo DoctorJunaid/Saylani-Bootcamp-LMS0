@@ -2,17 +2,15 @@ import React from 'react';
 import { X } from 'lucide-react';
 import CustomSelect from '../CustomSelect';
 
-const EditStudentModal = ({ student, onClose }) => {
-  if (!student) return null;
-
+const AddStudentModal = ({ onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
       
-      <div className="bg-[var(--color-surface)] rounded-[var(--radius-xl)] shadow-xl border border-[var(--color-border)] w-full sm:w-3/4 md:w-1/2 max-w-2xl max-h-[95vh] flex flex-col">
+      <div className="bg-[var(--color-surface)] rounded-[var(--radius-xl)] shadow-xl border border-[var(--color-border)] w-1/2 sm:w-3/4 md:w-1/2 max-h-[95vh] flex flex-col">
         
         {/* Header */}
         <div className="flex items-center justify-between p-6 pb-4 shrink-0">
-          <h2 className="text-xl font-bold text-[var(--color-text)]">Edit Student</h2>
+          <h2 className="text-xl font-bold text-[var(--color-text)]">Add Student</h2>
           <button 
             onClick={onClose}
             className="p-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-low)] rounded-lg transition-colors"
@@ -30,7 +28,6 @@ const EditStudentModal = ({ student, onClose }) => {
               <label className="text-xs font-semibold text-[var(--color-text-muted)]">Roll Number</label>
               <input 
                 type="text" 
-                defaultValue={student.rollNo}
                 className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors" 
               />
             </div>
@@ -40,7 +37,6 @@ const EditStudentModal = ({ student, onClose }) => {
               <label className="text-xs font-semibold text-[var(--color-text-muted)]">Name</label>
               <input 
                 type="text" 
-                defaultValue={student.name}
                 className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors" 
               />
             </div>
@@ -50,7 +46,6 @@ const EditStudentModal = ({ student, onClose }) => {
               <label className="text-xs font-semibold text-[var(--color-text-muted)]">Email</label>
               <input 
                 type="email" 
-                defaultValue={`${student.name.split(' ')[0].toLowerCase()}@bootcamp.dev`}
                 className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors" 
               />
             </div>
@@ -60,7 +55,6 @@ const EditStudentModal = ({ student, onClose }) => {
               <label className="text-xs font-semibold text-[var(--color-text-muted)]">Course</label>
               <input 
                 type="text" 
-                defaultValue={student.course}
                 className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors" 
               />
             </div>
@@ -70,7 +64,6 @@ const EditStudentModal = ({ student, onClose }) => {
               <label className="text-xs font-semibold text-[var(--color-text-muted)]">Batch</label>
               <input 
                 type="text" 
-                defaultValue={student.batch}
                 className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors" 
               />
             </div>
@@ -80,8 +73,8 @@ const EditStudentModal = ({ student, onClose }) => {
               <label className="text-xs font-semibold text-[var(--color-text-muted)]">Team</label>
               <CustomSelect
                 label="Team"
-                value={student.team}
-                options={['Team Alpha', 'Team Beta', 'Team Gamma', 'Unassigned']}
+                defaultOption="Unassigned"
+                options={['Team Alpha', 'Team Beta', 'Team Gamma']}
                 className="w-full"
               />
             </div>
@@ -98,6 +91,7 @@ const EditStudentModal = ({ student, onClose }) => {
             Cancel
           </button>
           <button 
+            onClick={onClose}
             className="px-5 py-2 bg-[var(--color-primary)] hover:opacity-90 text-[var(--color-on-primary)] text-sm font-semibold rounded-lg transition-colors shadow-sm"
           >
             Save
@@ -109,4 +103,4 @@ const EditStudentModal = ({ student, onClose }) => {
   );
 };
 
-export default EditStudentModal;
+export default AddStudentModal;

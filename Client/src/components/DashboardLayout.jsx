@@ -17,7 +17,7 @@ const topBarConfig = {
     showButton: true,
     buttonText: "Add Student",
     buttonIcon: Plus,
-    onButtonClick: () => alert("Add Student clicked"),
+    onButtonClick: () => window.dispatchEvent(new CustomEvent('openAddStudent')),
   },
   "/attendance": {
     title: "Attendance",
