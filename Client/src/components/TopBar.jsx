@@ -16,7 +16,9 @@ export default function TopBar({
       <div>
         <h1 className="text-lg font-semibold text-text">{title}</h1>
         {subtitle ? (
-          <p className="mt-1 text-sm text-text-muted">{subtitle}</p>
+          <p className="mt-1 text-sm font-normal text-text-muted">
+            {subtitle}
+          </p>
         ) : null}
       </div>
 
@@ -26,7 +28,7 @@ export default function TopBar({
             type="button"
             onClick={onNotificationClick}
             aria-label="Notifications"
-            className="text-text-muted transition-colors duration-fast hover:text-text"
+            className="rounded-lg p-2 text-text-muted transition-colors duration-fast hover:bg-yellow-500 hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
           >
             <Bell size={20} strokeWidth={2} />
           </button>
@@ -36,7 +38,7 @@ export default function TopBar({
           <button
             type="button"
             onClick={onButtonClick}
-            className="flex items-center gap-sm rounded-md bg-primary px-md py-sm text-sm font-medium text-on-primary transition-opacity duration-fast hover:opacity-90"
+            className="flex items-center gap-sm rounded-md bg-primary px-md py-sm text-sm font-medium text-on-primary transition-colors duration-fast hover:bg-on-primary-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container focus-visible:ring-offset-2"
           >
             <ButtonIcon size={16} strokeWidth={2.5} />
             <span>{buttonText}</span>
