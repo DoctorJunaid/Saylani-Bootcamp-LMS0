@@ -26,7 +26,7 @@ const topBarConfig = {
     showButton: true,
     buttonText: "Take Attendance",
     buttonIcon: CalendarCheck,
-    onButtonClick: () => alert("Take Attendance clicked"),
+    onButtonClick: () => window.dispatchEvent(new CustomEvent('openTakeAttendance')),
   },
   "/teams": {
     title: "Teams",

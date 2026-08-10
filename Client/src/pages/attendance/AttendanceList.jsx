@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AttendanceToolbar from '../../components/attendanceComponents/AttendanceToolbar';
 import AttendanceTable from '../../components/attendanceComponents/AttendanceTable';
 import AttendancePagination from '../../components/attendanceComponents/AttendancePagination';
+import TakeAttendanceModal from '../../components/attendanceComponents/TakeAttendanceModal';
 
 // Generate mock data for demonstration
 const mockAttendanceData = [
@@ -26,6 +27,7 @@ const AttendanceList = () => {
   const [data, setData] = useState(mockAttendanceData);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [isTakeAttendanceModalOpen, setIsTakeAttendanceModalOpen] = useState(false);
   const itemsPerPage = 10;
 
   // Reset to first page when searching
@@ -33,13 +35,34 @@ const AttendanceList = () => {
     setCurrentPage(1);
   }, [searchQuery]);
 
-  // Handle Status Update
+  // Listen for 'Take Attendance' click from the DashboardLayout TopBar
+  useEffect(() => {
+    const handleOpenModal = () => setIsTakeAttendanceModalOpen(true);
+    window.addEventListener('openTakeAttendance', handleOpenModal);
+    return () => window.removeEventListener('openTakeAttendance', handleOpenModal);
+  }, []);
+
+  // Handle Status Update from single row
   const handleStatusChange = (id, newStatus) => {
     setData((prev) => 
       prev.map((student) => 
         student.id === id ? { ...student, status: newStatus } : student
       )
     );
+  };
+
+  // Handle bulk save from Take Attendance Modal
+  const handleBulkSave = (updates) => {
+    setData((prev) => {
+      const updatedData = [...prev];
+      updates.forEach(update => {
+        const idx = updatedData.findIndex(s => s.id === update.id);
+        if (idx !== -1) {
+          updatedData[idx] = { ...updatedData[idx], status: update.status };
+        }
+      });
+      return updatedData;
+    });
   };
 
   // Filter Data
@@ -103,6 +126,7 @@ const AttendanceList = () => {
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           onDownloadCsv={handleDownloadCsv}
+          onTakeAttendanceClick={() => setIsTakeAttendanceModalOpen(true)}
         />
 
         {/* Table Container */}
@@ -122,6 +146,15 @@ const AttendanceList = () => {
         </div>
 
       </div>
+
+      {/* Take Attendance Modal */}
+      {isTakeAttendanceModalOpen && (
+        <TakeAttendanceModal 
+          students={data} 
+          onClose={() => setIsTakeAttendanceModalOpen(false)}
+          onSave={handleBulkSave}
+        />
+      )}
     </div>
   );
 };
