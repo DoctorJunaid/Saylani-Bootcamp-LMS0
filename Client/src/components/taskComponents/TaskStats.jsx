@@ -2,8 +2,8 @@ import React from "react";
 import {
   LuClipboardList,
   LuCircleAlert,
-  LuMoreHorizontal,
-  LuCheckCircle2,
+  LuMessageCircleMore,
+  LuCircleCheck,
   LuArrowUp,
 } from "react-icons/lu";
 
@@ -45,13 +45,11 @@ const TaskStats = () => {
       <StatCard
         title="Total Tasks"
         value="124"
-        badge="12%"
         icon={<LuClipboardList className="h-5 w-5" />}
       />
       <StatCard
         title="High Priority"
         value="18"
-        badge="4"
         badgeColor="text-[var(--color-error)]"
         icon={<LuCircleAlert className="h-5 w-5 text-[var(--color-error)]" />}
       />
@@ -59,15 +57,13 @@ const TaskStats = () => {
         title="In Progress"
         value="45"
         icon={
-          <LuMoreHorizontal className="h-5 w-5 text-[var(--color-warning)]" />
+          <LuMessageCircleMore className="h-5 w-5 text-[var(--color-warning)]" />
         }
       />
       <StatCard
         title="Completed (This Wk)"
         value="62"
-        icon={
-          <LuCheckCircle2 className="h-5 w-5 text-[var(--color-success)]" />
-        }
+        icon={<LuCircleCheck className="h-5 w-5 text-[var(--color-success)]" />}
       />
     </div>
   );
