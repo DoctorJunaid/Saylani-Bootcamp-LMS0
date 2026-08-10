@@ -8,6 +8,7 @@ import {
   Calendar,
   ClipboardCheck,
 } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 const statCards = [
   { label: "Total Students", value: 9, icon: GraduationCap, tone: "text-primary" },
@@ -119,7 +120,7 @@ export default function Dashboard() {
   const totalStudents = statCards[0].value;
 
   return (
-    <div className="flex flex-col gap-lg font-plus-jakarta-sans">
+    <div className="flex flex-col gap-lg font-plus-jakarta-sans p-[var(--spacing-lg)]">
       {/* Stat cards */}
       <div className="grid grid-cols-1 gap-md sm:grid-cols-2 lg:grid-cols-5">
         {statCards.map((card) => (
@@ -142,7 +143,7 @@ export default function Dashboard() {
               type="button"
               className="text-sm font-medium text-primary underline-offset-2 transition-colors duration-fast hover:underline"
             >
-              Manage
+             <NavLink to="/attendance">Manage</NavLink>
             </button>
           </div>
 
@@ -170,7 +171,7 @@ export default function Dashboard() {
               type="button"
               className="text-sm font-medium text-primary underline-offset-2 transition-colors duration-fast hover:underline"
             >
-              Manage
+             <NavLink to="/tasks">Manage</NavLink>
             </button>
           </div>
 

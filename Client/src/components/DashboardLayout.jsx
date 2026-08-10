@@ -73,7 +73,7 @@ export default function DashboardLayout() {
           buttonIcon={config.buttonIcon}
           onButtonClick={config.onButtonClick}
         />
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto bg-[var(--color-background)]">
           <Outlet />
         </main>
       </div>

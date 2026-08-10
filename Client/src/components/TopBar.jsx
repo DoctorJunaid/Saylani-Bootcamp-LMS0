@@ -12,7 +12,7 @@ export default function TopBar({
   onButtonClick,
 }) {
   return (
-    <header className="flex items-center justify-between border-b border-border bg-surface px-lg py-md font-plus-jakarta-sans">
+    <header className="flex items-center justify-between border-b border-border bg-surface px-lg py-md">
       <div>
         <h1 className="text-lg font-semibold text-text">{title}</h1>
         {subtitle ? (

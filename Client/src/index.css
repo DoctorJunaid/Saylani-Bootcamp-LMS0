@@ -1,3 +1,6 @@
+* {
+    font-family: plus-jakarta-sans, sans-serif;
+}
 @import "tailwindcss";
 
 /* ===========================================================
