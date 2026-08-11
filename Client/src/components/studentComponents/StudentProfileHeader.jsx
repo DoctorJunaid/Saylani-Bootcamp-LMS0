@@ -19,12 +19,6 @@ const StudentProfileHeader = () => {
           <Pencil className="h-4 w-4" />
           Edit Profile
         </button>
-        <button className="inline-flex items-center justify-center p-2 border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-low)] text-[var(--color-text-muted)] rounded-lg transition-colors shadow-sm">
-          <Mail className="h-4 w-4" />
-        </button>
-        <button className="inline-flex items-center justify-center p-2 border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-low)] text-[#ef4444] rounded-lg transition-colors shadow-sm">
-          <Key className="h-4 w-4" />
-        </button>
       </div>
 
     </div>
