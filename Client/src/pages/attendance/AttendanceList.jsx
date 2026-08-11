@@ -3,24 +3,25 @@ import AttendanceToolbar from '../../components/attendanceComponents/AttendanceT
 import AttendanceTable from '../../components/attendanceComponents/AttendanceTable';
 import AttendancePagination from '../../components/attendanceComponents/AttendancePagination';
 import TakeAttendanceModal from '../../components/attendanceComponents/TakeAttendanceModal';
+import StudentRecordModal from '../../components/attendanceComponents/StudentRecordModal';
 
 // Generate mock data for demonstration
 const mockAttendanceData = [
-  { id: 1, rollNo: '100235', name: 'Bilal Ahmed', date: 'Aug 10, 2026', status: 'Leave', note: null },
-  { id: 2, rollNo: '100236', name: 'Sana Malik', date: 'Aug 10, 2026', status: 'Not marked', note: null },
-  { id: 3, rollNo: '100237', name: 'Hamza Sheikh', date: 'Aug 10, 2026', status: 'Not marked', note: null },
-  { id: 4, rollNo: '100238', name: 'Fatima Noor', date: 'Aug 10, 2026', status: 'Not marked', note: null },
-  { id: 5, rollNo: '100239', name: 'Usman Tariq', date: 'Aug 10, 2026', status: 'Not marked', note: null },
-  { id: 6, rollNo: '100243', name: 'Hakim', date: 'Aug 10, 2026', status: 'Not marked', note: null },
-  { id: 7, rollNo: '100435', name: 'Junaid', date: 'Aug 10, 2026', status: 'Not marked', note: null },
-  { id: 8, rollNo: '100436', name: 'Ayesha Khan', date: 'Aug 10, 2026', status: 'Present', note: null },
-  { id: 9, rollNo: '100437', name: 'Ali Raza', date: 'Aug 10, 2026', status: 'Present', note: null },
-  { id: 10, rollNo: '100438', name: 'Zainab Abbas', date: 'Aug 10, 2026', status: 'Absent', note: 'Uninformed' },
-  { id: 11, rollNo: '100439', name: 'Omar Farooq', date: 'Aug 10, 2026', status: 'Not marked', note: null },
-  { id: 12, rollNo: '100440', name: 'Hira Mani', date: 'Aug 10, 2026', status: 'Leave', note: 'Sick Leave' },
-  { id: 13, rollNo: '100441', name: 'Saad Tariq', date: 'Aug 10, 2026', status: 'Present', note: null },
-  { id: 14, rollNo: '100442', name: 'Khadija Shah', date: 'Aug 10, 2026', status: 'Not marked', note: null },
-  { id: 15, rollNo: '100443', name: 'Musa Khan', date: 'Aug 10, 2026', status: 'Present', note: null },
+  { id: 1, rollNo: '100235', name: 'Bilal Ahmed', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 2, rollNo: '100236', name: 'Sana Malik', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 3, rollNo: '100237', name: 'Hamza Sheikh', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 4, rollNo: '100238', name: 'Fatima Noor', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 5, rollNo: '100239', name: 'Usman Tariq', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 6, rollNo: '100243', name: 'Hakim', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 7, rollNo: '100435', name: 'Junaid', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 8, rollNo: '100436', name: 'Ayesha Khan', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 9, rollNo: '100437', name: 'Ali Raza', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 10, rollNo: '100438', name: 'Zainab Abbas', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 11, rollNo: '100439', name: 'Omar Farooq', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 12, rollNo: '100440', name: 'Hira Mani', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 13, rollNo: '100441', name: 'Saad Tariq', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 14, rollNo: '100442', name: 'Khadija Shah', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 15, rollNo: '100443', name: 'Musa Khan', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
 ];
 
 const AttendanceList = () => {
@@ -28,6 +29,7 @@ const AttendanceList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isTakeAttendanceModalOpen, setIsTakeAttendanceModalOpen] = useState(false);
+  const [selectedStudentForRecord, setSelectedStudentForRecord] = useState(null);
   const itemsPerPage = 10;
 
   // Reset to first page when searching
@@ -44,9 +46,10 @@ const AttendanceList = () => {
 
   // Handle Status Update from single row
   const handleStatusChange = (id, newStatus) => {
+    const time = newStatus === 'Present' ? new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : null;
     setData((prev) => 
       prev.map((student) => 
-        student.id === id ? { ...student, status: newStatus } : student
+        student.id === id ? { ...student, status: newStatus, checkInTime: time } : student
       )
     );
   };
@@ -58,7 +61,11 @@ const AttendanceList = () => {
       updates.forEach(update => {
         const idx = updatedData.findIndex(s => s.id === update.id);
         if (idx !== -1) {
-          updatedData[idx] = { ...updatedData[idx], status: update.status };
+          updatedData[idx] = { 
+            ...updatedData[idx], 
+            status: update.status,
+            checkInTime: update.checkInTime !== undefined ? update.checkInTime : updatedData[idx].checkInTime
+          };
         }
       });
       return updatedData;
@@ -80,7 +87,7 @@ const AttendanceList = () => {
 
   // Download CSV
   const handleDownloadCsv = () => {
-    const headers = ['Roll No', 'Student Name', 'Date', 'Status', 'Note'];
+    const headers = ['Roll No', 'Student Name', 'Date', 'Status', 'Check In', 'Check Out', 'Note'];
     
     // Helper to safely format CSV values that might contain commas
     const escapeCsvValue = (val) => {
@@ -97,6 +104,8 @@ const AttendanceList = () => {
       escapeCsvValue(r.name),
       escapeCsvValue(r.date),
       escapeCsvValue(r.status),
+      escapeCsvValue(r.checkInTime || ''),
+      escapeCsvValue(r.checkOutTime || ''),
       escapeCsvValue(r.note || '')
     ]);
     
@@ -133,6 +142,7 @@ const AttendanceList = () => {
           <AttendanceTable 
             attendanceData={paginatedData} 
             onStatusChange={handleStatusChange}
+            onStudentClick={(student) => setSelectedStudentForRecord(student)}
           />
           
           <AttendancePagination 
@@ -152,6 +162,14 @@ const AttendanceList = () => {
           students={data} 
           onClose={() => setIsTakeAttendanceModalOpen(false)}
           onSave={handleBulkSave}
+        />
+      )}
+
+      {/* Student Record Modal */}
+      {selectedStudentForRecord && (
+        <StudentRecordModal 
+          student={selectedStudentForRecord} 
+          onClose={() => setSelectedStudentForRecord(null)} 
         />
       )}
     </div>
