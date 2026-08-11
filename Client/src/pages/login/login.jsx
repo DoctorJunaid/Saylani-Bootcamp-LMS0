@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginAdmin } from "../../Services/auth.services";
 import toast from "react-hot-toast";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -12,23 +13,17 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+
     try {
+      const data = await loginAdmin(email, password);
 
-        const data = await loginAdmin(email, password);
-
-        toast.success("Login successfully!",{position:"top-center"  })
-        navigate("/dashboard")
-    } 
-    catch (error) 
-    {
-       toast.error(error.response?.data?.message || "Inavlid Email or password" );
-  
+      toast.success("Login successfully!", { position: "top-center" });
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Inavlid Email or password");
     } finally {
-
-    setIsLoading(false);
-
-  }
-      
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -89,14 +84,7 @@ export default function Login() {
             </button>
           </div>
 
-          {/* Form */}
-<<<<<<< HEAD
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-=======
           <form onSubmit={handleLogin} className="flex flex-col gap-4">
-
->>>>>>> 9002fbb324fe9ee97e4eb2027fc39d1790bafc8d
-            {/* Email */}
             <div>
               <label
                 htmlFor="admin-email"
@@ -124,13 +112,28 @@ export default function Login() {
                 Password
               </label>
 
-              <input
-                id="admin-password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-lg border border-[var(--color-border)] bg-white px-3.5 py-2.5 text-sm text-[var(--color-text)] transition-all focus:border-[#00639b] focus:outline-none focus:ring-1 focus:ring-[#00639b]"
-              />
+              <div className="relative flex items-center">
+                <input
+                  id="admin-password"
+                  type={password ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full rounded-lg border border-[var(--color-surface-high)] bg-[var(--color-surface)] py-2.5 pr-10 pl-3.5 text-sm text-[var(--color-text)] placeholder-[var(--color-outline)]/60 transition-all focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20"
+                />
+                <button
+                  type="button"
+                  onClick={() => setPassword((prev) => !prev)}
+                  className="absolute right-3 text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer"
+                  aria-label={password ? "Hide password" : "Show password"}
+                >
+                  {password ? (
+                    <EyeOff size={16} strokeWidth={2} />
+                  ) : (
+                    <Eye size={16} strokeWidth={2} />
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* Sign In Button */}
