@@ -9,7 +9,7 @@ import AttendanceList from "./pages/attendance/AttendanceList";
 import Task from "./pages/task/Task";
 import TeamsPage from "./pages/TeamPage/Team";
 import Team from "./pages/TeamPage/Team";
-import TeamDetails from "./pages/TeamPage/TeamDeatils";
+// import TeamDetails from "./pages/TeamPage/TeamDeatils";
 import { Toaster } from "react-hot-toast";
 
 function App() {
