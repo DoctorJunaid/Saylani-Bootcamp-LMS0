@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import  { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 
 export default function CustomSelect({ label, defaultOption, options, value, onChange, className = '' }) {
@@ -35,16 +35,16 @@ export default function CustomSelect({ label, defaultOption, options, value, onC
         aria-expanded={open}
         aria-label={label}
         onClick={() => setOpen((o) => !o)}
-        className={`flex items-center justify-between gap-2 w-full sm:w-auto px-4 py-2.5 rounded-lg border text-sm font-medium cursor-pointer transition-colors duration-[var(--duration-fast)] ${
+        className={`flex items-center justify-between gap-2 w-full sm:w-auto px-4 py-2.5 rounded-lg border border-[var(--color-primary)] text-sm font-medium cursor-pointer transition-all duration-[var(--duration-fast)] ${
           open
-            ? 'border-[var(--color-primary)] bg-[var(--color-surface)] text-[var(--color-text)]'
-            : 'border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:border-[var(--color-outline)] hover:text-[var(--color-text)]'
+            ? 'bg-[var(--color-primary-container)]/10 text-[var(--color-primary)]'
+            : 'bg-[var(--color-primary)] text-[var(--color-on-primary)] hover:opacity-90'
         }`}
       >
         <span className="truncate">{selected}</span>
         <ChevronDown
           className={`h-4 w-4 shrink-0 transition-transform duration-[var(--duration-fast)] ${
-            open ? 'rotate-180 text-[var(--color-primary)]' : 'text-[var(--color-text-muted)]'
+            open ? 'rotate-180' : ''
           }`}
         />
       </button>
@@ -65,7 +65,7 @@ export default function CustomSelect({ label, defaultOption, options, value, onC
                 onClick={() => handleSelect(opt)}
                 className={`flex items-center justify-between gap-2 px-4 py-2 text-sm cursor-pointer transition-colors duration-[var(--duration-fast)] ${
                   isSelected
-                    ? 'bg-[var(--color-primary-container)]/15 text-[var(--color-on-primary-container)] font-medium'
+                    ? 'bg-[var(--color-primary)] text-[var(--color-on-primary)] font-medium'
                     : 'text-[var(--color-text-muted)] hover:bg-[var(--color-surface-low)] hover:text-[var(--color-text)]'
                 }`}
               >

@@ -1,24 +1,29 @@
+import "dotenv/config"; 
 import express from "express";
 import { connectDB } from "./config/db.js";
-import configDotenv from "dotenv";
 import studentRoutes from "./routes/student.Routes.js";
 import projectRoutes from "./routes/project.Routes.js";
 import taskRoutes from "./routes/task.Routes.js";
 import teamRoutes from "./routes/team.Routes.js";
 import adminRouter from "./routes/admin.Routes.js";
+import { protectAdmin } from "./middleware/auth.middleware.js";
+import cors from "cors"
 
 
 const app = express();
 app.use(express.json());
+app.use(cors())
 
 // Routes
 app.use("/api/admin", adminRouter)
-app.use("/api/student", studentRoutes)
-app.use("/api/tasks", taskRoutes);
-app.use("/api/teams", teamRoutes);
-app.use("/api/projects", projectRoutes);
+app.use("/api/student",protectAdmin, studentRoutes)
+app.use("/api/tasks",protectAdmin, taskRoutes);
+app.use("/api/teams",protectAdmin, teamRoutes);
+app.use("/api/projects",protectAdmin, projectRoutes);
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 9000;
+console.log("PORT from env:", process.env.PORT);
+console.log("MONGO_URI from env:", process.env.MONGODB_URI);
 connectDB();
 
 app.get("/", (req, res) => {

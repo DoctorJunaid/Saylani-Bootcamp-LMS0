@@ -9,7 +9,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setTimeout(() => {
@@ -55,7 +55,6 @@ export default function Login() {
               <input
                 id="teacher-email"
                 type="email"
-                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="teacher@saylani.org"

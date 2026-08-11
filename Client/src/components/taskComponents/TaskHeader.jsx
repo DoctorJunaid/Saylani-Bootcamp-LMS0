@@ -3,6 +3,8 @@ import { LuList, LuCalendar, LuPlus } from "react-icons/lu";
 import Button from "../Button";
 
 const TaskHeader = () => {
+  const [view, setView] = React.useState("list");
+
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-md mb-lg">
       <div>
@@ -14,18 +16,44 @@ const TaskHeader = () => {
         </p>
       </div>
 
-      <div className="flex items-center gap-md">
+      <div className="flex items-center gap-3">
         {/* Toggle View */}
-        <div className="flex items-center bg-[var(--color-surface-low)] rounded-md p-1 border border-[var(--color-border)]">
-          <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-sm bg-[var(--color-surface)] text-[var(--color-primary)] shadow-[var(--shadow-sm)]">
+        <div className="flex items-center bg-[var(--color-surface-low)] rounded-lg p-1 border border-[var(--color-border)]">
+          <button
+            type="button"
+            onClick={() => setView("list")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md cursor-pointer transition-all ${
+              view === "list"
+                ? "bg-[var(--color-surface)] text-[var(--color-primary)] shadow-[var(--shadow-sm)]"
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+            }`}
+          >
             <LuList className="h-4 w-4" />
             List
           </button>
-          <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)]">
+          <button
+            type="button"
+            onClick={() => setView("timeline")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md cursor-pointer transition-all ${
+              view === "timeline"
+                ? "bg-[var(--color-surface)] text-[var(--color-primary)] shadow-[var(--shadow-sm)]"
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+            }`}
+          >
             <LuCalendar className="h-4 w-4" />
             Timeline
           </button>
         </div>
+
+        {/* New Task Button */}
+        <button
+          type="button"
+          onClick={() => alert("New Task modal/action")}
+          className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-[var(--color-primary)] text-[var(--color-on-primary)] hover:opacity-90 shadow-[var(--shadow-sm)] cursor-pointer transition-all"
+        >
+          <LuPlus className="h-4 w-4" />
+          New Task
+        </button>
       </div>
     </div>
   );
