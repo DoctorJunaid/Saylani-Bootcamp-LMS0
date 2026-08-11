@@ -14,6 +14,7 @@ import {
   Clock,
   UserCheck2,
   LogOut,
+  X,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
@@ -163,7 +164,7 @@ function StatCard({ label, value, icon: Icon, tone }) {
         <p className="text-sm font-medium text-[var(--color-text-muted)]">{label}</p>
         <p className="mt-[var(--spacing-xs)] text-2xl font-bold text-[var(--color-text)]">{value}</p>
       </div>
-      <div className={`rounded-lg p-2.5 bg-[var(--color-surface-low)] ${tone}`}>
+      <div className={`rounded-lg  ${tone}`}>
         <Icon size={22} strokeWidth={2} />
       </div>
     </div>
@@ -173,20 +174,20 @@ function StatCard({ label, value, icon: Icon, tone }) {
 function StatusBadge({ status }) {
   if (status === "Present") {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-success)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--color-success)] border border-[var(--color-success)]/20">
+      <span className="inline-flex items-center gap-1.5 rounded-full  px-2.5 py-1 text-xs font-semibold text-[var(--color-success)] border border-[var(--color-success)]/20">
         <CheckCircle2 size={13} /> Present
       </span>
     );
   }
   if (status === "Absent") {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-error)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--color-error)] border border-[var(--color-error)]/20">
+      <span className="inline-flex items-center gap-1.5 rounded-full  px-2.5 py-1 text-xs font-semibold text-[var(--color-error)] border border-[var(--color-error)]/20">
         <XCircle size={13} /> Absent
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-warning)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--color-warning)] border border-[var(--color-warning)]/20">
+    <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold text-[var(--color-warning)] border border-[var(--color-warning)]/20">
       <AlertCircle size={13} /> Leave
     </span>
   );
@@ -326,16 +327,13 @@ export default function Dashboard() {
           {/* Section Header */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-[var(--color-surface-high)] pb-[var(--spacing-md)]">
             <div className="flex items-center gap-[var(--spacing-sm)]">
-              <div className="rounded-lg bg-[var(--color-primary)]/10 p-2 text-[var(--color-primary)]">
+              <div className="rounded-lg p-1 text-[var(--color-primary)]">
                 <Calendar size={20} strokeWidth={2} />
               </div>
               <div>
                 <h2 className="text-base font-bold text-[var(--color-text)]">
                   Today&apos;s Attendance Summary
                 </h2>
-                <p className="text-xs text-[var(--color-text-muted)]">
-                  Real-time check-in/out records ({presentCount} Present &middot; {absentCount} Absent)
-                </p>
               </div>
             </div>
             
@@ -343,7 +341,7 @@ export default function Dashboard() {
               to="/attendance"
               className="text-sm font-semibold text-[var(--color-primary)] hover:underline self-start sm:self-auto"
             >
-              Manage All &rarr;
+              Manage
             </NavLink>
           </div>
 
@@ -366,9 +364,9 @@ export default function Dashboard() {
                   <button
                     type="button"
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text)] bg-[var(--color-surface-high)] rounded-full px-2 py-0.5"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text)] bg-[var(--color-surface-high)] rounded-full px-1 py-0.5"
                   >
-                    Clear
+                    <X />
                   </button>
                 )}
               </div>
@@ -476,7 +474,7 @@ export default function Dashboard() {
         <div className="flex flex-col rounded-[var(--radius-xl)] border border-[var(--color-surface-high)] bg-[var(--color-surface)] p-[var(--spacing-lg)] shadow-[var(--shadow-sm)] transition-shadow duration-[var(--duration-normal)] hover:shadow-[var(--shadow-md)] lg:col-span-1">
           <div className="flex items-center justify-between border-b border-[var(--color-surface-high)] pb-[var(--spacing-md)] mb-[var(--spacing-sm)]">
             <div className="flex items-center gap-[var(--spacing-sm)]">
-              <div className="rounded-lg bg-[var(--color-primary)]/10 p-2 text-[var(--color-primary)]">
+              <div className="rounded-lg p-1 text-[var(--color-primary)]">
                 <ClipboardCheck size={20} strokeWidth={2} />
               </div>
               <h2 className="text-base font-bold text-[var(--color-text)]">
@@ -487,7 +485,7 @@ export default function Dashboard() {
               to="/tasks"
               className="text-sm font-semibold text-[var(--color-primary)] hover:underline"
             >
-              Manage &rarr;
+              Manage
             </NavLink>
           </div>
 
