@@ -14,6 +14,7 @@ import {
   Clock,
   UserCheck2,
   LogOut,
+  X,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
@@ -46,7 +47,7 @@ const initialAttendanceData = [
     course: "Graphic Design",
     checkIn: "09:30 AM",
     checkOut: "--",
-    status: "Leave",
+    status: "--",
     lastUpdated: 1770737400000,
   },
   {
@@ -66,7 +67,7 @@ const initialAttendanceData = [
     course: "Cyber Security",
     checkIn: "--",
     checkOut: "--",
-    status: "Absent",
+    status: "--",
     lastUpdated: 1770700000000,
   },
   {
@@ -140,9 +141,12 @@ const tasks = [
 ];
 
 const taskStatusStyles = {
-  Completed: "bg-[var(--color-success)]/10 text-[var(--color-success)] border border-[var(--color-success)]/20",
-  "In Progress": "bg-[var(--color-warning)]/10 text-[var(--color-warning)] border border-[var(--color-warning)]/20",
-  Pending: "bg-[var(--color-secondary)]/10 text-[var(--color-secondary)] border border-[var(--color-secondary)]/20",
+  Completed:
+    "bg-[var(--color-success)]/10 text-[var(--color-success)] border border-[var(--color-success)]/20",
+  "In Progress":
+    "bg-[var(--color-warning)]/10 text-[var(--color-warning)] border border-[var(--color-warning)]/20",
+  Pending:
+    "bg-[var(--color-secondary)]/10 text-[var(--color-secondary)] border border-[var(--color-secondary)]/20",
 };
 
 // Helper for formatted time (e.g., 09:37 AM)
@@ -160,10 +164,14 @@ function StatCard({ label, value, icon: Icon, tone }) {
   return (
     <div className="flex items-start justify-between rounded-[var(--radius-xl)] border border-[var(--color-surface-high)] bg-[var(--color-surface)] p-[var(--spacing-lg)] shadow-[var(--shadow-sm)] transition-all duration-[var(--duration-normal)] hover:shadow-[var(--shadow-md)]">
       <div>
-        <p className="text-sm font-medium text-[var(--color-text-muted)]">{label}</p>
-        <p className="mt-[var(--spacing-xs)] text-2xl font-bold text-[var(--color-text)]">{value}</p>
+        <p className="text-sm font-medium text-[var(--color-text-muted)]">
+          {label}
+        </p>
+        <p className="mt-[var(--spacing-xs)] text-2xl font-bold text-[var(--color-text)]">
+          {value}
+        </p>
       </div>
-      <div className={`rounded-lg p-2.5 bg-[var(--color-surface-low)] ${tone}`}>
+      <div className={`rounded-lg  ${tone}`}>
         <Icon size={22} strokeWidth={2} />
       </div>
     </div>
@@ -173,20 +181,27 @@ function StatCard({ label, value, icon: Icon, tone }) {
 function StatusBadge({ status }) {
   if (status === "Present") {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-success)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--color-success)] border border-[var(--color-success)]/20">
+      <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold text-[var(--color-success)] border border-[var(--color-success)]/20">
         <CheckCircle2 size={13} /> Present
+      </span>
+    );
+  }
+  if (status === "--") {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold text-[var(--color-text-muted)] border border-[var(--color-surface-high)]/80">
+        --
       </span>
     );
   }
   if (status === "Absent") {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-error)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--color-error)] border border-[var(--color-error)]/20">
+      <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold text-[var(--color-error)] border border-[var(--color-error)]/20">
         <XCircle size={13} /> Absent
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-warning)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--color-warning)] border border-[var(--color-warning)]/20">
+    <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold text-[var(--color-warning)] border border-[var(--color-warning)]/20">
       <AlertCircle size={13} /> Leave
     </span>
   );
@@ -196,7 +211,9 @@ function TaskRow({ title, student, rollNumber, dueDate, status }) {
   return (
     <div className="-mx-[var(--spacing-sm)] flex items-center justify-between rounded-[var(--radius-md)] border-b border-[var(--color-surface-high)] px-[var(--spacing-sm)] py-[var(--spacing-md)] transition-colors duration-[var(--duration-fast)] last:border-b-0 hover:bg-[var(--color-surface-low)]">
       <div className="space-y-0.5">
-        <p className="text-sm font-semibold text-[var(--color-text)]">{title}</p>
+        <p className="text-sm font-semibold text-[var(--color-text)]">
+          {title}
+        </p>
         <p className="text-xs text-[var(--color-text-muted)]">
           {student} &middot; {rollNumber} &middot; due {dueDate}
         </p>
@@ -219,11 +236,11 @@ export default function Dashboard() {
   const totalStudents = attendanceData.length;
   const presentCount = useMemo(
     () => attendanceData.filter((s) => s.status === "Present").length,
-    [attendanceData]
+    [attendanceData],
   );
   const absentCount = useMemo(
     () => attendanceData.filter((s) => s.status === "Absent").length,
-    [attendanceData]
+    [attendanceData],
   );
 
   const statCards = [
@@ -233,10 +250,30 @@ export default function Dashboard() {
       icon: GraduationCap,
       tone: "text-[var(--color-primary)]",
     },
-    { label: "Present Today", value: presentCount, icon: UserCheck, tone: "text-[var(--color-success)]" },
-    { label: "Absent Today", value: absentCount, icon: UserX, tone: "text-[var(--color-error)]" },
-    { label: "Total Teams", value: 3, icon: Users, tone: "text-[var(--color-primary)]" },
-    { label: "Pending Tasks", value: 6, icon: ClipboardList, tone: "text-[var(--color-text)]" },
+    {
+      label: "Present Today",
+      value: presentCount,
+      icon: UserCheck,
+      tone: "text-[var(--color-success)]",
+    },
+    {
+      label: "Absent Today",
+      value: absentCount,
+      icon: UserX,
+      tone: "text-[var(--color-error)]",
+    },
+    {
+      label: "Total Teams",
+      value: 3,
+      icon: Users,
+      tone: "text-[var(--color-primary)]",
+    },
+    {
+      label: "Pending Tasks",
+      value: 6,
+      icon: ClipboardList,
+      tone: "text-[var(--color-text)]",
+    },
   ];
 
   // Filter & sort students (newest checked-in / updated students ALWAYS placed at the TOP)
@@ -251,7 +288,7 @@ export default function Dashboard() {
       (s) =>
         s.name.toLowerCase().includes(query) ||
         s.rollNo.toLowerCase().includes(query) ||
-        s.course.toLowerCase().includes(query)
+        s.course.toLowerCase().includes(query),
     );
   }, [attendanceData, searchQuery]);
 
@@ -259,10 +296,19 @@ export default function Dashboard() {
   const markStudentPresent = (studentId) => {
     const timeNowStr = getCurrentTimeString();
     const timestamp = Date.now();
+    let alreadyPresent = false;
+
     setAttendanceData((prevData) =>
       prevData.map((student) => {
         if (student.id === studentId) {
-          setFeedbackMessage(`Marked "${student.name}" (${student.rollNo}) as Present at ${timeNowStr}!`);
+          if (student.status === "Present") {
+            alreadyPresent = true;
+            return student;
+          }
+
+          setFeedbackMessage(
+            `Marked "${student.name}" (${student.rollNo}) as Present at ${timeNowStr}!`,
+          );
           setTimeout(() => setFeedbackMessage(""), 3500);
           return {
             ...student,
@@ -272,18 +318,34 @@ export default function Dashboard() {
           };
         }
         return student;
-      })
+      }),
     );
+
+    if (alreadyPresent) {
+      setFeedbackMessage(
+        "This student is already marked Present and cannot be marked again.",
+      );
+      setTimeout(() => setFeedbackMessage(""), 3000);
+    }
   };
 
   // Mark student Check Out & update timestamp (moves them to the TOP)
   const markStudentCheckOut = (studentId) => {
     const timeNowStr = getCurrentTimeString();
     const timestamp = Date.now();
+    let alreadyCheckedOut = false;
+
     setAttendanceData((prevData) =>
       prevData.map((student) => {
         if (student.id === studentId) {
-          setFeedbackMessage(`Checked out "${student.name}" (${student.rollNo}) at ${timeNowStr}!`);
+          if (student.checkOut !== "--") {
+            alreadyCheckedOut = true;
+            return student;
+          }
+
+          setFeedbackMessage(
+            `Checked out "${student.name}" (${student.rollNo}) at ${timeNowStr}!`,
+          );
           setTimeout(() => setFeedbackMessage(""), 3500);
           return {
             ...student,
@@ -292,24 +354,33 @@ export default function Dashboard() {
           };
         }
         return student;
-      })
+      }),
     );
+
+    if (alreadyCheckedOut) {
+      setFeedbackMessage("This student has already been checked out.");
+      setTimeout(() => setFeedbackMessage(""), 3000);
+    }
   };
 
-  // Shortcut for Search Bar: Mark the top matching searched student as Present
+  // Shortcut for Search Bar: Mark the first non-present matching student as Present
   const handleShortcutMarkPresent = (e) => {
     if (e) e.preventDefault();
-    if (filteredStudents.length > 0) {
-      markStudentPresent(filteredStudents[0].id);
+    const studentToMark = filteredStudents.find(
+      (student) => student.status !== "Present",
+    );
+    if (studentToMark) {
+      markStudentPresent(studentToMark.id);
     } else {
-      setFeedbackMessage("No student found to mark as present.");
+      setFeedbackMessage(
+        "No student selected to mark Present. All visible students are already Present.",
+      );
       setTimeout(() => setFeedbackMessage(""), 3000);
     }
   };
 
   return (
     <div className="flex flex-col gap-[var(--spacing-lg)] font-plus-jakarta-sans p-[var(--spacing-lg)] max-w-full">
-      
       {/* Stat cards */}
       <div className="grid grid-cols-1 gap-[var(--spacing-md)] sm:grid-cols-2 lg:grid-cols-5">
         {statCards.map((card) => (
@@ -319,37 +390,35 @@ export default function Dashboard() {
 
       {/* Main Grid Section: Today's Attendance Table + Task Summary */}
       <div className="grid grid-cols-1 gap-[var(--spacing-lg)] lg:grid-cols-3">
-        
         {/* Today's Attendance Student List Card (Spans 2 columns on lg) */}
         <div className="flex flex-col gap-[var(--spacing-md)] rounded-[var(--radius-xl)] border border-[var(--color-surface-high)] bg-[var(--color-surface)] p-[var(--spacing-lg)] shadow-[var(--shadow-sm)] transition-shadow duration-[var(--duration-normal)] hover:shadow-[var(--shadow-md)] lg:col-span-2">
-          
           {/* Section Header */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-[var(--color-surface-high)] pb-[var(--spacing-md)]">
             <div className="flex items-center gap-[var(--spacing-sm)]">
-              <div className="rounded-lg bg-[var(--color-primary)]/10 p-2 text-[var(--color-primary)]">
+              <div className="rounded-lg p-1 text-[var(--color-primary)]">
                 <Calendar size={20} strokeWidth={2} />
               </div>
               <div>
                 <h2 className="text-base font-bold text-[var(--color-text)]">
                   Today&apos;s Attendance Summary
                 </h2>
-                <p className="text-xs text-[var(--color-text-muted)]">
-                  Real-time check-in/out records ({presentCount} Present &middot; {absentCount} Absent)
-                </p>
               </div>
             </div>
-            
+
             <NavLink
               to="/attendance"
               className="text-sm font-semibold text-[var(--color-primary)] hover:underline self-start sm:self-auto"
             >
-              Manage All &rarr;
+              Manage
             </NavLink>
           </div>
 
           {/* Search Bar (Integrated directly inside Today's Attendance Summary) */}
           <div className="flex flex-col gap-2">
-            <form onSubmit={handleShortcutMarkPresent} className="flex flex-col sm:flex-row items-center gap-[var(--spacing-md)] w-full">
+            <form
+              onSubmit={handleShortcutMarkPresent}
+              className="flex flex-col sm:flex-row items-center gap-[var(--spacing-md)] w-full"
+            >
               <div className="relative flex-1 w-full">
                 <Search
                   size={18}
@@ -366,9 +435,9 @@ export default function Dashboard() {
                   <button
                     type="button"
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text)] bg-[var(--color-surface-high)] rounded-full px-2 py-0.5"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text)] bg-[var(--color-surface-high)] rounded-full px-1 py-0.5"
                   >
-                    Clear
+                    <X />
                   </button>
                 )}
               </div>
@@ -423,13 +492,23 @@ export default function Dashboard() {
                       </td>
                       <td className="px-4 py-3.5 text-[var(--color-text-muted)] whitespace-nowrap">
                         <span className="inline-flex items-center gap-1 font-mono text-xs">
-                          {student.checkIn !== "--" && <Clock size={12} className="text-[var(--color-success)]" />}
+                          {student.checkIn !== "--" && (
+                            <Clock
+                              size={12}
+                              className="text-[var(--color-success)]"
+                            />
+                          )}
                           {student.checkIn}
                         </span>
                       </td>
                       <td className="px-4 py-3.5 text-[var(--color-text-muted)] whitespace-nowrap">
                         <span className="inline-flex items-center gap-1 font-mono text-xs">
-                          {student.checkOut !== "--" && <Clock size={12} className="text-[var(--color-text-muted)]" />}
+                          {student.checkOut !== "--" && (
+                            <Clock
+                              size={12}
+                              className="text-[var(--color-text-muted)]"
+                            />
+                          )}
                           {student.checkOut}
                         </span>
                       </td>
@@ -454,16 +533,27 @@ export default function Dashboard() {
                             <LogOut size={12} /> Check Out
                           </button>
                         ) : (
-                          <span className="text-xs text-[var(--color-text-muted)] font-medium">Completed</span>
+                          <span className="text-xs text-[var(--color-text-muted)] font-medium">
+                            Completed
+                          </span>
                         )}
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={7} className="px-4 py-8 text-center text-[var(--color-text-muted)]">
-                      <p className="text-sm font-medium">No student records found matching &quot;{searchQuery}&quot;</p>
-                      <p className="text-xs mt-1">Try searching with a different roll number, name, or course.</p>
+                    <td
+                      colSpan={7}
+                      className="px-4 py-8 text-center text-[var(--color-text-muted)]"
+                    >
+                      <p className="text-sm font-medium">
+                        No student records found matching &quot;{searchQuery}
+                        &quot;
+                      </p>
+                      <p className="text-xs mt-1">
+                        Try searching with a different roll number, name, or
+                        course.
+                      </p>
                     </td>
                   </tr>
                 )}
@@ -476,7 +566,7 @@ export default function Dashboard() {
         <div className="flex flex-col rounded-[var(--radius-xl)] border border-[var(--color-surface-high)] bg-[var(--color-surface)] p-[var(--spacing-lg)] shadow-[var(--shadow-sm)] transition-shadow duration-[var(--duration-normal)] hover:shadow-[var(--shadow-md)] lg:col-span-1">
           <div className="flex items-center justify-between border-b border-[var(--color-surface-high)] pb-[var(--spacing-md)] mb-[var(--spacing-sm)]">
             <div className="flex items-center gap-[var(--spacing-sm)]">
-              <div className="rounded-lg bg-[var(--color-primary)]/10 p-2 text-[var(--color-primary)]">
+              <div className="rounded-lg p-1 text-[var(--color-primary)]">
                 <ClipboardCheck size={20} strokeWidth={2} />
               </div>
               <h2 className="text-base font-bold text-[var(--color-text)]">
@@ -487,7 +577,7 @@ export default function Dashboard() {
               to="/tasks"
               className="text-sm font-semibold text-[var(--color-primary)] hover:underline"
             >
-              Manage &rarr;
+              Manage
             </NavLink>
           </div>
 
@@ -501,4 +591,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
