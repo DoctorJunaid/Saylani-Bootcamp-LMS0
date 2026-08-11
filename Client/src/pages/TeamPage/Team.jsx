@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import FilterToolbar from "../../components/team/FilterTollbar";
 import TeamGrid from "../../components/team/TeamGrid";
 import CreateTeamModal from "../../components/team/CreateTeamModel";
+import TeamDetails from "./TeamDetail";
 import { fetchTeams, createTeam } from "../../Data/teams";
 
 /**
@@ -20,7 +21,6 @@ import { fetchTeams, createTeam } from "../../Data/teams";
  */
 
 export default function TeamsPage() {
-  const navigate = useNavigate();
   const [teams, setTeams] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,6 +29,7 @@ export default function TeamsPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedTeamId, setSelectedTeamId] = useState(null);
 
   useEffect(() => {
     const handleOpenCreateTeamModal = () => {
@@ -90,7 +91,7 @@ export default function TeamsPage() {
   }, [teams, activeFilter, searchQuery]);
 
   function handleViewTeam(teamId) {
-    navigate(`/team/${teamId}`);
+    setSelectedTeamId(teamId);
   }
 
   async function handleCreateTeam(newTeam) {
@@ -132,6 +133,13 @@ export default function TeamsPage() {
         onClose={() => setIsCreateModalOpen(false)}
         onCreate={handleCreateTeam}
       />
+
+      {selectedTeamId && (
+        <TeamDetails 
+          teamId={selectedTeamId} 
+          onClose={() => setSelectedTeamId(null)} 
+        />
+      )}
     </div>
   );
 }

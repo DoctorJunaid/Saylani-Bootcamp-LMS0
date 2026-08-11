@@ -40,9 +40,9 @@ const StudentTable = ({ students = [] }) => {
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${student.avatarBg} ${student.avatarText}`}>
                     {student.initials}
                   </div>
-                  <div className="font-semibold text-[#0284c7] cursor-pointer hover:underline flex flex-col line-clamp-2 max-w-[150px] whitespace-normal leading-tight">
+                  <Link to={`/students/${student.id}`} className="font-semibold text-[#0284c7] cursor-pointer hover:underline flex flex-col line-clamp-2 max-w-[150px] whitespace-normal leading-tight">
                     {student.name}
-                  </div>
+                  </Link>
                 </div>
               </td>
               <td className="px-4 py-4 text-xs text-[var(--color-text-muted)]">{student.course}</td>

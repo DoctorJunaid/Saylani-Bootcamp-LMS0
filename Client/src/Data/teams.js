@@ -226,8 +226,6 @@ export async function fetchTeams() {
  * Return shape: Team object, ya `null` agar team nahi mili.
  */
 export async function fetchTeamById(teamId) {
-  await new Promise((resolve) => setTimeout(resolve, 300));
-
   const team = MOCK_TEAMS.find((t) => t.id === teamId);
   return team ?? null;
 }
