@@ -1,9 +1,10 @@
-
-
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import FilterToolbar from "../../components/team/FilterTollbar";
 import TeamGrid from "../../components/team/TeamGrid";
-import { fetchTeams } from "../../Data/teams";
+import CreateTeamModal from "../../components/team/CreateTeamModel";
+import TeamDetails from "./TeamDetail";
+import { fetchTeams, createTeam } from "../../Data/teams";
 
 /**
  * TeamsPage
@@ -26,6 +27,21 @@ export default function TeamsPage() {
 
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedTeamId, setSelectedTeamId] = useState(null);
+
+  useEffect(() => {
+    const handleOpenCreateTeamModal = () => {
+      setIsCreateModalOpen(true);
+    };
+
+    window.addEventListener("openCreateTeamModal", handleOpenCreateTeamModal);
+
+    return () => {
+      window.removeEventListener("openCreateTeamModal", handleOpenCreateTeamModal);
+    };
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -75,13 +91,25 @@ export default function TeamsPage() {
   }, [teams, activeFilter, searchQuery]);
 
   function handleViewTeam(teamId) {
-    // TODO: apni routing yahan lagayein, e.g. navigate(`/teams/${teamId}`)
-    console.log("View team clicked:", teamId);
+    setSelectedTeamId(teamId);
+  }
+
+  async function handleCreateTeam(newTeam) {
+    // createTeam abhi mock hai (data/teams.js) — backend ready hone par
+    // wahi ek file update karni hai, yahan kuch change nahi karna.
+    const savedTeam = await createTeam(newTeam);
+    setTeams((prev) => [savedTeam, ...prev]);
   }
 
   return (
     <div className="bg-background min-h-screen">
       <div className="max-w-[var(--container)] mx-auto px-lg py-2xl">
+        {/* <PageHeader
+          title="Teams"
+          subtitle="View and manage project teams"
+          onCreateTeam={() => setIsCreateModalOpen(true)}
+        /> */}
+
         <FilterToolbar
           counts={counts}
           activeFilter={activeFilter}
@@ -99,6 +127,19 @@ export default function TeamsPage() {
           />
         </div>
       </div>
+
+      <CreateTeamModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onCreate={handleCreateTeam}
+      />
+
+      {selectedTeamId && (
+        <TeamDetails 
+          teamId={selectedTeamId} 
+          onClose={() => setSelectedTeamId(null)} 
+        />
+      )}
     </div>
   );
 }

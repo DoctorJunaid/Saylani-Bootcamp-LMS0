@@ -1,39 +1,19 @@
 import "dotenv/config"; 
-import express from "express";
+import app from "./app.js"; // app instance ko import kiya
 import { connectDB } from "./config/db.js";
-import studentRoutes from "./routes/student.Routes.js";
-import projectRoutes from "./routes/project.Routes.js";
-import taskRoutes from "./routes/task.Routes.js";
-import teamRoutes from "./routes/team.Routes.js";
-import adminRouter from "./routes/admin.Routes.js";
-import { protectAdmin } from "./middleware/auth.middleware.js";
-import cors from "cors"
-
-
-const app = express();
-app.use(express.json());
-app.use(cors())
-
-// Routes
-app.use("/api/admin", adminRouter)
-app.use("/api/student",protectAdmin, studentRoutes)
-app.use("/api/tasks",protectAdmin, taskRoutes);
-app.use("/api/teams",protectAdmin, teamRoutes);
-app.use("/api/projects",protectAdmin, projectRoutes);
 
 const PORT = process.env.PORT || 9000;
-console.log("PORT from env:", process.env.PORT);
-console.log("MONGO_URI from env:", process.env.MONGODB_URI);
-connectDB();
-
-app.get("/", (req, res) => {
-  res.send("API is running")
-})
 
 
-
-
-app.listen(PORT, ()=>{  
-  console.log(`Server Running on PORT http://localhost:${PORT}`)
-})
-
+// 1. Pehle Database Connect karein
+connectDB()
+  .then(() => {
+    // 2. DB connect hone ke baad server start karein
+    app.listen(PORT, () => {  
+      console.log(`Server Running on PORT http://localhost:${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Database connection failed:", error);
+    process.exit(1); // Server ko crash hone se bachane ke liye exit code
+  });

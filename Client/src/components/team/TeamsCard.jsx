@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import StatusBadge from "./StatusBadge";
 
 /**
@@ -66,7 +67,7 @@ export default function TeamCard({ team, onViewTeam }) {
       <button
         type="button"
         onClick={() => onViewTeam?.(id)}
-        className="inline-flex items-center gap-xs text-primary font-weight-medium text-sm mt-md self-start hover:underline transition-colors duration-fast"
+        className="inline-flex items-center gap-1 text-[#0284c7] font-semibold text-sm mt-4 self-start hover:underline transition-colors"
       >
         View team
         <svg
