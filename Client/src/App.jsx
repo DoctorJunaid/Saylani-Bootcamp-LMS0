@@ -8,6 +8,7 @@ import StudentProfile from "./pages/students/StudentProfile";
 import AttendanceList from "./pages/attendance/AttendanceList";
 import Task from "./pages/task/Task";
 import TeamsPage from "./pages/TeamPage/Team";
+import TeamDetails from "./pages/TeamPage/TeamDetail";
 
 function App() {
   return (
