@@ -8,7 +8,7 @@ const EditStudentModal = ({ student, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
       
-      <div className="bg-[var(--color-surface)] rounded-[var(--radius-xl)] shadow-xl border border-[var(--color-border)] w-full sm:w-3/4 md:w-1/2 max-w-2xl max-h-[95vh] flex flex-col">
+      <div className="bg-[var(--color-surface)] rounded-[var(--radius-xl)] shadow-xl border border-[var(--color-border)] w-1/2 sm:w-3/4 md:w-1/2 max-h-[95vh] flex flex-col">
         
         {/* Header */}
         <div className="flex items-center justify-between p-6 pb-4 shrink-0">

@@ -2,25 +2,56 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, CheckCircle2 } from 'lucide-react';
 
 const TakeAttendanceModal = ({ students, onClose, onSave }) => {
-  // Initialize attendance draft state (empty by default)
-  const [draft, setDraft] = useState({});
+  // Initialize attendance draft state with any existing statuses
+  const [draft, setDraft] = useState(() => {
+    const initialState = {};
+    students.forEach((s) => {
+      if (s.status === 'Present') initialState[s.id] = 'P';
+      else if (s.status === 'Absent') initialState[s.id] = 'A';
+      else if (s.status === 'Leave') initialState[s.id] = 'L';
+    });
+    return initialState;
+  });
+
+  const [checkInTimes, setCheckInTimes] = useState({});
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const [lockedSessionIds, setLockedSessionIds] = useState(new Set());
   const tableContainerRef = useRef(null);
   const rowRefs = useRef({});
 
-  // Auto-mark the focused student as 'P' if they don't have a status yet
-  useEffect(() => {
+  const isStudentLocked = (id) => {
+    const s = students.find((x) => x.id === id);
+    return (s && s.status !== 'Not marked') || lockedSessionIds.has(id);
+  };
+
+  const handleMoveToRow = (newIndex) => {
     const currentStudentId = students[activeIndex]?.id;
     if (currentStudentId) {
+      setLockedSessionIds(prev => {
+        const newSet = new Set(prev);
+        newSet.add(currentStudentId);
+        return newSet;
+      });
+    }
+    setActiveIndex(newIndex);
+  };
+
+  // Auto-mark the focused student as 'P' if they don't have a status yet and are not locked
+  useEffect(() => {
+    const currentStudentId = students[activeIndex]?.id;
+    if (currentStudentId && !isStudentLocked(currentStudentId)) {
       setDraft(prev => {
         if (!prev[currentStudentId]) {
+          // Record the time automatically
+          const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          setCheckInTimes(times => ({ ...times, [currentStudentId]: time }));
           return { ...prev, [currentStudentId]: 'P' };
         }
         return prev;
       });
     }
-  }, [activeIndex, students]);
+  }, [activeIndex, students, lockedSessionIds]);
 
   const currentDate = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
@@ -40,32 +71,42 @@ const TakeAttendanceModal = ({ students, onClose, onSave }) => {
 
       if (e.key === 'ArrowRight') {
         e.preventDefault();
-        setDraft((prev) => {
-          const currentStatus = prev[currentStudentId] || 'P';
-          const nextStatus = currentStatus === 'P' ? 'A' : currentStatus === 'A' ? 'L' : 'P';
-          return { ...prev, [currentStudentId]: nextStatus };
-        });
+        if (!isStudentLocked(currentStudentId)) {
+          setDraft((prev) => {
+            const currentStatus = prev[currentStudentId] || 'P';
+            const nextStatus = currentStatus === 'P' ? 'A' : currentStatus === 'A' ? 'L' : 'P';
+            const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            setCheckInTimes(times => ({ ...times, [currentStudentId]: time }));
+            return { ...prev, [currentStudentId]: nextStatus };
+          });
+        }
       } else if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        setDraft((prev) => {
-          const currentStatus = prev[currentStudentId] || 'P';
-          const nextStatus = currentStatus === 'P' ? 'L' : currentStatus === 'A' ? 'P' : 'A';
-          return { ...prev, [currentStudentId]: nextStatus };
-        });
+        if (!isStudentLocked(currentStudentId)) {
+          setDraft((prev) => {
+            const currentStatus = prev[currentStudentId] || 'P';
+            const nextStatus = currentStatus === 'P' ? 'L' : currentStatus === 'A' ? 'P' : 'A';
+            const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            setCheckInTimes(times => ({ ...times, [currentStudentId]: time }));
+            return { ...prev, [currentStudentId]: nextStatus };
+          });
+        }
       } else if (e.key === 'Enter' || e.key === 'ArrowDown') {
         e.preventDefault();
         if (activeIndex < students.length - 1) {
-          setActiveIndex((prev) => prev + 1);
+          handleMoveToRow(activeIndex + 1);
         }
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        if (activeIndex > 0) setActiveIndex((prev) => prev - 1);
+        if (activeIndex > 0) {
+          handleMoveToRow(activeIndex - 1);
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeIndex, students]);
+  }, [activeIndex, students, lockedSessionIds]);
 
   // Auto-scroll to active row
   useEffect(() => {
@@ -79,12 +120,26 @@ const TakeAttendanceModal = ({ students, onClose, onSave }) => {
 
   const handleToggleAll = () => {
     if (isAllPresent) {
-      setDraft({});
-    } else {
+      // Unmark only unlocked students
       setDraft((prev) => {
         const newState = { ...prev };
         students.forEach((s) => {
-          newState[s.id] = 'P';
+          if (!isStudentLocked(s.id)) {
+            delete newState[s.id];
+          }
+        });
+        return newState;
+      });
+      setCheckInTimes({});
+    } else {
+      const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      setDraft((prev) => {
+        const newState = { ...prev };
+        students.forEach((s) => {
+          if (!isStudentLocked(s.id)) {
+            newState[s.id] = 'P';
+            setCheckInTimes(times => ({ ...times, [s.id]: time }));
+          }
         });
         return newState;
       });
@@ -94,22 +149,32 @@ const TakeAttendanceModal = ({ students, onClose, onSave }) => {
   const handleSave = () => {
     // Convert draft (P, A, L) back to actual status (Present, Absent, Leave)
     const statusMap = { P: 'Present', A: 'Absent', L: 'Leave' };
-    const updates = students.map(s => ({
-      id: s.id,
-      status: statusMap[draft[s.id]] || 'Not marked'
-    }));
+    const updates = students.map(s => {
+      const draftStatus = draft[s.id];
+      const time = checkInTimes[s.id] || s.checkInTime || null;
+      return {
+        id: s.id,
+        status: statusMap[draftStatus] || 'Not marked',
+        checkInTime: draftStatus === 'P' ? time : null,
+      };
+    });
     
     onSave(updates);
     onClose();
   };
 
-  const Bubble = ({ letter, active, onClick, colorClass }) => (
+  const Bubble = ({ letter, active, onClick, colorClass, disabled }) => (
     <button
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
       className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold border transition-colors ${
-        active 
-          ? colorClass 
-          : 'border-[var(--color-border)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-low)]'
+        disabled && active 
+          ? `opacity-60 cursor-not-allowed ${colorClass}` 
+          : disabled 
+            ? 'opacity-30 cursor-not-allowed border-[var(--color-border)] text-[var(--color-text-muted)]' 
+            : active 
+              ? colorClass 
+              : 'border-[var(--color-border)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-low)] cursor-pointer'
       }`}
     >
       {letter}
@@ -179,12 +244,13 @@ const TakeAttendanceModal = ({ students, onClose, onSave }) => {
               {students.map((student, index) => {
                 const isActive = activeIndex === index;
                 const status = draft[student.id];
+                const isLocked = isStudentLocked(student.id);
 
                 return (
                   <tr 
                     key={student.id} 
                     ref={(el) => (rowRefs.current[index] = el)}
-                    onClick={() => setActiveIndex(index)}
+                    onClick={() => handleMoveToRow(index)}
                     className={`transition-colors cursor-pointer ${
                       isActive ? 'bg-[var(--color-primary-container)]/10' : 'hover:bg-[var(--color-surface-low)]'
                     }`}
@@ -200,20 +266,35 @@ const TakeAttendanceModal = ({ students, onClose, onSave }) => {
                         <Bubble 
                           letter="P" 
                           active={status === 'P'} 
-                          onClick={() => setDraft({ ...draft, [student.id]: 'P' })}
-                          colorClass="bg-[#dcfce7] border-[#16a34a] text-[#16a34a]" 
+                          onClick={() => {
+                            const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                            setCheckInTimes(times => ({ ...times, [student.id]: time }));
+                            setDraft({ ...draft, [student.id]: 'P' });
+                          }}
+                          colorClass="bg-[#dcfce7] border-[#16a34a] text-[#16a34a]"
+                          disabled={isLocked}
                         />
                         <Bubble 
                           letter="A" 
                           active={status === 'A'} 
-                          onClick={() => setDraft({ ...draft, [student.id]: 'A' })}
+                          onClick={() => {
+                            const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                            setCheckInTimes(times => ({ ...times, [student.id]: time }));
+                            setDraft({ ...draft, [student.id]: 'A' });
+                          }}
                           colorClass="bg-[#fee2e2] border-[#ef4444] text-[#ef4444]" 
+                          disabled={isLocked}
                         />
                         <Bubble 
                           letter="L" 
                           active={status === 'L'} 
-                          onClick={() => setDraft({ ...draft, [student.id]: 'L' })}
+                          onClick={() => {
+                            const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                            setCheckInTimes(times => ({ ...times, [student.id]: time }));
+                            setDraft({ ...draft, [student.id]: 'L' });
+                          }}
                           colorClass="bg-[#ffedd5] border-[#ea580c] text-[#ea580c]" 
+                          disabled={isLocked}
                         />
                       </div>
                     </td>

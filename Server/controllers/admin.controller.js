@@ -14,8 +14,8 @@ export const loginAdminController = async(req , res)=>{
           res.status(200).json({
             // message:email, password,
             message:"Admin login Sucessfully",
-            // result
-            ...result
+            // result //Poore result object ko result naam ke andar rakh do.
+            ...result //Result ke andar ki properties ko bahar current object mein spread kar do.
           })
         
     } 

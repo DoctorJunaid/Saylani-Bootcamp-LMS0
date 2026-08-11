@@ -8,14 +8,21 @@ import StudentProfile from "./pages/students/StudentProfile";
 import AttendanceList from "./pages/attendance/AttendanceList";
 import Task from "./pages/task/Task";
 import TeamsPage from "./pages/TeamPage/Team";
+import Team from "./pages/TeamPage/Team";
+import TeamDetails from "./pages/TeamPage/TeamDeatils";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-right" reverseOrder={false} />
       <Routes>
         <Route path="/login" element={<Login />} />
+
+        {/* Root path -> seedha login pe bhejo */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
         <Route element={<DashboardLayout />}>
-          <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="students" element={<StudentsList />} />
           <Route path="students/:id" element={<StudentProfile />} />
@@ -25,7 +32,9 @@ function App() {
           <Route path="tasks" element={<Task />} />
 
         </Route>
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+
+        {/* Koi bhi unknown route bhi login pe bhejo */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );

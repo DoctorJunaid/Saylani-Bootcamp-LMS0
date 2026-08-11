@@ -26,7 +26,7 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-const AttendanceTable = ({ attendanceData, onStatusChange }) => {
+const AttendanceTable = ({ attendanceData, onStatusChange, onStudentClick }) => {
   return (
     <div className="overflow-x-auto overflow-y-visible">
       <table className="w-full text-left whitespace-nowrap">
@@ -35,6 +35,8 @@ const AttendanceTable = ({ attendanceData, onStatusChange }) => {
             <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Roll No</th>
             <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Student</th>
             <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Date</th>
+            <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Check In</th>
+            <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Check Out</th>
             <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Status</th>
             <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Note</th>
             <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider text-right">Change</th>
@@ -49,13 +51,26 @@ const AttendanceTable = ({ attendanceData, onStatusChange }) => {
               
               {/* Student */}
               <td className="px-4 py-4">
-                <span className="font-semibold text-[#0284c7] cursor-pointer hover:underline">
+                <span 
+                  onClick={() => onStudentClick && onStudentClick(record)}
+                  className="font-semibold text-[#0284c7] cursor-pointer hover:underline"
+                >
                   {record.name}
                 </span>
               </td>
               
               {/* Date */}
               <td className="px-4 py-4 text-xs font-medium text-[var(--color-text-muted)]">{record.date}</td>
+
+              {/* Check In */}
+              <td className="px-4 py-4 text-xs font-medium text-[var(--color-text-muted)]">
+                {record.checkInTime || '—'}
+              </td>
+
+              {/* Check Out */}
+              <td className="px-4 py-4 text-xs font-medium text-[var(--color-text-muted)]">
+                {record.checkOutTime || '—'}
+              </td>
               
               {/* Status */}
               <td className="px-4 py-4">
@@ -85,7 +100,7 @@ const AttendanceTable = ({ attendanceData, onStatusChange }) => {
           
           {attendanceData.length === 0 && (
             <tr>
-              <td colSpan="6" className="px-4 py-12 text-center text-[var(--color-text-muted)]">
+              <td colSpan="8" className="px-4 py-12 text-center text-[var(--color-text-muted)]">
                 No attendance records found.
               </td>
             </tr>
