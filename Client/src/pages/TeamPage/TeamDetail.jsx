@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { X } from "lucide-react";
 import StatusBadge from "../../components/team/StatusBadge";
 import ProjectCard from "../../components/team/ProjectCard";
 import MemberCard from "../../components/team/MemberCrad";
@@ -40,9 +40,7 @@ function BackIcon() {
   );
 }
 
-export default function TeamDetails() {
-  const { teamId } = useParams();
-  const navigate = useNavigate();
+export default function TeamDetails({ teamId, onClose }) {
 
   const [team, setTeam] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -81,93 +79,100 @@ export default function TeamDetails() {
   const members = team?.members ?? [];
 
   return (
-    <div className="bg-background min-h-screen">
-      <div className="max-w-[var(--container)] mx-auto px-lg py-2xl">
-        {/* Back to Teams */}
-        <button
-          type="button"
-          onClick={() => navigate("/teams")}
-          className="inline-flex items-center gap-xs text-sm font-weight-medium text-primary hover:underline transition-colors duration-fast mb-lg"
-        >
-          <BackIcon />
-          Back to Teams
-        </button>
+    <div
+      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-lg"
+      onClick={onClose}
+    >
+      <div
+        className="bg-surface rounded-xl shadow-md w-full max-w-[800px] flex flex-col max-h-[90vh] overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-xl overflow-y-auto">
 
-        {isLoading && (
-          <p className="text-sm text-text-muted">Team load ho rahi hai...</p>
-        )}
-
-        {!isLoading && error && (
-          <p className="text-sm text-error">
-            Team load nahi ho paayi: {error}
-          </p>
-        )}
-
-        {!isLoading && !error && !team && (
-          <p className="text-sm text-text-muted">
-            Yeh team nahi mili. Ho sakta hai delete ho gayi ho ya link ghalat ho.
-          </p>
-        )}
-
-        {!isLoading && !error && team && (
-          <>
-            {/* Team header */}
-            <div className="bg-surface border border-border rounded-xl shadow-md p-lg mb-lg">
-              <div className="flex flex-wrap items-start justify-between gap-md">
-                <div>
-                  <h1 className="text-2xl font-weight-bold text-text">
-                    {team.name}
-                  </h1>
-                  <p className="text-sm text-text-muted mt-xs">
-                    {members.length} {members.length === 1 ? "member" : "members"}
-                    {" · "}
-                    {projects.length}{" "}
-                    {projects.length === 1 ? "project" : "projects"}
-                  </p>
-                </div>
-                <StatusBadge status={team.status} />
-              </div>
+          {!isLoading && error && (
+            <div className="bg-error/10 text-error p-md rounded-lg text-sm mb-lg border border-error/20">
+              Failed to load team: {error}
             </div>
+          )}
 
-            {/* Projects section */}
-            <section className="mb-lg">
-              <h2 className="text-xl font-weight-semibold text-text mb-md">
-                Projects
-              </h2>
+          {!isLoading && !error && !team && (
+            <div className="text-center py-12">
+              <p className="text-sm text-text-muted">
+                Team not found. It may have been deleted or the link is incorrect.
+              </p>
+            </div>
+          )}
 
-              {projects.length === 0 ? (
-                <p className="text-sm text-text-muted">
-                  Is team ko abhi koi project assign nahi hua.
-                </p>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
-                  {projects.map((project) => (
-                    <ProjectCard key={project.id ?? project.title} project={project} />
-                  ))}
+          {!isLoading && !error && team && (
+            <>
+              {/* Team header */}
+              <div className="bg-surface border border-border rounded-xl shadow-md p-lg mb-lg">
+                <div className="flex flex-wrap items-start justify-between gap-md">
+                  <div>
+                    <h1 className="text-2xl font-weight-bold text-text">
+                      {team.name}
+                    </h1>
+                    <p className="text-sm text-text-muted mt-xs">
+                      {members.length} {members.length === 1 ? "member" : "members"}
+                      {" · "}
+                      {projects.length}{" "}
+                      {projects.length === 1 ? "project" : "projects"}
+                    </p>
+                  </div>
+                  <StatusBadge status={team.status} />
                 </div>
-              )}
-            </section>
+              </div>
 
-            {/* Team members section */}
-            <section>
-              <h2 className="text-xl font-weight-semibold text-text mb-md">
-                Team Members
-              </h2>
+              {/* Projects section */}
+              <section className="mb-lg">
+                <h2 className="text-xl font-weight-semibold text-text mb-md">
+                  Projects
+                </h2>
 
-              {members.length === 0 ? (
-                <p className="text-sm text-text-muted">
-                  Is team me abhi koi member add nahi hua.
-                </p>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
-                  {members.map((member) => (
-                    <MemberCard key={member.id ?? member.email} member={member} />
-                  ))}
-                </div>
-              )}
-            </section>
-          </>
-        )}
+                {projects.length === 0 ? (
+                  <p className="text-sm text-text-muted">
+                    No projects have been assigned to this team yet.
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+                    {projects.map((project) => (
+                      <ProjectCard key={project.id ?? project.title} project={project} />
+                    ))}
+                  </div>
+                )}
+              </section>
+
+              {/* Team members section */}
+              <section>
+                <h2 className="text-xl font-weight-semibold text-text mb-md">
+                  Team Members
+                </h2>
+
+                {members.length === 0 ? (
+                  <p className="text-sm text-text-muted">
+                    No members have been added to this team yet.
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+                    {members.map((member) => (
+                      <MemberCard key={member.id ?? member.email} member={member} />
+                    ))}
+                  </div>
+                )}
+              </section>
+            </>
+          )}
+        </div>
+
+        <div className="flex justify-end gap-sm p-lg border-t border-border bg-surface shrink-0">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-lg py-sm rounded-lg text-sm font-weight-medium text-text-muted bg-surface-container hover:bg-surface-high transition-colors duration-fast"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );

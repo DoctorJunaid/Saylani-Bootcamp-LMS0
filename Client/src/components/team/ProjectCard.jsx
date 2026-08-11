@@ -1,6 +1,14 @@
 import StatusBadge from "./StatusBadge";
-// import ProgressBar from "./ProgressBar";
-
+function ProgressBar({ value }) {
+  return (
+    <div className="w-full bg-[var(--color-surface-high)] rounded-full h-1.5 mt-1 overflow-hidden">
+      <div 
+        className="h-1.5 rounded-full bg-[var(--color-primary)] transition-all duration-500" 
+        style={{ width: `${Math.min(Math.max(value || 0, 0), 100)}%` }}
+      ></div>
+    </div>
+  );
+}
 /**
  * ProjectCard
  * ---------------------------------------------------------------

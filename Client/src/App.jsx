@@ -8,12 +8,7 @@ import StudentProfile from "./pages/students/StudentProfile";
 import AttendanceList from "./pages/attendance/AttendanceList";
 import Task from "./pages/task/Task";
 import TeamsPage from "./pages/TeamPage/Team";
-<<<<<<< HEAD
-import TeamDetails from "./pages/TeamPage/TeamDetail";
-=======
-import Team from "./pages/TeamPage/Team";
 import { Toaster } from "react-hot-toast";
->>>>>>> 3afa625bd3a217ba179c66b52533a019b9a90e52
 
 function App() {
   return (
@@ -31,7 +26,6 @@ function App() {
           <Route path="students/:id" element={<StudentProfile />} />
           <Route path="attendance" element={<AttendanceList />} />
           <Route path="teams" element={<TeamsPage />} />
-          <Route path="/team/:id" element={<div className="p-6 text-sm text-text">Team details will open here.</div>} />
           <Route path="tasks" element={<Task />} />
 
         </Route>
