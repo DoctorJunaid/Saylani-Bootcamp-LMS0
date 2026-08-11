@@ -7,6 +7,7 @@ import StudentsList from "./pages/students/StudentsList";
 import StudentProfile from "./pages/students/StudentProfile";
 import AttendanceList from "./pages/attendance/AttendanceList";
 import Task from "./pages/task/Task";
+import TeamsPage from "./pages/TeamPage/Team";
 import Team from "./pages/TeamPage/Team";
 import TeamDetails from "./pages/TeamPage/TeamDeatils";
 import { Toaster } from "react-hot-toast";
@@ -26,9 +27,10 @@ function App() {
           <Route path="students" element={<StudentsList />} />
           <Route path="students/:id" element={<StudentProfile />} />
           <Route path="attendance" element={<AttendanceList />} />
-          <Route path="teams" element={<Team />} />
-          <Route path="/team/:id" element={<TeamDetails />} />
+          <Route path="teams" element={<TeamsPage />} />
+          <Route path="/team/:id" element={<div className="p-6 text-sm text-text">Team details will open here.</div>} />
           <Route path="tasks" element={<Task />} />
+
         </Route>
 
         {/* Koi bhi unknown route bhi login pe bhejo */}

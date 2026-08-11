@@ -35,7 +35,7 @@ const topBarConfig = {
     showButton: true,
     buttonText: "Create Team",
     buttonIcon: UsersRound,
-    onButtonClick: () => alert("Create Team clicked"),
+    onButtonClick: () => window.dispatchEvent(new CustomEvent("openCreateTeamModal")),
   },
   "/tasks": {
     title: "Tasks",
@@ -52,12 +52,13 @@ export default function DashboardLayout() {
   const location = useLocation();
   const currentPath = location.pathname;
 
-  const config = topBarConfig[currentPath] || {
-    title: "Bootcamp LMS",
-    subtitle: "",
-    showNotification: false,
-    showButton: false,
-  };
+  const config = topBarConfig[currentPath] ||
+    (currentPath.startsWith("/team") ? topBarConfig["/teams"] : null) || {
+      title: "Bootcamp LMS",
+      subtitle: "",
+      showNotification: false,
+      showButton: false,
+    };
 
   return (
     <div className="flex h-screen overflow-hidden">
