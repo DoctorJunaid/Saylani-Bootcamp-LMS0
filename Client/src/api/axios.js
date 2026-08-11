@@ -1,5 +1,5 @@
 import axios from "axios";
 
-const api = axios.create({baseURL:"http://localhost:9000/api",});
+const api = axios.create({baseURL:"https://saylani-bootcamp-lms-0.vercel.app",});
 
 export default api;
