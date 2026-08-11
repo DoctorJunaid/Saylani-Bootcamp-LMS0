@@ -1,0 +1,29 @@
+import express from "express";
+import cors from "cors";
+import studentRoutes from "./routes/student.Routes.js";
+import projectRoutes from "./routes/project.Routes.js";
+import taskRoutes from "./routes/task.Routes.js";
+import teamRoutes from "./routes/team.Routes.js";
+import adminRouter from "./routes/admin.Routes.js";
+import { protectAdmin } from "./middleware/auth.middleware.js";
+
+const app = express();
+
+// Middlewares
+app.use(express.json());
+app.use(cors());
+
+// Base Route
+app.get("/", (req, res) => {
+  res.send("API is running");
+});
+
+// App Routes
+app.use("/api/admin", adminRouter);
+app.use("/api/student", protectAdmin, studentRoutes);
+app.use("/api/tasks", protectAdmin, taskRoutes);
+app.use("/api/teams", protectAdmin, teamRoutes);
+app.use("/api/projects", protectAdmin, projectRoutes);
+
+// App instance ko export karein taake server.js ya test files ise use kar sakein
+export default app;
