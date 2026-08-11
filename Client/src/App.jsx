@@ -8,8 +8,12 @@ import StudentProfile from "./pages/students/StudentProfile";
 import AttendanceList from "./pages/attendance/AttendanceList";
 import Task from "./pages/task/Task";
 import TeamsPage from "./pages/TeamPage/Team";
+<<<<<<< HEAD
+import TeamDetails from "./pages/TeamPage/TeamDetail";
+=======
 import Team from "./pages/TeamPage/Team";
 import { Toaster } from "react-hot-toast";
+>>>>>>> 3afa625bd3a217ba179c66b52533a019b9a90e52
 
 function App() {
   return (
