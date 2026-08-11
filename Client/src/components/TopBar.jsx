@@ -1,5 +1,6 @@
 
 import { Bell, Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function TopBar({
   title,
@@ -10,7 +11,10 @@ export default function TopBar({
   buttonText = "Add",
   buttonIcon: ButtonIcon = Plus,
   onButtonClick,
-}) {
+})
+    
+ {
+   const navigate = useNavigate();
   return (
     <header className="flex items-center justify-between border-b border-border bg-surface px-lg py-md">
       <div>
@@ -26,7 +30,7 @@ export default function TopBar({
         {showNotification ? (
           <button
             type="button"
-            onClick={onNotificationClick}
+            onClick={() => (onNotificationClick ? onNotificationClick() : navigate("/teams"))}
             aria-label="Notifications"
             className="rounded-lg p-2 text-text-muted transition-colors duration-fast hover:bg-yellow-500 hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
           >

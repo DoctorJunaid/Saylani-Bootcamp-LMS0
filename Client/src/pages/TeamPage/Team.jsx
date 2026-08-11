@@ -1,97 +1,104 @@
-// import TeamHeader from "../../components/team/TeamHeader";
-import TeamColumn from "../../components/team/TeamColumn";
 
-const Teams = () => {
-  const data = {
-    notStarted: [
-      {
-        id:1,
-        teamName: "Team Alpha",
-        title: "Data Pipeline Optimization",
-        deadline: "Aug 30, 2025",
-        progress: 10,
-        status: "Not Started",
-        members: [
-          "https://i.pravatar.cc/40?img=1",
-          "https://i.pravatar.cc/40?img=2",
-        ],
-        projects: [
-          { title: "Data model audit", completed: true },
-          { title: "ETL pipeline", completed: true },
-          { title: "Reporting dashboard", completed: false },
-        ],
-      },
-    ],
-    inProgress: [
-      {
-        id:2,
-        teamName: "Team Alpha",
-        title: "E-commerce API Refactor",
-        deadline: "Aug 30, 2025",
-        progress: 65,
-        status: "In Progress",
-        members: [
-          "https://i.pravatar.cc/40?img=3",
-          "https://i.pravatar.cc/40?img=4",
-          "https://i.pravatar.cc/40?img=5",
-        ],
-        projects: [
-          { title: "API v1", completed: true },
-          { title: "Inventory sync", completed: false },
-          { title: "Payments flow", completed: false },
-        ],
-      },
-    ],
-    review: [
-      {
-        id:3,
-        teamName: "Tech Titans",
-        title: "Authentication Microservice",
-        deadline: "Aug 30, 2025",
-        progress: 90,
-        status: "Under Review",
-        members: [
-          "https://i.pravatar.cc/40?img=6",
-          "https://i.pravatar.cc/40?img=7",
-        ],
-        projects: [
-          { title: "OAuth integration", completed: true },
-          { title: "JWT refresh", completed: true },
-          { title: "SSO setup", completed: false },
-        ],
-      },
-    ],
-  };
 
-  // Column config
-  const columns = [
-    { key: "notStarted", title: "NOT STARTED" },
-    { key: "inProgress", title: "IN PROGRESS" },
-    { key: "review", title: "UNDER REVIEW" },
-  ];
+import { useEffect, useMemo, useState } from "react";
+import FilterToolbar from "../../components/team/FilterTollbar";
+import TeamGrid from "../../components/team/TeamGrid";
+import { fetchTeams } from "../../Data/teams";
+
+/**
+ * TeamsPage
+ * ---------------------------------------------------------------
+ * Page ke kaam:
+ *  1. data/teams.js se teams fetch karna
+ *  2. loading / error state manage karna
+ *  3. status filter + search apply karna (client-side)
+ *  4. FilterToolbar + TeamGrid ko render karna
+ *
+ * "View team" click hone par abhi console.log ho raha hai —
+ * isko apni routing (react-router / next navigation) se replace
+ * kar dena, e.g. navigate(`/teams/${teamId}`)
+ */
+
+export default function TeamsPage() {
+  const [teams, setTeams] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadTeams() {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const data = await fetchTeams();
+        if (isMounted) setTeams(data);
+      } catch (err) {
+        if (isMounted) setError(err.message ?? "Unknown error");
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+
+    loadTeams();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Counts for the filter pills — derived from the full team list,
+  // so numbers stay correct even while a filter/search is active.
+  const counts = useMemo(
+    () => ({
+      all: teams.length,
+      not_started: teams.filter((t) => t.status === "not_started").length,
+      in_progress: teams.filter((t) => t.status === "in_progress").length,
+      completed: teams.filter((t) => t.status === "completed").length,
+    }),
+    [teams]
+  );
+
+  const filteredTeams = useMemo(() => {
+    return teams.filter((team) => {
+      const matchesFilter =
+        activeFilter === "all" || team.status === activeFilter;
+
+      const matchesSearch = team.name
+        .toLowerCase()
+        .includes(searchQuery.trim().toLowerCase());
+
+      return matchesFilter && matchesSearch;
+    });
+  }, [teams, activeFilter, searchQuery]);
+
+  function handleViewTeam(teamId) {
+    // TODO: apni routing yahan lagayein, e.g. navigate(`/teams/${teamId}`)
+    console.log("View team clicked:", teamId);
+  }
 
   return (
-    <div className="w-full min-h-screen bg-[var(--color-background)] p-[var(--spacing-lg)]">
-      
-      {/* Header */}
-      {/* <TeamHeader /> */}
+    <div className="bg-background min-h-screen">
+      <div className="max-w-[var(--container)] mx-auto px-lg py-2xl">
+        <FilterToolbar
+          counts={counts}
+          activeFilter={activeFilter}
+          onFilterChange={setActiveFilter}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
 
-      {/* Columns */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[var(--spacing-lg)] mt-[var(--spacing-lg)]">
-        
-        {columns.map((col) => (
-          <TeamColumn
-            key={col.key}
-            title={col.title}
-            teams={data[col.key]}
-            count={data[col.key].length}
+        <div className="mt-lg">
+          <TeamGrid
+            teams={filteredTeams}
+            isLoading={isLoading}
+            error={error}
+            onViewTeam={handleViewTeam}
           />
-        ))}
-
+        </div>
       </div>
-
     </div>
   );
-};
-
-export default Teams;
+}
