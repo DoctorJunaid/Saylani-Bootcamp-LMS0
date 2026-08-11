@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { loginAdmin } from "../../Services/auth.services";
+import toast from "react-hot-toast";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -7,14 +9,26 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    try {
 
-    setTimeout(() => {
-      setIsLoading(false);
-      navigate("/dashboard");
-    }, 500);
+        const data = await loginAdmin(email, password);
+
+        toast.success("Login successfully!",{position:"top-center"  })
+        navigate("/dashboard")
+    } 
+    catch (error) 
+    {
+       toast.error(error.response?.data?.message || "Inavlid Email or password" );
+  
+    } finally {
+
+    setIsLoading(false);
+
+  }
+      
   };
 
   return (
@@ -76,7 +90,12 @@ export default function Login() {
           </div>
 
           {/* Form */}
+<<<<<<< HEAD
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+=======
+          <form onSubmit={handleLogin} className="flex flex-col gap-4">
+
+>>>>>>> 9002fbb324fe9ee97e4eb2027fc39d1790bafc8d
             {/* Email */}
             <div>
               <label
@@ -89,7 +108,6 @@ export default function Login() {
               <input
                 id="admin-email"
                 type="email"
-                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@bootcamp.dev"
@@ -109,7 +127,6 @@ export default function Login() {
               <input
                 id="admin-password"
                 type="password"
-                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full rounded-lg border border-[var(--color-border)] bg-white px-3.5 py-2.5 text-sm text-[var(--color-text)] transition-all focus:border-[#00639b] focus:outline-none focus:ring-1 focus:ring-[#00639b]"
@@ -120,7 +137,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className="mt-2 w-full rounded-lg bg-[#00639b] py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#005180] disabled:opacity-70"
+              className="mt-2 w-full rounded-lg bg-primary cursor-pointer py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#005180] disabled:opacity-70"
             >
               {isLoading ? "Signing in..." : "Sign in"}
             </button>
