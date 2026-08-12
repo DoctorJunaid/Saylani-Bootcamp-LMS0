@@ -2,7 +2,7 @@ import React from 'react';
 import { Search } from 'lucide-react';
 import CustomSelect from '../CustomSelect';
 
-const StudentToolbar = () => {
+const StudentToolbar = ({ searchQuery, onSearchChange }) => {
   return (
     <div className="flex flex-col xl:flex-row items-center justify-between gap-4 py-4 w-full">
 
@@ -13,6 +13,8 @@ const StudentToolbar = () => {
         </div>
         <input
           type="text"
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search by roll number, name, email, course or batch"
           className="block w-full pl-10 pr-3 py-2.5 text-sm bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] placeholder-[var(--color-text-muted)] text-[var(--color-text)] transition-colors"
         />

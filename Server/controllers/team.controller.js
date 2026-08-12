@@ -74,10 +74,60 @@ export const getTeamById = async (req, res) => {
 
 // @desc    Create team
 // @route   POST /api/teams
-export const createTeam = async (req, res) => {
-    try {
-        const { name, projectId, members } = req.body;
+// export const createTeam = async (req, res) => {
+//     try {
+//         const { name, projectId, members } = req.body;
 
+//         if (!name) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Team name is required"
+//             });
+//         }
+
+//         if (!projectId) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Project ID is required"
+//             });
+//         }
+
+//         if (members && !Array.isArray(members)) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Members must be an array"
+//             });
+//         }
+
+//         const team = await createTeamService({
+//             name,
+//             projectId,
+//             members: members || []
+//         });
+
+//         res.status(201).json({
+//             success: true,
+//             data: team
+//         });
+
+//     } catch (error) {
+//         res.status(500).json({
+//             success: false,
+//             message: error.message
+//         });
+//     }
+// };
+export const createTeam = async (req, res) => {
+  try {
+    const { name, projectId, members, status } = req.body;
+
+<<<<<<< HEAD
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        message: "Team name is required",
+      });
+=======
         if (!name) {
             return res.status(400).json({
                 success: false,
@@ -109,16 +159,48 @@ export const createTeam = async (req, res) => {
             success: false,
             message: error.message
         });
+>>>>>>> ff6739968ace9d15f90467f18ba83127d82133b8
     }
-};
 
+    if (!projectId) {
+      return res.status(400).json({
+        success: false,
+        message: "Project ID is required",
+      });
+    }
+
+    if (members && !Array.isArray(members)) {
+      return res.status(400).json({
+        success: false,
+        message: "Members must be an array",
+      });
+    }
+
+    const team = await createTeamService({
+      name,
+      projectId,
+      members: members || [],
+      status: status || "not_started",
+    });
+
+    res.status(201).json({
+      success: true,
+      data: team,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 // @desc    Update team
 // @route   PUT /api/teams/:id
 export const updateTeam = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, projectId, members, status } = req.body;
+        const { name, projectId, status } = req.body;
 
         if (!id) {
             return res.status(400).json({
@@ -127,17 +209,10 @@ export const updateTeam = async (req, res) => {
             });
         }
 
-        if (!name && !projectId && !members && !status) {
+        if (!name && !projectId  && !status) {
             return res.status(400).json({
                 success: false,
                 message: "At least one field is required to update"
-            });
-        }
-
-        if (members && !Array.isArray(members)) {
-            return res.status(400).json({
-                success: false,
-                message: "Members must be an array"
             });
         }
 
@@ -153,7 +228,6 @@ export const updateTeam = async (req, res) => {
         const team = await updateTeamService(id, {
             ...(name !== undefined && { name }),
             ...(projectId !== undefined && { projectId }),
-            ...(members !== undefined && { members }),
             ...(status !== undefined && { status })
         });
 
@@ -252,17 +326,6 @@ export const addMemberToTeam = async (req, res) => {
             });
         }
 
-        // Check student is already assigned to another team
-        const existingTeam = await Team.findOne({
-            members: studentId
-        });
-
-        if (existingTeam) {
-            return res.status(400).json({
-                success: false,
-                message: "Student is already assigned to another team"
-            });
-        }
 
         const updatedTeam = await addMemberToTeamService(
             teamId,

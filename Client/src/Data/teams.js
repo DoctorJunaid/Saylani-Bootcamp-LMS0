@@ -179,7 +179,7 @@ export async function fetchTeams() {
             Authorization: `Bearer ${localStorage.getItem('token')}`
         }
     });
-    return res.data.teams || [];
+    return res.data.data || [];
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to fetch teams");
   }
@@ -192,7 +192,7 @@ export async function fetchTeamById(teamId) {
             Authorization: `Bearer ${localStorage.getItem('token')}`
         }
     });
-    return res.data.team || null;
+    return res.data.data || null;
   } catch (error) {
     if (error.response?.status === 404) return null;
     throw new Error(error.response?.data?.message || "Failed to fetch team");
@@ -206,8 +206,74 @@ export async function createTeam(team) {
             Authorization: `Bearer ${localStorage.getItem('token')}`
         }
     });
-    return res.data.team;
+    return res.data.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to create team");
+  }
+}
+
+export async function updateTeam(teamId, teamData) {
+  try {
+    const res = await api.put(`${ENDPOINT}/${teamId}`, teamData, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+    });
+    return res.data.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to update team");
+  }
+}
+
+export async function addMemberToTeam(teamId, studentId) {
+  try {
+    const res = await api.post(`${ENDPOINT}/${teamId}/members/${studentId}`, {}, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+    });
+    return res.data.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to add member to team");
+  }
+}
+
+export async function removeMemberFromTeam(teamId, studentId) {
+  try {
+    const res = await api.delete(`${ENDPOINT}/${teamId}/members/${studentId}`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+    });
+    return res.data.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to remove member from team");
+  }
+}
+
+export async function removeSelectedMembersFromTeam(teamId, studentIds) {
+  try {
+    const res = await api.delete(`${ENDPOINT}/${teamId}/members`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        data: { studentIds }
+    });
+    return res.data.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to remove members from team");
+  }
+}
+
+export async function fetchUnassignedStudents() {
+  try {
+    const res = await api.get(`${ENDPOINT}/unassigned-students`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+    });
+    return res.data.data || [];
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to fetch unassigned students");
   }
 }
