@@ -41,12 +41,12 @@ export const getStudents = async({search})=>{
             {
                 rollNumber: Number(search),
             }],
-        });
+        }).populate("team_id", "name");
     }
     // If no search
     else{
 
-         students = await Student.find();
+         students = await Student.find().populate("team_id", "name");
     }
      
     return students;
