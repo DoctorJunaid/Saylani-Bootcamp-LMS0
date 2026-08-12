@@ -18,8 +18,8 @@ const projectSchema = new mongoose.Schema({
     },
     status:{
         type: String,
-        enum: ['Not Started', 'In Progress', 'Completed'],
-        default: 'Not Started'
+        enum: ['not_started', 'in_progress', 'completed'],
+        default: 'not_started'
     },
     progress: {
         type: Number,
