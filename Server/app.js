@@ -12,11 +12,18 @@ const app = express();
 
 // Middlewares
 app.use(express.json());
-app.use(cors({
+
+const corsOptions = {
   origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
-}));
+};
+
+// Handle OPTIONS preflight requests IMMEDIATELY — no DB needed
+app.options("*", cors(corsOptions));
+
+// Apply CORS to all routes
+app.use(cors(corsOptions));
 
 // Middleware to ensure DB connection on serverless environments like Vercel
 app.use(async (req, res, next) => {
