@@ -200,7 +200,7 @@ export const createTeam = async (req, res) => {
 export const updateTeam = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, projectId, members, status } = req.body;
+        const { name, projectId, status } = req.body;
 
         if (!id) {
             return res.status(400).json({
@@ -209,17 +209,10 @@ export const updateTeam = async (req, res) => {
             });
         }
 
-        if (!name && !projectId && !members && !status) {
+        if (!name && !projectId  && !status) {
             return res.status(400).json({
                 success: false,
                 message: "At least one field is required to update"
-            });
-        }
-
-        if (members && !Array.isArray(members)) {
-            return res.status(400).json({
-                success: false,
-                message: "Members must be an array"
             });
         }
 
@@ -235,7 +228,6 @@ export const updateTeam = async (req, res) => {
         const team = await updateTeamService(id, {
             ...(name !== undefined && { name }),
             ...(projectId !== undefined && { projectId }),
-            ...(members !== undefined && { members }),
             ...(status !== undefined && { status })
         });
 
@@ -334,17 +326,6 @@ export const addMemberToTeam = async (req, res) => {
             });
         }
 
-        // Check student is already assigned to another team
-        const existingTeam = await Team.findOne({
-            members: studentId
-        });
-
-        if (existingTeam) {
-            return res.status(400).json({
-                success: false,
-                message: "Student is already assigned to another team"
-            });
-        }
 
         const updatedTeam = await addMemberToTeamService(
             teamId,

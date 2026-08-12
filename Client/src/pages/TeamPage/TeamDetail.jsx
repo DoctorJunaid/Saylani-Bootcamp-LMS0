@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import StatusBadge from "../../components/team/StatusBadge";
 import ProjectCard from "../../components/team/ProjectCard";
 import MemberCard from "../../components/team/MemberCrad";
-import { fetchTeamById, updateTeam } from "../../Data/teams";
+import { fetchTeamById, updateTeam, addMemberToTeam, removeMemberFromTeam, fetchUnassignedStudents } from "../../Data/teams";
 import { getStudentData } from "../../api/axios";
 
 export default function TeamDetails({ teamId, onClose }) {
@@ -24,14 +24,18 @@ export default function TeamDetails({ teamId, onClose }) {
       setError(null);
       try {
         const token = localStorage.getItem("token");
-        const [teamData, studentsResponse] = await Promise.all([
+        const [teamData, unassignedStudents] = await Promise.all([
           fetchTeamById(teamId),
-          getStudentData(token).catch(() => ({ students: [] }))
+          fetchUnassignedStudents().catch(async () => {
+            // Fallback to getStudentData if unassigned-students route fails
+            const res = await getStudentData(token).catch(() => ({ students: [] }));
+            return res?.students || [];
+          })
         ]);
         
         if (isMounted) {
           setTeam(teamData);
-          setAllStudents(studentsResponse?.students || []);
+          setAllStudents(unassignedStudents || []);
         }
       } catch (err) {
         if (isMounted) setError(err.message ?? "Unknown error");
@@ -55,9 +59,9 @@ export default function TeamDetails({ teamId, onClose }) {
   const members = team?.members ?? [];
   const memberIds = new Set(members.map(m => m._id || m.id));
 
-  // Available students to add (not already in team)
+  // Available students to add (unassigned & not already in team)
   const availableStudents = useMemo(() => {
-    return allStudents.filter(s => !memberIds.has(s._id || s.id));
+    return allStudents.filter(s => !s.team_id && !memberIds.has(s._id || s.id));
   }, [allStudents, memberIds]);
 
   async function handleAddMember() {
@@ -65,16 +69,17 @@ export default function TeamDetails({ teamId, onClose }) {
     
     setIsUpdating(true);
     try {
-      const newMembers = [...members.map(m => m._id || m.id), ...selectedStudentIds];
-      const updated = await updateTeam(teamId, { members: newMembers });
-      // updateTeam might not populate members fully if it only returns ids, 
-      // but let's re-fetch or optimistically update
-      setTeam(updated);
+      for (const studentId of selectedStudentIds) {
+        await addMemberToTeam(teamId, studentId);
+      }
       setSelectedStudentIds([]);
       
-      // We should ideally fetch the full team again to get populated member objects
-      const freshTeam = await fetchTeamById(teamId);
+      const [freshTeam, freshUnassigned] = await Promise.all([
+        fetchTeamById(teamId),
+        fetchUnassignedStudents().catch(() => [])
+      ]);
       setTeam(freshTeam);
+      setAllStudents(freshUnassigned);
     } catch (err) {
       alert("Failed to add member: " + err.message);
     } finally {
@@ -87,12 +92,14 @@ export default function TeamDetails({ teamId, onClose }) {
 
     setIsUpdating(true);
     try {
-      const newMembers = members.map(m => m._id || m.id).filter(id => id !== memberIdToRemove);
-      const updated = await updateTeam(teamId, { members: newMembers });
+      await removeMemberFromTeam(teamId, memberIdToRemove);
       
-      // Re-fetch to get populated array
-      const freshTeam = await fetchTeamById(teamId);
+      const [freshTeam, freshUnassigned] = await Promise.all([
+        fetchTeamById(teamId),
+        fetchUnassignedStudents().catch(() => [])
+      ]);
       setTeam(freshTeam);
+      setAllStudents(freshUnassigned);
     } catch (err) {
       alert("Failed to remove member: " + err.message);
     } finally {

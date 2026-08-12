@@ -1,4 +1,5 @@
 import { Task } from "../models/taskModel.js";
+import Student from "../models/student.Model.js";
 
 // @desc    Get all tasks from database
 export const getAllTasksService = async () => {
@@ -24,6 +25,11 @@ export const createTaskService = async (taskData) => {
         throw new Error("Student ID and task title are required");
     }
 
+    const studentExists = await Student.findById(studentId);
+    if (!studentExists) {
+        throw new Error("Referenced student does not exist");
+    }
+
     const task = await Task.create({
         studentId,
         title,
@@ -37,6 +43,13 @@ export const createTaskService = async (taskData) => {
 
 // @desc    Update task by ID
 export const updateTaskService = async (id, updateData) => {
+    if (updateData.studentId) {
+        const studentExists = await Student.findById(updateData.studentId);
+        if (!studentExists) {
+            throw new Error("Referenced student does not exist");
+        }
+    }
+
     const task = await Task.findByIdAndUpdate(
         id,
         updateData,
