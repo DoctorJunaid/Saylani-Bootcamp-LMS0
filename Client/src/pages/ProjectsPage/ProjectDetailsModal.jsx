@@ -116,7 +116,7 @@ export default function ProjectDetailsModal({ projectId, onClose, onUpdate }) {
               </section>
 
               {/* Team Assignment section */}
-              <section>
+              <section className="mb-lg">
                 <h2 className="text-lg font-weight-semibold text-text mb-sm">
                   Assigned Team
                 </h2>
@@ -141,6 +141,31 @@ export default function ProjectDetailsModal({ projectId, onClose, onUpdate }) {
                     Changing the team will automatically update the project lists for both the old and new teams.
                   </p>
                 </div>
+              </section>
+
+              {/* Progress section */}
+              <section>
+                <div className="flex justify-between items-center mb-sm">
+                  <h2 className="text-lg font-weight-semibold text-text">Progress</h2>
+                  <span className="text-sm font-weight-medium text-text">{project.progress || 0}%</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="100" 
+                  value={project.progress || 0}
+                  onChange={async (e) => {
+                    const newProgress = parseInt(e.target.value);
+                    setProject(prev => ({ ...prev, progress: newProgress }));
+                    try {
+                      await updateProject(projectId, { progress: newProgress });
+                      if (onUpdate) onUpdate();
+                    } catch (err) {
+                      console.error("Failed to update progress", err);
+                    }
+                  }}
+                  className="w-full accent-primary"
+                />
               </section>
             </>
           )}

@@ -1,17 +1,10 @@
 import { useState, useEffect } from "react";
 import { fetchTeams } from "../../Data/teams";
 
-const STATUS_OPTIONS = [
-  { value: "Not Started", label: "Not Started" },
-  { value: "In Progress", label: "In Progress" },
-  { value: "Completed", label: "Completed" },
-];
-
 const EMPTY_FORM = {
   title: "",
   description: "",
   dueDate: "",
-  status: "Not Started",
   teamId: "", // Empty means unassigned
 };
 
@@ -52,7 +45,6 @@ export default function CreateProjectModal({ isOpen, onClose, onCreate }) {
     const newProject = {
       title: formData.title.trim(),
       description: formData.description.trim(),
-      status: formData.status,
     };
     
     if (formData.dueDate) newProject.dueDate = formData.dueDate;
@@ -142,24 +134,6 @@ export default function CreateProjectModal({ isOpen, onClose, onCreate }) {
               onChange={handleChange}
               className="w-full bg-surface border border-border rounded-lg px-md py-sm text-sm text-text focus:outline-none focus:border-primary transition-colors duration-fast"
             />
-          </div>
-
-          <div>
-            <label className="text-sm font-weight-medium text-text mb-xs block">
-              Status
-            </label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="w-full bg-surface border border-border rounded-lg px-md py-sm text-sm text-text focus:outline-none focus:border-primary transition-colors duration-fast"
-            >
-              {STATUS_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
           </div>
 
           {error && <p className="text-sm text-error">{error}</p>}
