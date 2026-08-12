@@ -283,6 +283,16 @@ export default function TeamDetails({ teamId, onClose }) {
             </div>
           )}
         </div>
+
+        <div className="flex justify-end gap-sm p-lg border-t border-border bg-surface shrink-0">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-lg py-sm rounded-lg text-sm font-weight-medium text-text-muted bg-surface-container hover:bg-yellow-500 hover:text-white transition-colors duration-fast"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );
