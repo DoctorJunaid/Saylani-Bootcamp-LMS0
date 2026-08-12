@@ -25,10 +25,16 @@ const NAV_ITEMS = [
     tone: "text-warning",
   },
   {
-    label: "Teams & Projects",
+    label: "Teams",
     icon: UsersRound,
     path: "/teams",
     tone: "text-success",
+  },
+  {
+    label: "Projects",
+    icon: ClipboardList, // Using a generic icon for now, since we import it anyway
+    path: "/projects",
+    tone: "text-info", // Custom tone or just default, wait, I can use text-primary
   },
   { label: "Tasks", icon: ClipboardList, path: "/tasks", tone: "text-error" },
 ];

@@ -34,7 +34,6 @@ const AttendanceTable = ({ attendanceData, onStatusChange, onStudentClick }) => 
           <tr className="border-b border-[var(--color-surface-highest)]">
             <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Roll No</th>
             <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Student</th>
-            <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Date</th>
             <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Check In</th>
             <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Check Out</th>
             <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Status</th>
@@ -58,9 +57,6 @@ const AttendanceTable = ({ attendanceData, onStatusChange, onStudentClick }) => 
                   {record.name}
                 </span>
               </td>
-              
-              {/* Date */}
-              <td className="px-4 py-4 text-xs font-medium text-[var(--color-text-muted)]">{record.date}</td>
 
               {/* Check In */}
               <td className="px-4 py-4 text-xs font-medium text-[var(--color-text-muted)]">
@@ -100,7 +96,7 @@ const AttendanceTable = ({ attendanceData, onStatusChange, onStudentClick }) => 
           
           {attendanceData.length === 0 && (
             <tr>
-              <td colSpan="8" className="px-4 py-12 text-center text-[var(--color-text-muted)]">
+            <td colSpan="7" className="px-4 py-12 text-center text-[var(--color-text-muted)]">
                 No attendance records found.
               </td>
             </tr>
