@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Student from "./student.Model";
+import Student from "./student.Model.js";
 
 export const attendanceSchema = new mongoose.Schema({
 
