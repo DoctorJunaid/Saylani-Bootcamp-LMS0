@@ -104,11 +104,18 @@ export default function TeamsPage() {
   return (
     <div className="bg-background min-h-screen">
       <div className="max-w-[var(--container)] mx-auto px-lg py-2xl">
-        {/* <PageHeader
-          title="Teams"
-          subtitle="View and manage project teams"
-          onCreateTeam={() => setIsCreateModalOpen(true)}
-        /> */}
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-3xl font-weight-bold text-text">Teams</h1>
+            <p className="text-text-muted mt-1">View and manage project teams.</p>
+          </div>
+          <button
+            onClick={() => setIsCreateModalOpen(true)}
+            className="bg-primary text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity"
+          >
+            Create Team
+          </button>
+        </div>
 
         <FilterToolbar
           counts={counts}

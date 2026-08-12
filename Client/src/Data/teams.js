@@ -168,97 +168,48 @@ const RAW_TEAMS = [
   },
 ];
 
-/**
- * withDerivedFields
- * ---------------------------------------------------------------
- * Har team object ko `memberCount` aur deprecated `project` field
- * ke saath enrich karta hai, taake purane components bina badlaav
- * ke chalte rahein.
- */
-function withDerivedFields(team) {
-  return {
-    ...team,
-    memberCount: team.members?.length ?? 0,
-    // ⚠️ DEPRECATED: naye code me `projects` array use karein
-    project: team.projects?.[0] ?? null,
-  };
-}
+import axios from "axios";
 
-const MOCK_TEAMS = RAW_TEAMS.map(withDerivedFields);
+// Since axios instance might be configured somewhere else, let's just use axios for now or assume baseUrl is set.
+// The backend runs at process.env.VITE_API_URL or relative if proxied. We'll use relative URL "/api/teams" assuming proxy or CORS setup.
+const API_URL = "http://localhost:9000/api/teams";
 
-/**
- * fetchTeams
- * ---------------------------------------------------------------
- * Jab backend ready ho jaye, is function ke body ko replace kar
- * dena, e.g.:
- *
- *   export async function fetchTeams() {
- *     const res = await fetch("/api/teams");
- *     if (!res.ok) throw new Error("Failed to fetch teams");
- *     return res.json();
- *   }
- *
- * Return shape hamesha yeh honi chahiye: Array<Team>
- */
 export async function fetchTeams() {
-  // Real network jaisa feel dene ke liye chhota delay (optional, hata sakte hain)
-  await new Promise((resolve) => setTimeout(resolve, 300));
-
-  return MOCK_TEAMS;
+  try {
+    const res = await axios.get(API_URL, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+    });
+    return res.data.teams || [];
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to fetch teams");
+  }
 }
 
-/**
- * fetchTeamById
- * ---------------------------------------------------------------
- * Ek specific team ka pura data (projects + members ke saath)
- * uska `id` de kar laata hai. TeamDetails.jsx isi function ko
- * use karta hai.
- *
- * Jab backend ready ho, replace kar dena:
- *
- *   export async function fetchTeamById(teamId) {
- *     const res = await fetch(`/api/teams/${teamId}`);
- *     if (res.status === 404) return null;
- *     if (!res.ok) throw new Error("Failed to fetch team");
- *     return res.json();
- *   }
- *
- * Return shape: Team object, ya `null` agar team nahi mili.
- */
 export async function fetchTeamById(teamId) {
-  const team = MOCK_TEAMS.find((t) => t.id === teamId);
-  return team ?? null;
+  try {
+    const res = await axios.get(`${API_URL}/${teamId}`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+    });
+    return res.data.team || null;
+  } catch (error) {
+    if (error.response?.status === 404) return null;
+    throw new Error(error.response?.data?.message || "Failed to fetch team");
+  }
 }
 
-/**
- * createTeam
- * ---------------------------------------------------------------
- * Abhi yeh sirf mock array me push karta hai (in-memory only —
- * refresh karne par gayab ho jayega).
- *
- * Jab backend ready ho, is function ke body ko replace kar dena:
- *
- *   export async function createTeam(team) {
- *     const res = await fetch("/api/teams", {
- *       method: "POST",
- *       headers: { "Content-Type": "application/json" },
- *       body: JSON.stringify(team),
- *     });
- *     if (!res.ok) throw new Error("Failed to create team");
- *     return res.json(); // backend se assigned real `id` wapas aayegi
- *   }
- *
- * Return shape hamesha ek single Team object honi chahiye.
- */
 export async function createTeam(team) {
-  await new Promise((resolve) => setTimeout(resolve, 300));
-
-  const enrichedTeam = withDerivedFields({
-    members: [],
-    projects: [],
-    ...team,
-  });
-
-  MOCK_TEAMS.unshift(enrichedTeam);
-  return enrichedTeam;
+  try {
+    const res = await axios.post(API_URL, team, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+    });
+    return res.data.team;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to create team");
+  }
 }
