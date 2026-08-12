@@ -264,3 +264,4 @@ export default function TeamDetails({ teamId, onClose }) {
     </div>
   );
 }
+
