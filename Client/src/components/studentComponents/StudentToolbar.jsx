@@ -15,7 +15,7 @@ const StudentToolbar = ({ searchQuery, onSearchChange }) => {
           type="text"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search by roll number, name, email, course or batch"
+          placeholder="Search by roll number, name"
           className="block w-full pl-10 pr-3 py-2.5 text-sm bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] placeholder-[var(--color-text-muted)] text-[var(--color-text)] transition-colors"
         />
       </div>
