@@ -143,11 +143,11 @@ const tasks = [
 
 const taskStatusStyles = {
   Completed:
-    "bg-[var(--color-success)]/10 text-[var(--color-success)] border border-[var(--color-success)]/20",
+    " text-[var(--color-success)] border border-[var(--color-success)]/20",
   "In Progress":
-    "bg-[var(--color-warning)]/10 text-[var(--color-warning)] border border-[var(--color-warning)]/20",
+    "text-[var(--color-warning)] border border-[var(--color-warning)]/20",
   Pending:
-    "bg-[var(--color-secondary)]/10 text-[var(--color-secondary)] border border-[var(--color-secondary)]/20",
+    "text-[var(--color-secondary)] border border-[var(--color-secondary)]/20",
 };
 
 // Helper for formatted time (e.g., 09:37 AM)
