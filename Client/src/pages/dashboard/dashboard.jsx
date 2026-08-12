@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   GraduationCap,
   UserCheck,
@@ -17,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import api, { getStudentData } from "../../api/axios";
 
 // Initial student attendance data for today (with timestamps for top ordering)
 const initialAttendanceData = [
@@ -232,8 +233,29 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
+  // student data api fetching
+  const [students, setStudents] = useState({ students: [] });
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("No token found in localStorage.");
+          return;
+        }
+        const data = await getStudentData(token);
+        setStudents(data ?? { students: [] });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchStudents();
+  }, []);
+
   // Dynamically calculated stats from state
-  const totalStudents = attendanceData.length;
+  const totalStudents = students?.students?.length ?? 0;
   const presentCount = useMemo(
     () => attendanceData.filter((s) => s.status === "Present").length,
     [attendanceData],
