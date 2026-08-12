@@ -15,15 +15,8 @@ import { useState } from "react";
  * turant dikh jayega.
  */
 
-const STATUS_OPTIONS = [
-  { value: "not_started", label: "Not Started" },
-  { value: "in_progress", label: "In Progress" },
-  { value: "completed", label: "Completed" },
-];
-
 const EMPTY_FORM = {
   name: "",
-  status: "not_started",
 };
 
 export default function CreateTeamModal({ isOpen, onClose, onCreate }) {
@@ -54,7 +47,6 @@ export default function CreateTeamModal({ isOpen, onClose, onCreate }) {
 
     const newTeam = {
       name: formData.name.trim(),
-      status: formData.status,
     };
 
     try {
@@ -95,24 +87,6 @@ export default function CreateTeamModal({ isOpen, onClose, onCreate }) {
               placeholder="e.g. Team Epsilon"
               className="w-full bg-surface border border-border rounded-lg px-md py-sm text-sm text-text focus:outline-none focus:border-primary transition-colors duration-fast"
             />
-          </div>
-
-          <div>
-            <label className="text-sm font-weight-medium text-text mb-xs block">
-              Status
-            </label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="w-full bg-surface border border-border rounded-lg px-md py-sm text-sm text-text focus:outline-none focus:border-primary transition-colors duration-fast"
-            >
-              {STATUS_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
           </div>
 
           {error && <p className="text-sm text-error">{error}</p>}

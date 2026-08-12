@@ -85,13 +85,6 @@ export const createTeam = async (req, res) => {
             });
         }
 
-        if (!projectId) {
-            return res.status(400).json({
-                success: false,
-                message: "Project ID is required"
-            });
-        }
-
         if (members && !Array.isArray(members)) {
             return res.status(400).json({
                 success: false,
@@ -102,7 +95,8 @@ export const createTeam = async (req, res) => {
         const team = await createTeamService({
             name,
             projectId,
-            members: members || []
+            members: members || [],
+            status: req.body.status || "not_started"
         });
 
         res.status(201).json({
@@ -124,7 +118,7 @@ export const createTeam = async (req, res) => {
 export const updateTeam = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, projectId, members } = req.body;
+        const { name, projectId, members, status } = req.body;
 
         if (!id) {
             return res.status(400).json({
@@ -133,7 +127,7 @@ export const updateTeam = async (req, res) => {
             });
         }
 
-        if (!name && !projectId && !members) {
+        if (!name && !projectId && !members && !status) {
             return res.status(400).json({
                 success: false,
                 message: "At least one field is required to update"
@@ -159,7 +153,8 @@ export const updateTeam = async (req, res) => {
         const team = await updateTeamService(id, {
             ...(name !== undefined && { name }),
             ...(projectId !== undefined && { projectId }),
-            ...(members !== undefined && { members })
+            ...(members !== undefined && { members }),
+            ...(status !== undefined && { status })
         });
 
         res.status(200).json({

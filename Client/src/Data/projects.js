@@ -1,10 +1,10 @@
-import axios from "axios";
+import api from "../api/axios";
 
-const API_URL = "http://localhost:9000/api/projects";
+const ENDPOINT = "/api/projects";
 
 export async function fetchProjects() {
   try {
-    const res = await axios.get(API_URL, {
+    const res = await api.get(ENDPOINT, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
         }
@@ -17,7 +17,7 @@ export async function fetchProjects() {
 
 export async function fetchProjectById(projectId) {
   try {
-    const res = await axios.get(`${API_URL}/${projectId}`, {
+    const res = await api.get(`${ENDPOINT}/${projectId}`, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
         }
@@ -31,7 +31,7 @@ export async function fetchProjectById(projectId) {
 
 export async function createProject(projectData) {
   try {
-    const res = await axios.post(API_URL, projectData, {
+    const res = await api.post(ENDPOINT, projectData, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
         }
@@ -44,7 +44,7 @@ export async function createProject(projectData) {
 
 export async function updateProject(projectId, updateData) {
   try {
-    const res = await axios.put(`${API_URL}/${projectId}`, updateData, {
+    const res = await api.put(`${ENDPOINT}/${projectId}`, updateData, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
         }
@@ -57,7 +57,7 @@ export async function updateProject(projectId, updateData) {
 
 export async function deleteProject(projectId) {
   try {
-    const res = await axios.delete(`${API_URL}/${projectId}`, {
+    const res = await api.delete(`${ENDPOINT}/${projectId}`, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
         }

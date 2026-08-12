@@ -168,15 +168,13 @@ const RAW_TEAMS = [
   },
 ];
 
-import axios from "axios";
+import api from "../api/axios";
 
-// Since axios instance might be configured somewhere else, let's just use axios for now or assume baseUrl is set.
-// The backend runs at process.env.VITE_API_URL or relative if proxied. We'll use relative URL "/api/teams" assuming proxy or CORS setup.
-const API_URL = "http://localhost:9000/api/teams";
+const ENDPOINT = "/api/teams";
 
 export async function fetchTeams() {
   try {
-    const res = await axios.get(API_URL, {
+    const res = await api.get(ENDPOINT, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
         }
@@ -189,7 +187,7 @@ export async function fetchTeams() {
 
 export async function fetchTeamById(teamId) {
   try {
-    const res = await axios.get(`${API_URL}/${teamId}`, {
+    const res = await api.get(`${ENDPOINT}/${teamId}`, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
         }
@@ -203,7 +201,7 @@ export async function fetchTeamById(teamId) {
 
 export async function createTeam(team) {
   try {
-    const res = await axios.post(API_URL, team, {
+    const res = await api.post(ENDPOINT, team, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
         }
