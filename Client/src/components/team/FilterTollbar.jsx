@@ -90,7 +90,7 @@ export default function FilterToolbar({
               key={key}
               type="button"
               onClick={() => onFilterChange(key)}
-              className={`flex items-center gap-sm rounded-full px-lg py-sm text-sm font-weight-medium transition-colors duration-fast ${
+              className={`flex items-center gap-sm rounded-md px-lg py-sm text-sm font-weight-medium transition-colors duration-fast ${
                 isActive
                   ? "bg-primary text-on-primary"
                   : "bg-surface-container text-text hover:bg-surface-high"
@@ -98,7 +98,7 @@ export default function FilterToolbar({
             >
               {label}
               <span
-                className={`inline-flex items-center justify-center min-w-[20px] rounded-full px-xs text-xs font-weight-semibold ${
+                className={`inline-flex items-center justify-center min-w-[20px] rounded-md px-xs text-xs font-weight-semibold ${
                   isActive
                     ? "bg-on-primary/20 text-on-primary"
                     : "bg-surface-high text-text-muted"

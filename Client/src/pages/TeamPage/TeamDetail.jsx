@@ -6,6 +6,7 @@ import MemberCard from "../../components/team/MemberCrad";
 import { fetchTeamById, updateTeam } from "../../Data/teams";
 import { getStudentData } from "../../api/axios";
 
+
 export default function TeamDetails({ teamId, onClose }) {
   const [team, setTeam] = useState(null);
   const [allStudents, setAllStudents] = useState([]);
@@ -16,35 +17,51 @@ export default function TeamDetails({ teamId, onClose }) {
   // New state for multi-select
   const [selectedStudentIds, setSelectedStudentIds] = useState([]);
 
-  useEffect(() => {
-    let isMounted = true;
+  const loadTeam = async () => {
+    try {
+      const data = await fetchTeamById(teamId);
+      setTeam(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-    async function loadData() {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const token = localStorage.getItem("token");
-        const [teamData, studentsResponse] = await Promise.all([
-          fetchTeamById(teamId),
-          getStudentData(token).catch(() => ({ students: [] }))
-        ]);
-        
-        if (isMounted) {
-          setTeam(teamData);
-          setAllStudents(studentsResponse?.students || []);
-        }
-      } catch (err) {
-        if (isMounted) setError(err.message ?? "Unknown error");
-      } finally {
-        if (isMounted) setIsLoading(false);
+  useEffect(() => {
+  let isMounted = true;
+
+  async function loadData() {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const [teamData, studentsResponse] = await Promise.all([
+        fetchTeamById(teamId),
+        getStudentData(token).catch(() => ({ students: [] })),
+      ]);
+
+      if (!isMounted) return;
+
+      setTeam(teamData);
+      setAllStudents(studentsResponse.students || []);
+    } catch (err) {
+      if (isMounted) {
+        setError(err.message);
+      }
+    } finally {
+      if (isMounted) {
+        setIsLoading(false);
       }
     }
+  }
 
-    loadData();
-    return () => {
-      isMounted = false;
-    };
-  }, [teamId]);
+  loadData();
+
+  return () => {
+    isMounted = false;
+  };
+}, [teamId]);
 
   const projects = team?.projects?.length
     ? team.projects
@@ -181,7 +198,11 @@ export default function TeamDetails({ teamId, onClose }) {
                 ) : (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-md">
                     {projects.map((project) => (
-                      <ProjectCard key={project._id ?? project.id ?? project.title} project={project} />
+                     <ProjectCard
+                        key={project._id ?? project.id ?? project.title}
+                        project={project}
+                        onRefresh={loadTeam}
+                    />
                     ))}
                   </div>
                 )}
