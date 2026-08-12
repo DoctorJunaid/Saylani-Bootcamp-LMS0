@@ -6,6 +6,7 @@ import MemberCard from "../../components/team/MemberCrad";
 import { fetchTeamById, updateTeam, addMemberToTeam, removeMemberFromTeam, fetchUnassignedStudents } from "../../Data/teams";
 import { getStudentData } from "../../api/axios";
 
+
 export default function TeamDetails({ teamId, onClose }) {
   const [team, setTeam] = useState(null);
   const [allStudents, setAllStudents] = useState([]);
@@ -16,8 +17,24 @@ export default function TeamDetails({ teamId, onClose }) {
   // New state for multi-select
   const [selectedStudentIds, setSelectedStudentIds] = useState([]);
 
+  const loadTeam = async () => {
+    try {
+      const data = await fetchTeamById(teamId);
+      setTeam(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
-    let isMounted = true;
+  let isMounted = true;
+
+  async function loadData() {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const token = localStorage.getItem("token");
 
     async function loadData() {
       setIsLoading(true);
@@ -43,12 +60,14 @@ export default function TeamDetails({ teamId, onClose }) {
         if (isMounted) setIsLoading(false);
       }
     }
+  }
 
-    loadData();
-    return () => {
-      isMounted = false;
-    };
-  }, [teamId]);
+  loadData();
+
+  return () => {
+    isMounted = false;
+  };
+}, [teamId]);
 
   const projects = team?.projects?.length
     ? team.projects
@@ -188,7 +207,11 @@ export default function TeamDetails({ teamId, onClose }) {
                 ) : (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-md">
                     {projects.map((project) => (
-                      <ProjectCard key={project._id ?? project.id ?? project.title} project={project} />
+                     <ProjectCard
+                        key={project._id ?? project.id ?? project.title}
+                        project={project}
+                        onRefresh={loadTeam}
+                    />
                     ))}
                   </div>
                 )}

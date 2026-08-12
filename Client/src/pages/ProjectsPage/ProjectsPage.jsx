@@ -125,6 +125,7 @@ export default function ProjectsPage() {
           projectId={selectedProjectId}
           onClose={() => setSelectedProjectId(null)}
           onUpdate={loadProjects}
+
         />
       )}
     </div>
