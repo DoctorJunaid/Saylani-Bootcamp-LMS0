@@ -8,12 +8,6 @@ import Project from "../models/project.Model.js";
 //     return await Team.find().populate("members");
 // }
 export const getAllTeamsService = async () => {
-<<<<<<< HEAD
-  return await Team.find()
-    .populate("members")
-    .populate("projectId");
-};
-=======
     const teams = await Team.find().populate("members").lean();
     const projects = await Project.find({ teamId: { $in: teams.map(t => t._id) } }).lean();
 
@@ -29,7 +23,6 @@ export const getAllTeamsService = async () => {
     });
     return teams;
 }
->>>>>>> ff6739968ace9d15f90467f18ba83127d82133b8
 
 // @desc get team by id
 
@@ -37,19 +30,12 @@ export const getAllTeamsService = async () => {
 //     return await Team.findById(id).populate("members");
 // }
 export const getTeamByIdService = async (id) => {
-<<<<<<< HEAD
-  return await Team.findById(id)
-    .populate("members")
-    .populate("projectId");
-};
-=======
     const team = await Team.findById(id).populate("members").lean();
     if (team) {
         team.projects = await Project.find({ teamId: team._id }).lean();
     }
     return team;
 }
->>>>>>> ff6739968ace9d15f90467f18ba83127d82133b8
 
 // @desc create team
 
