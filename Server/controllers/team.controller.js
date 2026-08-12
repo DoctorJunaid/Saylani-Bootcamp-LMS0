@@ -121,11 +121,45 @@ export const createTeam = async (req, res) => {
   try {
     const { name, projectId, members, status } = req.body;
 
+<<<<<<< HEAD
     if (!name) {
       return res.status(400).json({
         success: false,
         message: "Team name is required",
       });
+=======
+        if (!name) {
+            return res.status(400).json({
+                success: false,
+                message: "Team name is required"
+            });
+        }
+
+        if (members && !Array.isArray(members)) {
+            return res.status(400).json({
+                success: false,
+                message: "Members must be an array"
+            });
+        }
+
+        const team = await createTeamService({
+            name,
+            projectId,
+            members: members || [],
+            status: req.body.status || "not_started"
+        });
+
+        res.status(201).json({
+            success: true,
+            data: team
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+>>>>>>> ff6739968ace9d15f90467f18ba83127d82133b8
     }
 
     if (!projectId) {
@@ -166,7 +200,7 @@ export const createTeam = async (req, res) => {
 export const updateTeam = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, projectId, members } = req.body;
+        const { name, projectId, members, status } = req.body;
 
         if (!id) {
             return res.status(400).json({
@@ -175,7 +209,7 @@ export const updateTeam = async (req, res) => {
             });
         }
 
-        if (!name && !projectId && !members) {
+        if (!name && !projectId && !members && !status) {
             return res.status(400).json({
                 success: false,
                 message: "At least one field is required to update"
@@ -201,7 +235,8 @@ export const updateTeam = async (req, res) => {
         const team = await updateTeamService(id, {
             ...(name !== undefined && { name }),
             ...(projectId !== undefined && { projectId }),
-            ...(members !== undefined && { members })
+            ...(members !== undefined && { members }),
+            ...(status !== undefined && { status })
         });
 
         res.status(200).json({

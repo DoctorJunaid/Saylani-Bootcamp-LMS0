@@ -14,7 +14,12 @@ function formatDeadline(isoDate) {
 }
 
 export default function TeamCard({ team, onViewTeam }) {
-  const { id, name, memberCount, status, project } = team;
+  const { id, _id, name, memberCount, members, status, project, projects } = team;
+  const teamId = _id || id;
+  const count = memberCount ?? (members?.length || 0);
+
+  // Grab the first project to show in the card, similar to the mock logic
+  const displayProject = project || (projects && projects.length > 0 ? projects[0] : null);
 
   return (
     <div className="bg-surface border border-border rounded-xl shadow-md p-lg flex flex-col justify-between">
@@ -27,16 +32,16 @@ export default function TeamCard({ team, onViewTeam }) {
 
         {/* Member count */}
         <p className="text-sm text-text-muted mt-xs">
-          {memberCount} {memberCount === 1 ? "member" : "members"}
+          {count} {count === 1 ? "member" : "members"}
         </p>
 
         {/* Project info box */}
         <div className="bg-surface-low border border-border rounded-lg p-md mt-md">
           <p className="text-base font-weight-medium text-text">
-            {project?.title ?? "No project assigned"}
+            {displayProject?.title ?? "No project assigned"}
           </p>
           <p className="text-sm text-text-muted mt-xs">
-            Deadline {formatDeadline(project?.deadline)}
+            Deadline {formatDeadline(displayProject?.dueDate || displayProject?.deadline)}
           </p>
         </div>
       </div>
@@ -44,7 +49,7 @@ export default function TeamCard({ team, onViewTeam }) {
       {/* Action */}
       <button
         type="button"
-        onClick={() => onViewTeam?.(id)}
+        onClick={() => onViewTeam?.(teamId)}
         className="inline-flex items-center gap-1 text-[#0284c7] font-semibold text-sm mt-4 self-start hover:underline transition-colors"
       >
         View team

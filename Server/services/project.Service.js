@@ -13,12 +13,18 @@ export const createProjectService = async (projectData) => {
 //     return projects;
 // }
 export const getProjectsService = async () => {
+<<<<<<< HEAD
   const projects = await projectModel
     .find()
     .populate("teamId");
 
   return projects;
 };
+=======
+    const projects = await projectModel.find().populate("teamId");
+    return projects;
+}
+>>>>>>> ff6739968ace9d15f90467f18ba83127d82133b8
 
 
 // get single project by Id service
@@ -27,12 +33,18 @@ export const getProjectsService = async () => {
 //     return project;
 // }
 export const getProjectByIdService = async (id) => {
+<<<<<<< HEAD
   const project = await projectModel
     .findById(id)
     .populate("teamId");
 
   return project;
 };
+=======
+    const project = await projectModel.findById(id).populate("teamId");
+    return project;
+}
+>>>>>>> ff6739968ace9d15f90467f18ba83127d82133b8
 
 
 // update project service

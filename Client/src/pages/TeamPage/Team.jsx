@@ -106,11 +106,6 @@ export default function TeamsPage() {
   return (
     <div className="bg-background min-h-screen">
       <div className="max-w-[var(--container)] mx-auto px-lg py-2xl">
-        {/* <PageHeader
-          title="Teams"
-          subtitle="View and manage project teams"
-          onCreateTeam={() => setIsCreateModalOpen(true)}
-        /> */}
 
         <FilterToolbar
           counts={counts}
