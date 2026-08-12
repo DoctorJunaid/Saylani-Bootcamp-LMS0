@@ -7,10 +7,10 @@ const teamSchema = new mongoose.Schema(
             required: [true, "Team name is required"],
         },
 
-        projectId: {
+        projectId:[ {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Project",
-        },
+        },],
 
         members: [
             {
