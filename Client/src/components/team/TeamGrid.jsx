@@ -1,19 +1,4 @@
 import TeamCard from "./TeamsCard";
-
-/**
- * TeamGrid
- * ---------------------------------------------------------------
- * Sirf teams ki list ko grid me layout karta hai.
- * Loading / empty / error states yahan hi handle hote hain,
- * taake page-level component sirf data fetch karne ki fikar kare.
- *
- * Props:
- *  - teams: Array<Team>   (dekho TeamCard.jsx me shape)
- *  - isLoading: boolean
- *  - error: string | null
- *  - onViewTeam: (id: string) => void
- */
-
 export default function TeamGrid({ teams, isLoading, error, onViewTeam }) {
   if (isLoading) {
     return (
