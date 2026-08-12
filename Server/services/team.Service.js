@@ -3,15 +3,25 @@ import Student from "../models/student.Model.js";
 
 // @desc get all teams
 
+// export const getAllTeamsService = async () => {
+//     return await Team.find().populate("members");
+// }
 export const getAllTeamsService = async () => {
-    return await Team.find().populate("members");
-}
+  return await Team.find()
+    .populate("members")
+    .populate("projectId");
+};
 
 // @desc get team by id
 
+// export const getTeamByIdService = async (id) => {
+//     return await Team.findById(id).populate("members");
+// }
 export const getTeamByIdService = async (id) => {
-    return await Team.findById(id).populate("members");
-}
+  return await Team.findById(id)
+    .populate("members")
+    .populate("projectId");
+};
 
 // @desc create team
 

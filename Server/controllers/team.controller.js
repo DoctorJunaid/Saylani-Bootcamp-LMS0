@@ -74,50 +74,92 @@ export const getTeamById = async (req, res) => {
 
 // @desc    Create team
 // @route   POST /api/teams
+// export const createTeam = async (req, res) => {
+//     try {
+//         const { name, projectId, members } = req.body;
+
+//         if (!name) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Team name is required"
+//             });
+//         }
+
+//         if (!projectId) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Project ID is required"
+//             });
+//         }
+
+//         if (members && !Array.isArray(members)) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Members must be an array"
+//             });
+//         }
+
+//         const team = await createTeamService({
+//             name,
+//             projectId,
+//             members: members || []
+//         });
+
+//         res.status(201).json({
+//             success: true,
+//             data: team
+//         });
+
+//     } catch (error) {
+//         res.status(500).json({
+//             success: false,
+//             message: error.message
+//         });
+//     }
+// };
 export const createTeam = async (req, res) => {
-    try {
-        const { name, projectId, members } = req.body;
+  try {
+    const { name, projectId, members, status } = req.body;
 
-        if (!name) {
-            return res.status(400).json({
-                success: false,
-                message: "Team name is required"
-            });
-        }
-
-        if (!projectId) {
-            return res.status(400).json({
-                success: false,
-                message: "Project ID is required"
-            });
-        }
-
-        if (members && !Array.isArray(members)) {
-            return res.status(400).json({
-                success: false,
-                message: "Members must be an array"
-            });
-        }
-
-        const team = await createTeamService({
-            name,
-            projectId,
-            members: members || []
-        });
-
-        res.status(201).json({
-            success: true,
-            data: team
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        message: "Team name is required",
+      });
     }
-};
 
+    if (!projectId) {
+      return res.status(400).json({
+        success: false,
+        message: "Project ID is required",
+      });
+    }
+
+    if (members && !Array.isArray(members)) {
+      return res.status(400).json({
+        success: false,
+        message: "Members must be an array",
+      });
+    }
+
+    const team = await createTeamService({
+      name,
+      projectId,
+      members: members || [],
+      status: status || "not_started",
+    });
+
+    res.status(201).json({
+      success: true,
+      data: team,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 // @desc    Update team
 // @route   PUT /api/teams/:id

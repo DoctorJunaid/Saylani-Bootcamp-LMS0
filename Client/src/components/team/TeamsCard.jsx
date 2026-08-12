@@ -1,27 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import StatusBadge from "./StatusBadge";
-
-/**
- * TeamCard
- * ---------------------------------------------------------------
- * Ek single team ka card — jaisa screenshot me tha.
- *
- * Backend contract (expected shape of `team` prop):
- * {
- *   id: string,
- *   name: string,              // "Team Alpha"
- *   memberCount: number,       // 0
- *   status: "not_started" | "in_progress" | "completed",
- *   project: {
- *     title: string,           // "E-Commerce Platform"
- *     deadline: string         // ISO date string, e.g. "2026-09-15"
- *   }
- * }
- *
- * `onViewTeam` callback ko team.id ke saath call kiya jata hai —
- * isko aap router push, modal open, ya API call se hook kar sakte hain.
- */
-
 function formatDeadline(isoDate) {
   if (!isoDate) return "No deadline set";
 

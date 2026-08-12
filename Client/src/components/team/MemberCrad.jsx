@@ -1,13 +1,3 @@
-/**
- * MemberCard
- * ---------------------------------------------------------------
- * Ek single team member — TeamDetails page ke "Team Members"
- * section me list ke andar use hota hai.
- *
- * Props:
- *  - member: { id, name, role, email }
- */
-
 function getInitials(name = "") {
   return name
     .split(" ")

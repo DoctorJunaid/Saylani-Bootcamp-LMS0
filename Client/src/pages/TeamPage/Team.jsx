@@ -5,6 +5,7 @@ import TeamGrid from "../../components/team/TeamGrid";
 import CreateTeamModal from "../../components/team/CreateTeamModel";
 import TeamDetails from "./TeamDetail";
 import { fetchTeams, createTeam } from "../../Data/teams";
+import { fetchProjects } from "../../Data/project";
 
 /**
  * TeamsPage
@@ -24,6 +25,7 @@ export default function TeamsPage() {
   const [teams, setTeams] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [projects, setProjects] = useState([]);
 
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");

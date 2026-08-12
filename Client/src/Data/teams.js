@@ -230,26 +230,26 @@ export async function fetchTeamById(teamId) {
   return team ?? null;
 }
 
-/**
- * createTeam
- * ---------------------------------------------------------------
- * Abhi yeh sirf mock array me push karta hai (in-memory only —
- * refresh karne par gayab ho jayega).
- *
- * Jab backend ready ho, is function ke body ko replace kar dena:
- *
- *   export async function createTeam(team) {
- *     const res = await fetch("/api/teams", {
- *       method: "POST",
- *       headers: { "Content-Type": "application/json" },
- *       body: JSON.stringify(team),
- *     });
- *     if (!res.ok) throw new Error("Failed to create team");
- *     return res.json(); // backend se assigned real `id` wapas aayegi
- *   }
- *
- * Return shape hamesha ek single Team object honi chahiye.
- */
+
+//  * createTeam
+//  * ---------------------------------------------------------------
+//  * Abhi yeh sirf mock array me push karta hai (in-memory only —
+//  * refresh karne par gayab ho jayega).
+//  *
+//  * Jab backend ready ho, is function ke body ko replace kar dena:
+//  *
+//  *   export async function createTeam(team) {
+//  *     const res = await fetch("/api/teams", {
+//  *       method: "POST",
+//  *       headers: { "Content-Type": "application/json" },
+//  *       body: JSON.stringify(team),
+//  *     });
+//  *     if (!res.ok) throw new Error("Failed to create team");
+//  *     return res.json(); // backend se assigned real `id` wapas aayegi
+//  *   }
+//  *
+//  * Return shape hamesha ek single Team object honi chahiye.
+ 
 export async function createTeam(team) {
   await new Promise((resolve) => setTimeout(resolve, 300));
 
@@ -262,3 +262,4 @@ export async function createTeam(team) {
   MOCK_TEAMS.unshift(enrichedTeam);
   return enrichedTeam;
 }
+
