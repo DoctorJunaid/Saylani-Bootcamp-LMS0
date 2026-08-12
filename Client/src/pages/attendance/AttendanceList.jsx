@@ -5,37 +5,40 @@ import AttendancePagination from '../../components/attendanceComponents/Attendan
 import TakeAttendanceModal from '../../components/attendanceComponents/TakeAttendanceModal';
 import StudentRecordModal from '../../components/attendanceComponents/StudentRecordModal';
 
-// Generate mock data for demonstration
+import toast from 'react-hot-toast';
+
+const todayStr = new Date().toISOString().split('T')[0];
 const mockAttendanceData = [
-  { id: 1, rollNo: '100235', name: 'Bilal Ahmed', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 2, rollNo: '100236', name: 'Sana Malik', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 3, rollNo: '100237', name: 'Hamza Sheikh', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 4, rollNo: '100238', name: 'Fatima Noor', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 5, rollNo: '100239', name: 'Usman Tariq', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 6, rollNo: '100243', name: 'Hakim', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 7, rollNo: '100435', name: 'Junaid', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 8, rollNo: '100436', name: 'Ayesha Khan', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 9, rollNo: '100437', name: 'Ali Raza', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 10, rollNo: '100438', name: 'Zainab Abbas', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 11, rollNo: '100439', name: 'Omar Farooq', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 12, rollNo: '100440', name: 'Hira Mani', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 13, rollNo: '100441', name: 'Saad Tariq', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 14, rollNo: '100442', name: 'Khadija Shah', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 15, rollNo: '100443', name: 'Musa Khan', date: 'Aug 10, 2026', status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 1, rollNo: '100235', name: 'Bilal Ahmed', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 2, rollNo: '100236', name: 'Sana Malik', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 3, rollNo: '100237', name: 'Hamza Sheikh', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 4, rollNo: '100238', name: 'Fatima Noor', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 5, rollNo: '100239', name: 'Usman Tariq', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 6, rollNo: '100243', name: 'Hakim', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 7, rollNo: '100435', name: 'Junaid', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 8, rollNo: '100436', name: 'Ayesha Khan', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 9, rollNo: '100437', name: 'Ali Raza', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 10, rollNo: '100438', name: 'Zainab Abbas', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 11, rollNo: '100439', name: 'Omar Farooq', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 12, rollNo: '100440', name: 'Hira Mani', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 13, rollNo: '100441', name: 'Saad Tariq', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 14, rollNo: '100442', name: 'Khadija Shah', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
+  { id: 15, rollNo: '100443', name: 'Musa Khan', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
 ];
 
 const AttendanceList = () => {
   const [data, setData] = useState(mockAttendanceData);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDate, setSelectedDate] = useState(todayStr);
   const [currentPage, setCurrentPage] = useState(1);
   const [isTakeAttendanceModalOpen, setIsTakeAttendanceModalOpen] = useState(false);
   const [selectedStudentForRecord, setSelectedStudentForRecord] = useState(null);
   const itemsPerPage = 10;
 
-  // Reset to first page when searching
+  // Reset to first page when searching or changing date
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery]);
+  }, [searchQuery, selectedDate]);
 
   // Listen for 'Take Attendance' click from the DashboardLayout TopBar
   useEffect(() => {
@@ -44,7 +47,7 @@ const AttendanceList = () => {
     return () => window.removeEventListener('openTakeAttendance', handleOpenModal);
   }, []);
 
-  // Handle Status Update from single row
+  // Handle Status Update from single row (Local state only)
   const handleStatusChange = (id, newStatus) => {
     const time = newStatus === 'Present' ? new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : null;
     setData((prev) => 
@@ -52,9 +55,10 @@ const AttendanceList = () => {
         student.id === id ? { ...student, status: newStatus, checkInTime: time } : student
       )
     );
+    toast.success("Attendance updated");
   };
 
-  // Handle bulk save from Take Attendance Modal
+  // Handle bulk save from Take Attendance Modal (Local state only)
   const handleBulkSave = (updates) => {
     setData((prev) => {
       const updatedData = [...prev];
@@ -70,12 +74,15 @@ const AttendanceList = () => {
       });
       return updatedData;
     });
+    toast.success("Bulk attendance saved successfully");
   };
 
   // Filter Data
   const filteredData = data.filter((student) => 
-    student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    student.rollNo.includes(searchQuery)
+    student.date === selectedDate && (
+      student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      student.rollNo.includes(searchQuery)
+    )
   );
 
   // Pagination Logic
@@ -128,12 +135,14 @@ const AttendanceList = () => {
     <div className="min-h-screen bg-[var(--color-background)] p-[var(--spacing-lg)] lg:p-[var(--spacing-xl)]">
       
       {/* Main Content Card */}
-      <div className="bg-[var(--color-surface)] rounded-[var(--radius-xl)] shadow-[var(--shadow-md)] border border-[var(--color-border)] p-[var(--spacing-md)] lg:p-[var(--spacing-lg)] flex flex-col gap-4">
+      <div className="bg-[var(--color-surface)] rounded-[var(--radius-xl)] shadow-[var(--shadow-md)] border border-[var(--color-border)] px-[var(--spacing-md)] lg:px-[var(--spacing-lg)] pb-[var(--spacing-md)] lg:pb-[var(--spacing-lg)] pt-4 flex flex-col gap-2">
         
         {/* Toolbar */}
         <AttendanceToolbar 
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
+          selectedDate={selectedDate}
+          onDateChange={setSelectedDate}
           onDownloadCsv={handleDownloadCsv}
         />
 
