@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import { connectDB } from "./config/db.js";
 import studentRoutes from "./routes/student.Routes.js";
 import projectRoutes from "./routes/project.Routes.js";
 import taskRoutes from "./routes/task.Routes.js";
@@ -11,7 +12,31 @@ const app = express();
 
 // Middlewares
 app.use(express.json());
-app.use(cors());
+
+const corsOptions = {
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+};
+
+// Handle OPTIONS preflight requests IMMEDIATELY — no DB needed
+app.options("*", cors(corsOptions));
+
+// Apply CORS to all routes
+app.use(cors(corsOptions));
+
+// Middleware to ensure DB connection on serverless environments like Vercel
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    res.status(500).json({ 
+      errorMessage: "Database Connection Failed", 
+      details: error.message 
+    });
+  }
+});
 
 // Base Route
 app.get("/", (req, res) => {

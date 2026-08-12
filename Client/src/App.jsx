@@ -8,6 +8,7 @@ import StudentProfile from "./pages/students/StudentProfile";
 import AttendanceList from "./pages/attendance/AttendanceList";
 import Task from "./pages/task/Task";
 import TeamsPage from "./pages/TeamPage/Team";
+import ProjectsPage from "./pages/ProjectsPage/ProjectsPage";
 import { Toaster } from "react-hot-toast";
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           <Route path="students/:id" element={<StudentProfile />} />
           <Route path="attendance" element={<AttendanceList />} />
           <Route path="teams" element={<TeamsPage />} />
+          <Route path="projects" element={<ProjectsPage />} />
           <Route path="tasks" element={<Task />} />
 
         </Route>

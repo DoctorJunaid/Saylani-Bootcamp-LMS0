@@ -78,7 +78,8 @@ export const getTasksByStudent = async (req, res) => {
 // @route   POST /api/tasks
 export const createTask = async (req, res) => {
     try {
-        const task = await createTaskService(req.body);
+        const { studentId, title, description, dueDate, status } = req.body;
+        const task = await createTaskService({ studentId, title, description, dueDate, status });
 
         res.status(201).json({
             success: true,
@@ -98,7 +99,17 @@ export const createTask = async (req, res) => {
 export const updateTask = async (req, res) => {
     try {
         const { id } = req.params;
-        const task = await updateTaskService(id, req.body);
+        const { studentId, title, description, dueDate, status } = req.body;
+        
+        const updateData = {
+            ...(studentId !== undefined && { studentId }),
+            ...(title !== undefined && { title }),
+            ...(description !== undefined && { description }),
+            ...(dueDate !== undefined && { dueDate }),
+            ...(status !== undefined && { status })
+        };
+
+        const task = await updateTaskService(id, updateData);
 
         if (!task) {
             return res.status(404).json({

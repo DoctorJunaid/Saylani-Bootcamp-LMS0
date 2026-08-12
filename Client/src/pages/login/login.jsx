@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginAdmin } from "../../Services/auth.services";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function Login() {

@@ -1,17 +1,3 @@
-/**
- * StatusBadge
- * ---------------------------------------------------------------
- * Chhota pill-shaped badge jo project/team ki current status
- * dikhata hai. Backend se aane wala "status" field seedha yahan
- * pass ho sakta hai — koi extra mapping frontend me nahi karni.
- *
- * Backend contract (expected value for `status`):
- *   "not_started" | "in_progress" | "completed"
- *
- * Agar backend kabhi koi naya status bheje (e.g. "on_hold"),
- * to sirf STATUS_STYLES object me ek naya entry add karna hoga —
- * baaki kahin kuch change nahi karna padega.
- */
 
 const STATUS_STYLES = {
   not_started: {

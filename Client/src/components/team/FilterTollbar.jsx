@@ -98,7 +98,7 @@ export default function FilterToolbar({
             >
               {label}
               <span
-                className={`inline-flex items-center justify-center min-w-[20px] rounded-full px-xs text-xs font-weight-semibold ${
+                className={`inline-flex items-center justify-center min-w-[20px] rounded-md px-xs text-xs font-weight-semibold ${
                   isActive
                     ? "bg-on-primary/20 text-on-primary"
                     : "bg-surface-high text-text-muted"

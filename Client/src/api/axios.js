@@ -1,17 +1,27 @@
 import axios from "axios";
 
+const api = axios.create({
+  baseURL: "https://saylani-bootcamp-lms-0.vercel.app",
+});
 
+// Automatically attach the Bearer token from localStorage to every request
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-const api = axios.create({baseURL:"https://saylani-bootcamp-lms-0.vercel.app",});
-
-export const getStudentData = async (token) => {
-  
-  const response = await api.get("api/student", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export const getStudentData = async () => {
+  const response = await api.get("api/student");
   return response.data;
 };
+
 
 export default api;
