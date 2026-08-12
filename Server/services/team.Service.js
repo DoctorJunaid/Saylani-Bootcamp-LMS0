@@ -1,16 +1,34 @@
 import { Team } from "../models/team.Model.js";
 import Student from "../models/student.Model.js";
+import Project from "../models/project.Model.js";
 
 // @desc get all teams
 
 export const getAllTeamsService = async () => {
-    return await Team.find().populate("members");
+    const teams = await Team.find().populate("members").lean();
+    const projects = await Project.find({ teamId: { $in: teams.map(t => t._id) } }).lean();
+    
+    const projectsByTeam = {};
+    projects.forEach(p => {
+        const tid = p.teamId.toString();
+        if(!projectsByTeam[tid]) projectsByTeam[tid] = [];
+        projectsByTeam[tid].push(p);
+    });
+
+    teams.forEach(t => {
+        t.projects = projectsByTeam[t._id.toString()] || [];
+    });
+    return teams;
 }
 
 // @desc get team by id
 
 export const getTeamByIdService = async (id) => {
-    return await Team.findById(id).populate("members");
+    const team = await Team.findById(id).populate("members").lean();
+    if (team) {
+        team.projects = await Project.find({ teamId: team._id }).lean();
+    }
+    return team;
 }
 
 // @desc create team

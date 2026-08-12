@@ -18,6 +18,12 @@ const teamSchema = new mongoose.Schema(
                 ref: "Student",
             },
         ],
+        
+        status: {
+            type: String,
+            enum: ["not_started", "in_progress", "completed"],
+            default: "not_started"
+        },
     },
     { timestamps: true }
 );

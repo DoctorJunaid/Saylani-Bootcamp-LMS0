@@ -9,14 +9,14 @@ export const createProjectService = async (projectData) => {
 
 // get all projects service
 export const getProjectsService = async () => {
-    const projects = await projectModel.find();
+    const projects = await projectModel.find().populate("teamId");
     return projects;
 }
 
 
 // get single project by Id service
 export const getProjectByIdService = async (id) => {
-    const project = await projectModel.findById(id);
+    const project = await projectModel.findById(id).populate("teamId");
     return project;
 }
 
