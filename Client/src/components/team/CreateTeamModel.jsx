@@ -95,7 +95,7 @@ export default function CreateTeamModal({ isOpen, onClose, onCreate }) {
             <button
               type="button"
               onClick={handleClose}
-              className="px-lg py-sm rounded-lg text-sm font-weight-medium text-text-muted bg-surface-container hover:bg-surface-high transition-colors duration-fast"
+              className="px-lg py-sm rounded-lg text-sm font-weight-medium text-text-muted bg-surface-container hover:bg-yellow-500 hover:text-white transition-colors duration-fast"
             >
               Cancel
             </button>
