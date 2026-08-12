@@ -13,7 +13,7 @@ const ProgressBar = ({ percentage, colorClass }) => (
   </div>
 );
 
-const StudentTable = ({ students = [] }) => {
+const StudentTable = ({ students = [], onRefresh }) => {
   const [editingStudent, setEditingStudent] = useState(null);
 
   return (
@@ -117,6 +117,10 @@ const StudentTable = ({ students = [] }) => {
         <EditStudentModal 
           student={editingStudent} 
           onClose={() => setEditingStudent(null)} 
+          onSuccess={() => {
+            setEditingStudent(null);
+            if (onRefresh) onRefresh();
+          }}
         />
       )}
     </div>

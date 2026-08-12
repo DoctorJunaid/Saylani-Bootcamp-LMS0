@@ -104,7 +104,7 @@ const StudentsList = () => {
              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
           </div>
         ) : (
-          <StudentTable students={paginatedData} />
+          <StudentTable students={paginatedData} onRefresh={fetchStudentsData} />
         )}
         
         {!isLoading && students.length > 0 && (
