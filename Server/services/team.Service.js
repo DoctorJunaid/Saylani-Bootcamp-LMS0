@@ -18,10 +18,24 @@ export const getAllTeamsService = async () => {
         projectsByTeam[tid].push(p);
     });
 
-    teams.forEach(t => {
-        t.projects = projectsByTeam[t._id.toString()] || [];
-    });
-    return teams;
+    
+
+    const result = await Promise.all(
+        teams.map(async(team)=>{
+
+            const projects = await Project.find({
+                teamId: team._id
+            });
+
+            return {
+                ...team,
+                projects
+            };
+
+        })
+    );
+
+    return result;
 }
 
 // @desc get team by id
@@ -30,13 +44,21 @@ export const getAllTeamsService = async () => {
 //     return await Team.findById(id).populate("members");
 // }
 export const getTeamByIdService = async (id) => {
-    const team = await Team.findById(id).populate("members").lean();
-    if (team) {
-        team.projects = await Project.find({ teamId: team._id }).lean();
-    }
-    return team;
-}
+    const team = await Team.findById(id)
+        .populate("members")
+        .lean();
 
+    if (!team) return null;
+
+    const projects = await Project.find({
+        teamId: id
+    });
+
+    return {
+        ...team,
+        projects
+    };
+};
 // @desc create team
 
 export const createTeamService = async (teamData) => {

@@ -23,7 +23,7 @@ function formatDeadline(isoDate) {
   }).format(date);
 }
 
-export default function ProjectCard({ project }) {
+export default function ProjectCard({ project, onRefresh }) {
   const { title, description, deadline, status, progress } = project;
 
   return (

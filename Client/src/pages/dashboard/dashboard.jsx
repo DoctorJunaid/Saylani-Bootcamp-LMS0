@@ -17,7 +17,11 @@ import {
   X,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import api, { getStudentData } from "../../api/axios";
+import {
+  getStudentData,
+  getTeamData,
+  getTaskData,
+} from "../../api/axios";
 
 // Initial student attendance data for today (with timestamps for top ordering)
 const initialAttendanceData = [
@@ -143,11 +147,11 @@ const tasks = [
 
 const taskStatusStyles = {
   Completed:
-    "bg-[var(--color-success)]/10 text-[var(--color-success)] border border-[var(--color-success)]/20",
+    " text-[var(--color-success)] border border-[var(--color-success)]/20",
   "In Progress":
-    "bg-[var(--color-warning)]/10 text-[var(--color-warning)] border border-[var(--color-warning)]/20",
+    "text-[var(--color-warning)] border border-[var(--color-warning)]/20",
   Pending:
-    "bg-[var(--color-secondary)]/10 text-[var(--color-secondary)] border border-[var(--color-secondary)]/20",
+    "text-[var(--color-secondary)] border border-[var(--color-secondary)]/20",
 };
 
 // Helper for formatted time (e.g., 09:37 AM)
@@ -235,7 +239,10 @@ export default function Dashboard() {
 
   // student data api fetching
   const [students, setStudents] = useState({ students: [] });
+  const [teams, setTeams] = useState([]);
+  const [task, setTask] = useState([]);
 
+  //total students count
   useEffect(() => {
     const fetchStudents = async () => {
       try {
@@ -254,8 +261,49 @@ export default function Dashboard() {
     fetchStudents();
   }, []);
 
+  //total teams count
+  useEffect(() => {
+    const fetchTeams = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("No token found in localStorage.");
+          return;
+        }
+        const data = await getTeamData(token);
+        setTeams(data?.data ?? []);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchTeams();
+  }, []);
+
+  //pending tasks count
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("No token found in localStorage.");
+          return;
+        }
+        const data = await getTaskData(token);
+        setTask(data?.data ?? []);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchTasks();
+  }, []);
+
   // Dynamically calculated stats from state
   const totalStudents = students?.students?.length ?? 0;
+  const totalTeams = teams.length;
+  const totalTasks = task.length;
+  const totalPendingTasks = task.filter(t => t.status === "Pending").length;
   const presentCount = useMemo(
     () => attendanceData.filter((s) => s.status === "Present").length,
     [attendanceData],
@@ -286,13 +334,13 @@ export default function Dashboard() {
     },
     {
       label: "Total Teams",
-      value: 3,
+      value: totalTeams,
       icon: Users,
       tone: "text-[var(--color-primary)]",
     },
     {
       label: "Pending Tasks",
-      value: 6,
+      value: totalPendingTasks,
       icon: ClipboardList,
       tone: "text-[var(--color-text)]",
     },

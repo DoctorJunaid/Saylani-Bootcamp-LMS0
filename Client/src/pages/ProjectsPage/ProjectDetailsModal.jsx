@@ -4,12 +4,22 @@ import StatusBadge from "../../components/team/StatusBadge";
 import { fetchProjectById, updateProject } from "../../Data/projects";
 import { fetchTeams } from "../../Data/teams";
 
+
+const STATUS_OPTIONS = [
+  { value: "Not Started", label: "Not Started" },
+  { value: "In Progress", label: "In Progress" },
+  { value: "Under Review", label: "Under Review" },
+  { value: "Completed", label: "Completed" },
+];
+
+
 export default function ProjectDetailsModal({ projectId, onClose, onUpdate }) {
   const [project, setProject] = useState(null);
   const [teams, setTeams] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isUpdatingTeam, setIsUpdatingTeam] = useState(false);
+  
 
   useEffect(() => {
     let isMounted = true;
@@ -142,6 +152,57 @@ export default function ProjectDetailsModal({ projectId, onClose, onUpdate }) {
                   </p>
                 </div>
               </section>
+
+             
+
+               {/* Project Status */}
+          <section className="mb-lg">
+            <h2 className="text-lg font-weight-semibold text-text mb-sm">
+              Project Status
+            </h2>
+
+            <div className="bg-surface-low border border-border rounded-lg p-md">
+              <div className="flex items-center gap-md">
+                <select
+                  value={project.status}
+                  disabled={isUpdatingTeam}
+                  onChange={async (e) => {
+                    const newStatus = e.target.value;
+
+                    setProject((prev) => ({
+                      ...prev,
+                      status: newStatus,
+                    }));
+
+                    try {
+                      await updateProject(projectId, {
+                        status: newStatus,
+                      });
+
+                      if (onUpdate) onUpdate();
+                    } catch (err) {
+                      console.error(err);
+                      alert("Failed to update project status.");
+                    }
+                  }}
+                  className="w-full bg-surface border border-border rounded-lg px-md py-sm text-sm text-text focus:outline-none focus:border-primary transition-colors duration-fast"
+                >
+                  {STATUS_OPTIONS.map((status) => (
+                    <option
+                      key={status.value}
+                      value={status.value}
+                    >
+                      {status.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <p className="text-xs text-text-muted mt-2">
+                Select the current status of this project.
+              </p>
+            </div>
+          </section>
 
               {/* Progress section */}
               <section>
