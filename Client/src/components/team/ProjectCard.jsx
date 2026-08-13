@@ -9,17 +9,6 @@ function ProgressBar({ value }) {
     </div>
   );
 }
-/**
- * ProjectCard
- * ---------------------------------------------------------------
- * Ek single project ki full details — TeamDetails page ke
- * "Projects" section me list ke andar use hota hai.
- *
- * Props:
- *  - project: {
- *      id, title, description, deadline, status, progress
- *    }
- */
 
 function formatDeadline(isoDate) {
   if (!isoDate) return "No deadline set";
@@ -34,7 +23,7 @@ function formatDeadline(isoDate) {
   }).format(date);
 }
 
-export default function ProjectCard({ project }) {
+export default function ProjectCard({ project, onRefresh }) {
   const { title, description, deadline, status, progress } = project;
 
   return (

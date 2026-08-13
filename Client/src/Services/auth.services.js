@@ -7,6 +7,7 @@ export const loginAdmin = async (email , password)=>{
     });
     
     localStorage.setItem("token", response.data.token);
+  }
 
-    return response.data;
-}
+  return response.data;
+};

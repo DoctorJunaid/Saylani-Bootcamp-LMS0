@@ -13,7 +13,7 @@ const ProgressBar = ({ percentage, colorClass }) => (
   </div>
 );
 
-const StudentTable = ({ students = [] }) => {
+const StudentTable = ({ students = [], onRefresh }) => {
   const [editingStudent, setEditingStudent] = useState(null);
 
   return (
@@ -21,20 +21,20 @@ const StudentTable = ({ students = [] }) => {
       <table className="w-full text-left whitespace-nowrap">
         <thead>
           <tr className="border-b border-[var(--color-border)]">
-            <th className="px-4 py-3 text-[10px] font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Roll No</th>
-            <th className="px-4 py-3 text-[10px] font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Name</th>
-            <th className="px-4 py-3 text-[10px] font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Course</th>
-            <th className="px-4 py-3 text-[10px] font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Batch</th>
-            <th className="px-4 py-3 text-[10px] font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Team</th>
-            <th className="px-4 py-3 text-[10px] font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Attendance</th>
-            <th className="px-4 py-3 text-[10px] font-semibold text-[var(--color-text-muted)] uppercase tracking-wider" colSpan="2">Tasks completed</th>
-            <th className="px-4 py-3 text-[10px] font-semibold text-[var(--color-text-muted)] uppercase tracking-wider text-right">Actions</th>
+            <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Roll No</th>
+            <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Name</th>
+            <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Course</th>
+            <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Batch</th>
+            <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Team</th>
+            <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Attendance</th>
+            <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider" colSpan="2">Tasks completed</th>
+            <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider text-right">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-[var(--color-surface-highest)] text-sm">
           {students.map((student) => (
             <tr key={student.id} className="hover:bg-[var(--color-surface-low)] transition-colors group">
-              <td className="px-4 py-4 font-medium text-[var(--color-text-muted)] text-[13px]">{student.rollNo}</td>
+              <td className="px-4 py-4 font-semibold text-[var(--color-text-muted)] text-[13px]">{student.rollNo}</td>
               <td className="px-4 py-4">
                 <div className="flex items-center gap-3">
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${student.avatarBg} ${student.avatarText}`}>
@@ -45,8 +45,8 @@ const StudentTable = ({ students = [] }) => {
                   </Link>
                 </div>
               </td>
-              <td className="px-4 py-4 text-xs text-[var(--color-text-muted)]">{student.course}</td>
-              <td className="px-4 py-4 text-xs text-[var(--color-text-muted)]">{student.batch}</td>
+              <td className="px-4 py-4 text-xs font-medium text-[var(--color-text-muted)]">{student.course}</td>
+              <td className="px-4 py-4 text-xs font-medium text-[var(--color-text-muted)]">{student.batch}</td>
               <td className="px-4 py-4">
                 <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${student.teamBg} ${student.teamText}`}>
                   {student.team}
@@ -117,6 +117,10 @@ const StudentTable = ({ students = [] }) => {
         <EditStudentModal 
           student={editingStudent} 
           onClose={() => setEditingStudent(null)} 
+          onSuccess={() => {
+            setEditingStudent(null);
+            if (onRefresh) onRefresh();
+          }}
         />
       )}
     </div>

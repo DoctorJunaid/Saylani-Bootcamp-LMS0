@@ -41,12 +41,12 @@ export const getStudents = async({search})=>{
             {
                 rollNumber: Number(search),
             }],
-        });
+        })
     }
     // If no search
     else{
 
-         students = await Student.find();
+         students = await Student.find()
     }
      
     return students;

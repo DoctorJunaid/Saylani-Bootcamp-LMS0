@@ -8,7 +8,7 @@ const projectSchema = new mongoose.Schema({
     teamId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Team',
-        required: true
+        default: null
     },
     description:{
         type: String
@@ -18,8 +18,14 @@ const projectSchema = new mongoose.Schema({
     },
     status:{
         type: String,
-        enum: ['Not Started', 'In Progress', 'Completed'],
+        enum: ['Not Started', 'In Progress', "Under Review", 'Completed'],
         default: 'Not Started'
+    },
+    progress: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 100
     },
 },{timestamps:true})
 

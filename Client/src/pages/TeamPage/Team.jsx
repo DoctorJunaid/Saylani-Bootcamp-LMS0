@@ -5,6 +5,7 @@ import TeamGrid from "../../components/team/TeamGrid";
 import CreateTeamModal from "../../components/team/CreateTeamModel";
 import TeamDetails from "./TeamDetail";
 import { fetchTeams, createTeam } from "../../Data/teams";
+import { fetchProjects } from "../../Data/project";
 
 /**
  * TeamsPage
@@ -24,6 +25,7 @@ export default function TeamsPage() {
   const [teams, setTeams] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [projects, setProjects] = useState([]);
 
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -104,11 +106,6 @@ export default function TeamsPage() {
   return (
     <div className="bg-background min-h-screen">
       <div className="max-w-[var(--container)] mx-auto px-lg py-2xl">
-        {/* <PageHeader
-          title="Teams"
-          subtitle="View and manage project teams"
-          onCreateTeam={() => setIsCreateModalOpen(true)}
-        /> */}
 
         <FilterToolbar
           counts={counts}
