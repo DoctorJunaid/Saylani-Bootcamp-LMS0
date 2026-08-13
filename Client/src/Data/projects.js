@@ -49,7 +49,9 @@ export async function updateProject(projectId, updateData) {
             Authorization: `Bearer ${localStorage.getItem('token')}`
         }
     });
+    console.log(res)
     return res.data.project;
+    
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to update project");
   }

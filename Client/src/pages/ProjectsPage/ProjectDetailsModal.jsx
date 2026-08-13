@@ -57,6 +57,7 @@ export default function ProjectDetailsModal({ projectId, onClose, onUpdate }) {
     setIsUpdatingTeam(true);
     try {
       const updatedProject = await updateProject(projectId, { teamId: newTeamId || null });
+      console.log("Updated Project:", updatedProject);
       setProject(updatedProject);
       if (onUpdate) onUpdate(); // Refresh the parent list
     } catch (err) {
@@ -179,7 +180,9 @@ export default function ProjectDetailsModal({ projectId, onClose, onUpdate }) {
                         status: newStatus,
                       });
 
-                      if (onUpdate) onUpdate();
+                       if (onUpdate) {
+                        await onUpdate();
+                      }
                     } catch (err) {
                       console.error(err);
                       alert("Failed to update project status.");
