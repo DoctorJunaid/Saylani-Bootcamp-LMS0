@@ -109,7 +109,7 @@ const AddStudentModal = ({ onClose, onSuccess }) => {
         </div>
 
         {/* Body (Form) */}
-        <div className="p-6 pt-2 overflow-y-auto">
+        <div className="p-6 pt-2 overflow-visible">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             
             <div className="flex flex-col gap-1.5">

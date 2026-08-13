@@ -52,7 +52,7 @@ export default function CustomSelect({ label, defaultOption, options, value, onC
       {open && (
         <ul
           role="listbox"
-          className="absolute z-10 mt-1 w-full sm:min-w-[180px] rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-md)] py-1 max-h-60 overflow-auto"
+          className="absolute z-50 mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-md)] py-1 max-h-60 overflow-auto"
         >
           {/* Include defaultOption in the list if provided */}
           {(defaultOption ? [defaultOption, ...options] : options).map((opt) => {
