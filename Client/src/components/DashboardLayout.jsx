@@ -3,12 +3,23 @@ import { Plus, CalendarCheck, UsersRound, ClipboardList } from "lucide-react";
 import SideNavBar from "./sideNavbar";
 import TopBar from "./TopBar";
 
+// Shared "Coming soon" notification array – you can replace per page later
+const comingSoonNotif = [
+  {
+    id: "coming-soon",
+    title: "Coming soon",
+    description: "Notification features are under development.",
+    time: "Just now",
+  },
+];
+
 const topBarConfig = {
   "/dashboard": {
     title: "Dashboard",
     subtitle: "Overview of your bootcamp",
     showNotification: true,
     showButton: false,
+    notifications: comingSoonNotif,
   },
   "/students": {
     title: "Students",
@@ -17,8 +28,8 @@ const topBarConfig = {
     showButton: true,
     buttonText: "Add Student",
     buttonIcon: Plus,
-    onButtonClick: () =>
-      window.dispatchEvent(new CustomEvent("openAddStudent")),
+    onButtonClick: () => window.dispatchEvent(new CustomEvent('openAddStudent')),
+    notifications: comingSoonNotif,
   },
   "/attendance": {
     title: "Attendance",
@@ -27,18 +38,18 @@ const topBarConfig = {
     showButton: true,
     buttonText: "Take Attendance",
     buttonIcon: CalendarCheck,
-    onButtonClick: () =>
-      window.dispatchEvent(new CustomEvent("openTakeAttendance")),
+    onButtonClick: () => window.dispatchEvent(new CustomEvent('openTakeAttendance')),
+    notifications: comingSoonNotif,
   },
   "/teams": {
     title: "Teams",
     subtitle: "View and manage project teams",
-    showNotification: false,
+    showNotification: false,   // bell hidden on Teams page
     showButton: true,
     buttonText: "Create Team",
     buttonIcon: UsersRound,
-    onButtonClick: () =>
-      window.dispatchEvent(new CustomEvent("openCreateTeamModal")),
+    onButtonClick: () => window.dispatchEvent(new CustomEvent("openCreateTeamModal")),
+    notifications: comingSoonNotif,
   },
   "/tasks": {
     title: "Tasks",
@@ -48,7 +59,11 @@ const topBarConfig = {
     buttonText: "New Task",
     buttonIcon: ClipboardList,
     onButtonClick: () => alert("New Task clicked"),
+    notifications: comingSoonNotif,
   },
+  // Add more routes if you want custom top bar for new pages:
+  // "/projects": { ... },
+  // "/students/:id" is tricky because of dynamic param, but fallback will handle it
 };
 
 export default function DashboardLayout() {
@@ -61,6 +76,7 @@ export default function DashboardLayout() {
       subtitle: "",
       showNotification: false,
       showButton: false,
+      notifications: [],
     };
 
   return (
@@ -76,8 +92,9 @@ export default function DashboardLayout() {
           buttonText={config.buttonText}
           buttonIcon={config.buttonIcon}
           onButtonClick={config.onButtonClick}
+          notifications={config.notifications || []}
         />
-        <main className="flex-1 overflow-auto bg-background">
+        <main className="flex-1 overflow-auto bg-[var(--color-background)]">
           <Outlet />
         </main>
       </div>
