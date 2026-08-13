@@ -86,7 +86,8 @@ const AttendanceTable = ({ attendanceData, onStatusChange, onStudentClick }) => 
                     value={record.status === 'Not marked' ? 'Set' : record.status}
                     options={['Present', 'Leave', 'Absent']}
                     onChange={(val) => onStatusChange(record.id, val)}
-                    className="w-[12 0px]"
+                    className="w-[120px]"
+                    size="sm"
                   />
                 </div>
               </td>
