@@ -75,6 +75,7 @@ export default function TeamsPage() {
       not_started: teams.filter((t) => t.status === "not_started").length,
       in_progress: teams.filter((t) => t.status === "in_progress").length,
       completed: teams.filter((t) => t.status === "completed").length,
+      under_review: teams.filter((t) => t.status === "under_review").length
     }),
     [teams]
   );

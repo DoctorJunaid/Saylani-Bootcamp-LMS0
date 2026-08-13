@@ -8,6 +8,11 @@ const STATUS_STYLES = {
     label: "In Progress",
     className: "bg-warning/10 text-warning border border-warning/20",
   },
+   under_review: {
+    label: "Under Review",
+    className:
+      "bg-blue-100 text-blue-700 border border-blue-300",
+  },
   completed: {
     label: "Completed",
     className: "bg-success/10 text-success border border-success/20",
@@ -19,7 +24,7 @@ export default function StatusBadge({ status }) {
 
   return (
     <span
-      className={`inline-flex items-center rounded-full px-md py-xs text-xs font-weight-medium ${style.className}`}
+      className={`inline-flex text-xs font-semibold items-center rounded-full px-md py-xs text-xs font-weight-medium  ${style.className}`}
     >
       {style.label}
     </span>

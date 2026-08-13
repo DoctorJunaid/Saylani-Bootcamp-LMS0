@@ -25,6 +25,9 @@ export default function TeamDetails({ teamId, onClose }) {
   const loadTeam = async () => {
     try {
       const data = await fetchTeamById(teamId);
+
+    console.log("Fresh Team Data:", data);
+    console.log("Projects:", data.projects);
       setTeam(data);
     } catch (err) {
       console.error(err);
@@ -52,6 +55,7 @@ export default function TeamDetails({ teamId, onClose }) {
         ]);
 
         if (isMounted) {
+           console.log("Initial Team Data:", teamData);
           setTeam(teamData);
           setAllStudents(unassignedStudents || []);
         }
@@ -74,6 +78,10 @@ export default function TeamDetails({ teamId, onClose }) {
       ? [team.project]
       : [];
 
+      useEffect(() => {
+  console.log("Updated Team:", team);
+  console.log("Projects:", team?.projects);
+}, [team]);
   const members = team?.members ?? [];
   const memberIds = new Set(members.map((m) => m._id || m.id));
 

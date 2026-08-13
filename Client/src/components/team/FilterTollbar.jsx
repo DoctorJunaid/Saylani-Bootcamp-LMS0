@@ -18,7 +18,9 @@ const FILTERS = [
   { key: "all", label: "All Teams" },
   { key: "not_started", label: "Not Started" },
   { key: "in_progress", label: "In Progress" },
+  { key: "under_review", label: "Under Review" },
   { key: "completed", label: "Completed" },
+  
 ];
 
 function SearchIcon() {
