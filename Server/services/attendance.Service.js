@@ -83,7 +83,7 @@ export const getOverAllAttendanceStatus =  async()=>{
            
         // just Sunday ko exclude karo
     const workingDays = attendance.filter((record) => {
-      const day = new Date(record.date).getDay();
+      const day = new Date(record.date).getDay();//Attendance record ki date check karo. Agar Sunday nahi hai to us record ko workingDays mein rakho.
 
       return day !== 0;
     });
