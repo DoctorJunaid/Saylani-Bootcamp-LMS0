@@ -1,6 +1,29 @@
 import React from 'react';
 
-const StudentProfileInfoCard = () => {
+const generateAvatarProps = (name) => {
+  const initials = name ? name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : '?';
+  const colors = [
+    { bg: 'bg-[#e0f2fe]', text: 'text-[#0284c7]' }, // blue
+    { bg: 'bg-[#dcfce7]', text: 'text-[#16a34a]' }, // green
+    { bg: 'bg-[#fef3c7]', text: 'text-[#d97706]' }, // yellow
+    { bg: 'bg-[#fee2e2]', text: 'text-[#ef4444]' }, // red
+    { bg: 'bg-[#f3e8ff]', text: 'text-[#9333ea]' }  // purple
+  ];
+  const charCode = initials.charCodeAt(0) || 0;
+  return { initials, ...colors[charCode % colors.length] };
+};
+
+const StudentProfileInfoCard = ({ student }) => {
+  if (!student) return null;
+  const { initials, bg, text } = generateAvatarProps(student.name);
+
+  // Format date
+  const enrollmentDate = new Date(student.createdAt).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+
   return (
     <div className="bg-[var(--color-surface)] rounded-[var(--radius-xl)] shadow-[var(--shadow-sm)] border border-[var(--color-border)] p-6 lg:p-8 flex flex-col lg:flex-row gap-8 lg:gap-12 mb-6">
       
@@ -8,39 +31,37 @@ const StudentProfileInfoCard = () => {
       <div className="flex-[1.5] flex flex-col sm:flex-row gap-6">
         
         {/* Avatar */}
-        <div className="w-24 h-24 rounded-lg bg-[var(--color-surface-high)] border border-[var(--color-border)] flex items-center justify-center shrink-0 overflow-hidden">
-          {/* Placeholder image resembling the design */}
-          <img src="https://i.pravatar.cc/150?img=47" alt="Profile" className="w-full h-full object-cover" />
+        <div className={`w-24 h-24 rounded-lg flex items-center justify-center shrink-0 overflow-hidden ${bg} ${text} text-3xl font-bold`}>
+          {initials}
         </div>
         
         {/* Details */}
         <div className="flex-1">
-          <div className="flex items-center justify-between mb-1">
-            <h2 className="text-xl font-bold text-[var(--color-text)] tracking-tight">Elara Vance</h2>
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold bg-[#dcfce7] text-[#16a34a]">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-[var(--color-text)] tracking-tight">{student.name}</h2>
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-bold bg-[#dcfce7] text-[#16a34a]">
               <span className="w-1.5 h-1.5 rounded-full bg-[#16a34a]"></span>
               Active
             </span>
           </div>
-          <p className="text-xs text-[var(--color-text-muted)] mb-6">Software Engineering Immersive • Cohort 42</p>
           
           {/* Info Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-5 gap-x-8">
             <div>
-              <p className="text-[10px] text-[var(--color-text-muted)] font-semibold mb-1">Email Address</p>
-              <p className="text-xs text-[var(--color-text)] font-semibold">elara.vance@student.edu</p>
+              <p className="text-xs text-[var(--color-text-muted)] font-semibold mb-1">Course</p>
+              <p className="text-sm text-[var(--color-text)] font-semibold">{student.course}</p>
             </div>
             <div>
-              <p className="text-[10px] text-[var(--color-text-muted)] font-semibold mb-1">Phone Number</p>
-              <p className="text-xs text-[var(--color-text)] font-semibold">+1 (555) 019-2834</p>
+              <p className="text-xs text-[var(--color-text-muted)] font-semibold mb-1">Batch</p>
+              <p className="text-sm text-[var(--color-text)] font-semibold">{student.batch}</p>
             </div>
             <div>
-              <p className="text-[10px] text-[var(--color-text-muted)] font-semibold mb-1">Roll Number</p>
-              <p className="text-xs text-[var(--color-text)] font-semibold">SEI-42-089</p>
+              <p className="text-xs text-[var(--color-text-muted)] font-semibold mb-1">Roll Number</p>
+              <p className="text-sm text-[var(--color-text)] font-semibold">{student.rollNumber}</p>
             </div>
             <div>
-              <p className="text-[10px] text-[var(--color-text-muted)] font-semibold mb-1">Enrollment Date</p>
-              <p className="text-xs text-[var(--color-text)] font-semibold">Aug 15, 2023</p>
+              <p className="text-xs text-[var(--color-text-muted)] font-semibold mb-1">Enrollment Date</p>
+              <p className="text-sm text-[var(--color-text)] font-semibold">{enrollmentDate}</p>
             </div>
           </div>
         </div>
@@ -57,30 +78,30 @@ const StudentProfileInfoCard = () => {
         <div className="space-y-6">
           {/* Progress 1 */}
           <div>
-            <div className="flex justify-between text-[11px] font-semibold mb-2">
-              <span className="text-[var(--color-text-muted)]">Course Completion</span>
-              <span className="text-[#2563eb]">68%</span>
+            <div className="flex justify-between text-xs font-semibold mb-2">
+              <span className="text-[var(--color-text-muted)]">Tasks Completed</span>
+              <span className="text-[#2563eb]">0%</span>
             </div>
             <div className="w-full bg-[var(--color-surface-high)] rounded-full h-2">
-              <div className="bg-[#2563eb] h-2 rounded-full" style={{ width: '68%' }}></div>
+              <div className="bg-[#2563eb] h-2 rounded-full" style={{ width: '0%' }}></div>
             </div>
           </div>
           
           {/* Progress 2 */}
           <div>
-            <div className="flex justify-between text-[11px] font-semibold mb-2">
+            <div className="flex justify-between text-xs font-semibold mb-2">
               <span className="text-[var(--color-text-muted)]">Attendance Rate</span>
-              <span className="text-[#16a34a]">92%</span>
+              <span className="text-[#16a34a]">0%</span>
             </div>
             <div className="w-full bg-[var(--color-surface-high)] rounded-full h-2">
-              <div className="bg-[#16a34a] h-2 rounded-full" style={{ width: '92%' }}></div>
+              <div className="bg-[#16a34a] h-2 rounded-full" style={{ width: '0%' }}></div>
             </div>
           </div>
 
           {/* Current Module */}
           <div className="pt-1">
-            <p className="text-[10px] text-[var(--color-text-muted)] font-semibold mb-1">Current Module</p>
-            <p className="text-xs text-[var(--color-text)] font-semibold">Advanced React Patterns</p>
+            <p className="text-xs text-[var(--color-text-muted)] font-semibold mb-1">Assigned Team</p>
+            <p className="text-sm text-[var(--color-text)] font-semibold">{student.team_id ? student.team_id.name : 'Unassigned'}</p>
           </div>
         </div>
       </div>

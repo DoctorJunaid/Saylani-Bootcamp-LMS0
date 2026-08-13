@@ -1,12 +1,14 @@
 import api from "../api/axios.js";
 
-export const loginAdmin = async (email , password)=>{
-    const response = await api.post("admin/login",{
-        email ,password,
-        
-    });
-    
-    localStorage.setItem("token", response.data.token);
+export const loginAdmin = async (email, password) => {
+  const response = await api.post("api/admin/login", {
+    email,
+    password,
+  });
 
-    return response.data;
-}
+  if (response.data?.token) {
+    localStorage.setItem("token", response.data.token);
+  }
+
+  return response.data;
+};
