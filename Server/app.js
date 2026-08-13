@@ -8,6 +8,7 @@ import teamRoutes from "./routes/team.Routes.js";
 import adminRouter from "./routes/admin.Routes.js";
 import { protectAdmin } from "./middleware/auth.middleware.js";
 import attendanceRoutes from "./routes/attendance.Routes.js";
+import dashboardRouter from "./routes/dashboard.Routes.js";
 
 const app = express();
 
@@ -50,7 +51,8 @@ app.use("/api/student", protectAdmin, studentRoutes);
 app.use("/api/tasks", protectAdmin, taskRoutes);
 app.use("/api/teams", protectAdmin, teamRoutes);
 app.use("/api/projects", protectAdmin, projectRoutes);
-app.use("/api/attendance", protectAdmin,attendanceRoutes)
+app.use("/api/attendance", protectAdmin, attendanceRoutes);
+app.use("/api/dashboard", protectAdmin, dashboardRouter);
 
 // App instance ko export karein taake server.js ya test files ise use kar sakein
 export default app;
