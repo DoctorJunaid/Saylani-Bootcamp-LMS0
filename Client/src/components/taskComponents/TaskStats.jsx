@@ -39,30 +39,24 @@ const StatCard = ({
   );
 };
 
-const TaskStats = () => {
+const TaskStats = ({ totalTasks = 0, inProgress = 0, completed = 0 }) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-md">
       <StatCard
         title="Total Tasks"
-        value="124"
+        value={totalTasks}
         icon={<LuClipboardList className="h-5 w-5" />}
       />
       <StatCard
-        title="High Priority"
-        value="18"
-        badgeColor="text-[var(--color-error)]"
-        icon={<LuCircleAlert className="h-5 w-5 text-[var(--color-error)]" />}
-      />
-      <StatCard
         title="In Progress"
-        value="45"
+        value={inProgress}
         icon={
           <LuMessageCircleMore className="h-5 w-5 text-[var(--color-warning)]" />
         }
       />
       <StatCard
-        title="Completed (This Wk)"
-        value="62"
+        title="Completed"
+        value={completed}
         icon={<LuCircleCheck className="h-5 w-5 text-[var(--color-success)]" />}
       />
     </div>

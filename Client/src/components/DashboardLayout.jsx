@@ -47,7 +47,7 @@ const topBarConfig = {
     showButton: true,
     buttonText: "New Task",
     buttonIcon: ClipboardList,
-    onButtonClick: () => alert("New Task clicked"),
+    onButtonClick: () => window.dispatchEvent(new CustomEvent('openCreateTask')),
   },
 };
 
