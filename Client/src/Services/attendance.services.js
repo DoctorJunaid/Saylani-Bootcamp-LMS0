@@ -3,7 +3,7 @@ import api from "../api/axios.js";
 
 // Mark / Update Attendance
 export const markAttendance = async (data) => {
-  const response = await api.post("/attendance", data);
+  const response = await api.post("/api/attendance", data);
 
   return response.data;
 };
@@ -11,7 +11,7 @@ export const markAttendance = async (data) => {
 
 // Get Attendance By Date
 export const getAttendanceByDate = async (date) => {
-  const response = await api.get(`/attendance/${date}`);
+  const response = await api.get(`/api/attendance/${date}`);
 
   return response.data;
 };
@@ -19,7 +19,7 @@ export const getAttendanceByDate = async (date) => {
 
 // Get Student Attendance History
 export const getStudentAttendanceHistory = async (studentId) => {
-  const response = await api.get(`/attendance/student/${studentId}`);
+  const response = await api.get(`/api/attendance/student/${studentId}`);
 
   return response.data;
 };
@@ -27,7 +27,7 @@ export const getStudentAttendanceHistory = async (studentId) => {
 
 // Get Overall Attendance Stats
 export const getOverallAttendanceStats = async () => {
-  const response = await api.get("/attendance/stats/overall");
+  const response = await api.get("/api/attendance/stats/overall");
 
   return response.data;
 };

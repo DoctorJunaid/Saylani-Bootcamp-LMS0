@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import AttendanceToolbar from '../../components/attendanceComponents/AttendanceToolbar';
 import AttendanceTable from '../../components/attendanceComponents/AttendanceTable';
 import AttendancePagination from '../../components/attendanceComponents/AttendancePagination';
@@ -8,6 +8,7 @@ import StudentRecordModal from '../../components/attendanceComponents/StudentRec
 import toast from 'react-hot-toast';
 
 import { getStudents } from '../../api/student.api';
+import { getAttendanceByDate, markAttendance } from '../../Services/attendance.services.js';
 
 const todayStr = new Date().toISOString().split('T')[0];
 
@@ -21,31 +22,47 @@ const AttendanceList = () => {
   const [selectedStudentForRecord, setSelectedStudentForRecord] = useState(null);
   const itemsPerPage = 10;
 
-  const loadStudents = async (dateStr) => {
+  const loadAttendanceData = async (dateStr) => {
     setIsLoading(true);
     try {
-      const response = await getStudents();
-      const mappedData = response.students.map(student => ({
-        id: student._id,
-        rollNo: student.rollNumber,
-        name: student.name,
-        date: dateStr,
-        status: 'Not marked',
-        note: null,
-        checkInTime: null,
-        checkOutTime: null
-      }));
+      const [studentsRes, attendanceRes] = await Promise.all([
+        getStudents(),
+        getAttendanceByDate(dateStr).catch(() => ({ attendance: [] })),
+      ]);
+
+      const attendanceMap = new Map();
+      (attendanceRes?.attendance || []).forEach((record) => {
+        const studentId = record.student_id?._id || record.student_id;
+        if (studentId) {
+          attendanceMap.set(String(studentId), record);
+        }
+      });
+
+      const mappedData = (studentsRes.students || []).map((student) => {
+        const att = attendanceMap.get(String(student._id));
+        return {
+          id: student._id,
+          rollNo: student.rollNumber,
+          name: student.name,
+          date: dateStr,
+          status: att?.status || 'Not marked',
+          note: att?.note || null,
+          checkInTime: att?.checkInTime || null,
+          checkOutTime: att?.checkOutTime || null,
+        };
+      });
+
       setData(mappedData);
     } catch (error) {
-      console.error("Error loading students:", error);
-      toast.error("Failed to load students");
+      console.error("Error loading attendance data:", error);
+      toast.error("Failed to load attendance records");
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    loadStudents(selectedDate);
+    loadAttendanceData(selectedDate);
   }, [selectedDate]);
 
   // Reset to first page when searching or changing date
@@ -60,34 +77,59 @@ const AttendanceList = () => {
     return () => window.removeEventListener('openTakeAttendance', handleOpenModal);
   }, []);
 
-  // Handle Status Update from single row (Local state only)
-  const handleStatusChange = (id, newStatus) => {
+  // Handle Status Update from single row and persist to backend
+  const handleStatusChange = async (id, newStatus) => {
     const time = newStatus === 'Present' ? new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : null;
+    
+    // Optimistic UI update
     setData((prev) => 
       prev.map((student) => 
         student.id === id ? { ...student, status: newStatus, checkInTime: time } : student
       )
     );
-    toast.success("Attendance updated");
+
+    try {
+      await markAttendance({
+        date: selectedDate,
+        students: [
+          {
+            student_id: id,
+            status: newStatus,
+            checkInTime: time || '',
+          },
+        ],
+      });
+      toast.success("Attendance updated");
+    } catch (error) {
+      console.error("Failed to update attendance on server:", error);
+      toast.error(error.response?.data?.message || "Failed to persist attendance change");
+      // Re-fetch to synchronize with server state
+      loadAttendanceData(selectedDate);
+    }
   };
 
-  // Handle bulk save from Take Attendance Modal (Local state only)
-  const handleBulkSave = (updates) => {
-    setData((prev) => {
-      const updatedData = [...prev];
-      updates.forEach(update => {
-        const idx = updatedData.findIndex(s => s.id === update.id);
-        if (idx !== -1) {
-          updatedData[idx] = { 
-            ...updatedData[idx], 
-            status: update.status,
-            checkInTime: update.checkInTime !== undefined ? update.checkInTime : updatedData[idx].checkInTime
-          };
-        }
+  // Handle bulk save from Take Attendance Modal and persist to backend
+  const handleBulkSave = async (updates) => {
+    try {
+      const payloadStudents = updates.map((u) => ({
+        student_id: u.id,
+        status: u.status || 'Not marked',
+        checkInTime: u.checkInTime || '',
+        checkOutTime: u.checkOutTime || '',
+        note: u.note || '',
+      }));
+
+      await markAttendance({
+        date: selectedDate,
+        students: payloadStudents,
       });
-      return updatedData;
-    });
-    toast.success("Attendance saved successfully");
+
+      toast.success("Attendance saved successfully");
+      loadAttendanceData(selectedDate);
+    } catch (error) {
+      console.error("Failed to save bulk attendance:", error);
+      toast.error(error.response?.data?.message || "Failed to save attendance");
+    }
   };
 
   // Filter Data

@@ -1,71 +1,73 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { X, Download, Calendar, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { getStudentAttendanceHistory } from '../../Services/attendance.services.js';
 
 const StudentRecordModal = ({ student, onClose }) => {
   if (!student) return null;
 
-  // Generate 15 days of mock attendance history for the selected student
-  const mockHistory = useMemo(() => {
-    const history = [];
-    const statuses = ['Present', 'Present', 'Present', 'Present', 'Absent', 'Leave', 'Present', 'Present'];
-    
-    let currentDate = new Date('2026-08-10');
-    
-    for (let i = 0; i < 15; i++) {
-      const dateStr = currentDate.toLocaleDateString('en-US', {
-        year: 'numeric', month: 'long', day: 'numeric'
-      });
-      
-      const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
-      
-      const checkInHour = 8 + Math.floor(Math.random() * 2);
-      const checkInMin = Math.floor(Math.random() * 60);
-      const checkOutHour = 13 + Math.floor(Math.random() * 2);
-      const checkOutMin = Math.floor(Math.random() * 60);
-
-      const checkInTime = randomStatus === 'Present' ? 
-        `${checkInHour.toString().padStart(2, '0')}:${checkInMin.toString().padStart(2, '0')} AM` : null;
-      const checkOutTime = randomStatus === 'Present' ? 
-        `${(checkOutHour - 12).toString().padStart(2, '0')}:${checkOutMin.toString().padStart(2, '0')} PM` : null;
-
-      history.push({
-        id: `hist-${i}`,
-        rollNo: student.rollNo,
-        name: student.name,
-        date: dateStr,
-        status: randomStatus,
-        checkInTime: checkInTime,
-        checkOutTime: checkOutTime,
-        note: randomStatus === 'Leave' ? 'Sick leave' : randomStatus === 'Absent' ? 'Uninformed' : null
-      });
-      
-      currentDate.setDate(currentDate.getDate() - 1); // Go back one day
-    }
-    
-    return history;
-  }, [student]);
-
+  const [history, setHistory] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [filterDate, setFilterDate] = useState('');
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      const studentId = student.id || student._id;
+      if (!studentId) return;
+      setIsLoading(true);
+      try {
+        const response = await getStudentAttendanceHistory(studentId);
+        const records = (response?.attendance || []).map((r) => {
+          const dateObj = new Date(r.date);
+          const dateStr = dateObj.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          });
+          return {
+            id: r._id,
+            rollNo: student.rollNo || student.rollNumber,
+            name: student.name,
+            date: dateStr,
+            rawDate: r.date,
+            status: r.status || 'Not marked',
+            checkInTime: r.checkInTime || null,
+            checkOutTime: r.checkOutTime || null,
+            note: r.note || null,
+          };
+        });
+        setHistory(records);
+      } catch (error) {
+        console.error("Error fetching student attendance history:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, [student]);
 
   // Filter history
   const filteredHistory = useMemo(() => {
-    if (!filterDate) return mockHistory;
+    if (!filterDate) return history;
     
-    // Format the input date to match the history date string (e.g., "August 10, 2026")
     const dateObj = new Date(filterDate);
-    // Adjust for timezone offset if necessary to avoid off-by-one errors in simple testing
     const formattedFilter = dateObj.toLocaleDateString('en-US', {
-        year: 'numeric', month: 'long', day: 'numeric'
+      year: 'numeric', month: 'long', day: 'numeric'
     });
 
-    return mockHistory.filter(record => record.date.includes(formattedFilter) || record.date.includes(filterDate));
-  }, [filterDate, mockHistory]);
+    return history.filter(
+      (record) =>
+        record.date.includes(formattedFilter) ||
+        record.date.includes(filterDate) ||
+        (record.rawDate && String(record.rawDate).startsWith(filterDate))
+    );
+  }, [filterDate, history]);
 
   // Calculate Statistics
-  const totalClasses = mockHistory.length;
-  const presentCount = mockHistory.filter(r => r.status === 'Present').length;
-  const absentCount = mockHistory.filter(r => r.status === 'Absent').length;
-  const leaveCount = mockHistory.filter(r => r.status === 'Leave').length;
+  const totalClasses = history.length;
+  const presentCount = history.filter(r => r.status === 'Present').length;
+  const absentCount = history.filter(r => r.status === 'Absent').length;
+  const leaveCount = history.filter(r => r.status === 'Leave').length;
   const presentPercentage = totalClasses === 0 ? 0 : Math.round((presentCount / totalClasses) * 100);
 
   const handleDownloadCsv = () => {
