@@ -38,9 +38,6 @@ export const getDashboardStats = async () => {
   return response.data;
 };
 
-export const getAttendanceByDate = async (date) => {
-  const response = await api.get(`/api/attendance/${date}`);
-  return response.data;
-};
+
 
 export default api;

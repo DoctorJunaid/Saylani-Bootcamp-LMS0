@@ -23,7 +23,6 @@ export default function Login() {
     try {
       const data = await loginAdmin(email, password);
 
-      console.log(data);
 
       toast.success("Login successfully!", {
         position: "top-center",
