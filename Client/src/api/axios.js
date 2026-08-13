@@ -19,9 +19,18 @@ api.interceptors.request.use(
 );
 
 export const getStudentData = async () => {
-  const response = await api.get("api/student");
+  const response = await api.get("/api/student");
   return response.data;
 };
 
+export const getTeamData = async () => {
+  const response = await api.get("/api/teams");
+  return response.data;
+};
+
+export const getTaskData = async () => {
+  const response = await api.get("/api/tasks");
+  return response.data;
+};
 
 export default api;

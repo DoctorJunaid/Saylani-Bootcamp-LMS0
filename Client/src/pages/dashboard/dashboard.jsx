@@ -17,11 +17,10 @@ import {
   X,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import api, {
+import {
   getStudentData,
   getTeamData,
   getTaskData,
-  getPendingTaskData,
 } from "../../api/axios";
 
 // Initial student attendance data for today (with timestamps for top ordering)
@@ -242,7 +241,6 @@ export default function Dashboard() {
   const [students, setStudents] = useState({ students: [] });
   const [teams, setTeams] = useState([]);
   const [task, setTask] = useState([]);
-  const [pendingTask, setPendingTask] = useState([]);
 
   //total students count
   useEffect(() => {
