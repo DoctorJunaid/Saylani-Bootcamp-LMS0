@@ -8,188 +8,27 @@ import {
   LuListFilter,
   LuUser,
 } from "react-icons/lu";
-
-// Initial Mock Tasks Data
-const initialTasks = [
-  {
-    id: 1,
-    title: "Update Syllabus: Web Dev Unit 1-4",
-    subtitle: "Curriculum / Modules / 2 weeks / Read & instructions...",
-    priority: "High",
-    status: "In Progress",
-    assignedTo: {
-      name: "Faiz ur Rehman",
-      avatarText: "FR",
-      avatarBg: "bg-blue-100 text-blue-700",
-    },
-    dueDate: "Tomorrow",
-    updateStatus: "Pending",
-  },
-  {
-    id: 2,
-    title: "Finalize Post-Placement JD Design",
-    subtitle: "UI Labs / Research / 2 weeks / 14 days left...",
-    priority: "Medium",
-    status: "Pending",
-    assignedTo: {
-      name: "Muhammad Junaid",
-      avatarText: "MJ",
-      avatarBg: "bg-amber-100 text-amber-700",
-    },
-    dueDate: "Oct 12, 2023",
-    updateStatus: "In Progress",
-  },
-  {
-    id: 3,
-    title: "Grad Onboarding Details",
-    subtitle: "Cohort Admin / Video Event 1...",
-    priority: "Low",
-    status: "Completed",
-    assignedTo: {
-      name: "Sana Ullah",
-      avatarText: "SU",
-      avatarBg: "bg-purple-100 text-purple-700",
-    },
-    dueDate: "Yesterday",
-    updateStatus: "In Progress",
-  },
-  {
-    id: 4,
-    title: "React Query Migration & Setup",
-    subtitle: "Frontend Architecture / Core Libs / Sprint 4...",
-    priority: "High",
-    status: "Pending",
-    assignedTo: {
-      name: "Idrees Ud Din",
-      avatarText: "ID",
-      avatarBg: "bg-blue-100 text-blue-700",
-    },
-    dueDate: "Oct 20, 2023",
-    updateStatus: "Pending",
-  },
-  {
-    id: 5,
-    title: "Database Schema Optimization",
-    subtitle: "Backend DB / Indexing / Performance...",
-    priority: "Medium",
-    status: "Completed",
-    assignedTo: {
-      name: "Bahadar Ali",
-      avatarText: "BA",
-      avatarBg: "bg-amber-100 text-amber-700",
-    },
-    dueDate: "Oct 18, 2023",
-    updateStatus: "Completed",
-  },
-  {
-    id: 6,
-    title: "Student Feedback Form UI",
-    subtitle: "Design System / Components / Student Portal...",
-    priority: "Low",
-    status: "Completed",
-    assignedTo: {
-      name: "Shayan Ahmad",
-      avatarText: "SA",
-      avatarBg: "bg-emerald-100 text-emerald-700",
-    },
-    dueDate: "Oct 15, 2023",
-    updateStatus: "Completed",
-  },
-  {
-    id: 7,
-    title: "Security Compliance Review",
-    subtitle: "Security / Auth Audit / OAuth 2.0...",
-    priority: "High",
-    status: "Pending",
-    assignedTo: {
-      name: "Sir Ibrahim Khan",
-      avatarText: "IK",
-      avatarBg: "bg-purple-100 text-purple-700",
-    },
-    dueDate: "Oct 25, 2023",
-    updateStatus: "Pending",
-  },
-];
+import { getTasks, updateTask } from "../../api/task.api";
 
 const UPDATE_OPTIONS = ["Pending", "In Progress", "Completed"];
 
 // Update Dropdown matching Screenshot 3
 const UpdateDropdown = ({ currentStatus, onStatusChange }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   return (
-    <div className="relative inline-block text-left" ref={dropdownRef}>
-      <button
-        type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
-        className="inline-flex items-center justify-between gap-2 px-3 py-1.5 w-32 text-xs sm:text-sm font-medium rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:border-[var(--color-outline)] shadow-[var(--shadow-sm)] transition-colors cursor-pointer"
-        aria-expanded={isOpen}
+    <div className="relative inline-block w-32 text-left">
+      <select
+        value={currentStatus}
+        onChange={(e) => onStatusChange(e.target.value)}
+        className="w-full px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:border-[var(--color-outline)] shadow-[var(--shadow-sm)] transition-colors cursor-pointer appearance-none outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
       >
-        <span className="truncate">{currentStatus}</span>
-        <LuChevronDown
-          className={`h-4 w-4 shrink-0 text-[var(--color-text-muted)] transition-transform duration-[var(--duration-fast)] ${isOpen ? "rotate-180" : ""
-            }`}
-        />
-      </button>
-
-      {isOpen && (
-        <div className="absolute right-0 z-30 mt-1 w-36 origin-top-right rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-md)] p-1 focus:outline-none animate-in fade-in zoom-in-95 duration-100">
-          {UPDATE_OPTIONS.map((option) => {
-            const isSelected = option === currentStatus;
-            return (
-              <button
-                key={option}
-                type="button"
-                onClick={() => {
-                  onStatusChange(option);
-                  setIsOpen(false);
-                }}
-                className={`w-full flex items-center justify-between px-3 py-2 text-xs sm:text-sm rounded-lg transition-colors cursor-pointer text-left ${isSelected
-                  ? "bg-[#e5a83b] text-[#191c1e] font-semibold"
-                  : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface-low)] hover:text-[var(--color-text)] font-normal"
-                  }`}
-              >
-                <span>{option}</span>
-                {isSelected && (
-                  <LuCheck className="h-4 w-4 shrink-0 text-[#191c1e]" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-      )}
+        {UPDATE_OPTIONS.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+      <LuChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-text-muted)] pointer-events-none" />
     </div>
-  );
-};
-
-// Priority Badge Component
-const PriorityBadge = ({ priority }) => {
-  let badgeStyle = "bg-gray-100 text-gray-700 border-gray-200";
-  if (priority === "High") {
-    badgeStyle = "bg-[#fee2e2] text-[#ef4444] border-[#fca5a5]/40";
-  } else if (priority === "Medium") {
-    badgeStyle = "bg-[#fef3c7] text-[#d97706] border-[#fcd34d]/40";
-  } else if (priority === "Low") {
-    badgeStyle = "bg-[#dcfce7] text-[#16a34a] border-[#86efac]/40";
-  }
-
-  return (
-    <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${badgeStyle}`}
-    >
-      {priority}
-    </span>
   );
 };
 
@@ -197,11 +36,11 @@ const PriorityBadge = ({ priority }) => {
 const StatusBadge = ({ status }) => {
   let badgeStyle = "bg-gray-100 text-gray-700 border-gray-200";
   if (status === "In Progress") {
-    badgeStyle = "bg-[#f3e8ff] text-[#9333ea] border-[#d8b4fe]/40";
+    badgeStyle = "bg-blue-50 text-blue-700 border-blue-200";
   } else if (status === "Pending" || status === "To Do") {
-    badgeStyle = "bg-[#e0e7ff] text-[#4f46e5] border-[#a5b4fc]/40";
+    badgeStyle = "bg-gray-100 text-gray-700 border-gray-200";
   } else if (status === "Completed" || status === "Done") {
-    badgeStyle = "bg-[#d1fae5] text-[#059669] border-[#6ee7b7]/40";
+    badgeStyle = "bg-green-50 text-green-700 border-green-200";
   }
 
   return (
@@ -213,8 +52,8 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-const TaskTable = () => {
-  const [tasks, setTasks] = useState(initialTasks);
+const TaskTable = ({ externalTasks, loading, fetchTasks, onEditTask, onDeleteTasks }) => {
+  const tasks = externalTasks || [];
   const [selectedIds, setSelectedIds] = useState([]);
   const [statusFilter, setStatusFilter] = useState("All Statuses");
   const [assigneeFilter, setAssigneeFilter] = useState("All Assignees");
@@ -260,7 +99,7 @@ const TaskTable = () => {
   });
 
   // Pagination logic
-  const totalItems = 124; // Mocked total as shown in screenshots
+  const totalItems = filteredTasks.length;
   const totalPages = Math.ceil(filteredTasks.length / pageSize) || 1;
   const startIndex = (currentPage - 1) * pageSize;
   const currentTasks = filteredTasks.slice(startIndex, startIndex + pageSize);
@@ -281,19 +120,13 @@ const TaskTable = () => {
   };
 
   // Update Status handler
-  const handleUpdateStatus = (taskId, newStatus) => {
-    setTasks((prev) =>
-      prev.map((task) => {
-        if (task.id === taskId) {
-          return {
-            ...task,
-            updateStatus: newStatus,
-            status: newStatus, // Sync status badge as well
-          };
-        }
-        return task;
-      })
-    );
+  const handleUpdateStatus = async (taskId, newStatus) => {
+    try {
+      await updateTask(taskId, { status: newStatus });
+      fetchTasks();
+    } catch (error) {
+      console.error("Error updating task status", error);
+    }
   };
 
   const isAllSelected =
@@ -309,9 +142,10 @@ const TaskTable = () => {
   return (
     <div className="flex flex-col">
       {/* Top Filter Bar (Inside Black Box) */}
-      <div className="flex flex-wrap items-center gap-3 pb-4 border-b border-[var(--color-border)]">
-        {/* Status Filter */}
-        <div className="relative" ref={statusDropdownRef}>
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[var(--color-border)]">
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Status Filter */}
+          <div className="relative" ref={statusDropdownRef}>
           <button
             type="button"
             onClick={() => {
@@ -399,6 +233,26 @@ const TaskTable = () => {
             </div>
           )}
         </div>
+        </div>
+
+        {/* Bulk Actions */}
+        {selectedIds.length > 0 && (
+          <button
+            type="button"
+            onClick={() => {
+              if (onDeleteTasks) {
+                onDeleteTasks(selectedIds)
+                  .then(() => setSelectedIds([]))
+                  .catch(() => {
+                    // Action was cancelled or failed, keep selection
+                  });
+              }
+            }}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[var(--color-error)] text-white text-xs sm:text-sm font-medium hover:opacity-90 transition-opacity shadow-[var(--shadow-sm)] cursor-pointer"
+          >
+            Delete Selected ({selectedIds.length})
+          </button>
+        )}
       </div>
 
       {/* Table Section */}
@@ -416,9 +270,6 @@ const TaskTable = () => {
               </th>
               <th className="px-4 py-3.5 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
                 Task Name
-              </th>
-              <th className="px-4 py-3.5 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
-                Priority
               </th>
               <th className="px-4 py-3.5 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
                 Status
@@ -456,24 +307,17 @@ const TaskTable = () => {
 
                     {/* Task Name */}
                     <td className="px-4 py-4">
-                      <div className="flex items-start gap-3">
-                        <div className="mt-0.5 text-[var(--color-text-muted)] shrink-0">
-                          <LuFileText className="h-4 w-4" />
+                      <div 
+                        className="flex flex-col cursor-pointer group"
+                        onClick={() => onEditTask && onEditTask(task)}
+                      >
+                        <div className="font-medium text-[var(--color-text)] group-hover:text-[var(--color-primary)] text-sm transition-colors">
+                          {task.title}
                         </div>
-                        <div>
-                          <div className="font-semibold text-[var(--color-text)] text-sm">
-                            {task.title}
-                          </div>
-                          <div className="text-xs text-[var(--color-text-muted)] mt-0.5">
-                            {task.subtitle}
-                          </div>
+                        <div className="text-xs text-[var(--color-text-muted)] mt-0.5">
+                          {task.subtitle}
                         </div>
                       </div>
-                    </td>
-
-                    {/* Priority */}
-                    <td className="px-4 py-4">
-                      <PriorityBadge priority={task.priority} />
                     </td>
 
                     {/* Status */}
@@ -515,10 +359,10 @@ const TaskTable = () => {
             ) : (
               <tr>
                 <td
-                  colSpan="7"
+                  colSpan="6"
                   className="px-4 py-8 text-center text-sm text-[var(--color-text-muted)]"
                 >
-                  No tasks found matching the filter criteria.
+                  {loading ? "Loading tasks..." : "No tasks found matching the filter criteria."}
                 </td>
               </tr>
             )}
