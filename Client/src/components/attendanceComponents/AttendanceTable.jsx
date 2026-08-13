@@ -28,7 +28,7 @@ const StatusBadge = ({ status }) => {
 
 const AttendanceTable = ({ attendanceData, onStatusChange, onStudentClick }) => {
   return (
-    <div className="overflow-x-auto overflow-y-visible">
+    <div className="overflow-visible w-full">
       <table className="w-full text-left whitespace-nowrap">
         <thead>
           <tr className="border-b border-[var(--color-surface-highest)]">
@@ -86,7 +86,7 @@ const AttendanceTable = ({ attendanceData, onStatusChange, onStudentClick }) => 
                     value={record.status === 'Not marked' ? 'Set' : record.status}
                     options={['Present', 'Leave', 'Absent']}
                     onChange={(val) => onStatusChange(record.id, val)}
-                    className="w-[120px]"
+                    className="w-[12 0px]"
                   />
                 </div>
               </td>

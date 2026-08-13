@@ -2,7 +2,19 @@ import React from 'react';
 import { Search } from 'lucide-react';
 import CustomSelect from '../CustomSelect';
 
-const StudentToolbar = ({ searchQuery, onSearchChange }) => {
+const StudentToolbar = ({ 
+  searchQuery, 
+  onSearchChange,
+  selectedCourse,
+  onCourseChange,
+  courseOptions = [],
+  selectedBatch,
+  onBatchChange,
+  batchOptions = [],
+  selectedTeam,
+  onTeamChange,
+  teamOptions = []
+}) => {
   return (
     <div className="flex flex-col xl:flex-row items-center justify-between gap-4 py-4 w-full">
 
@@ -25,17 +37,23 @@ const StudentToolbar = ({ searchQuery, onSearchChange }) => {
         <CustomSelect
           label="Course"
           defaultOption="All courses"
-          options={['Web & App Dev', 'Data Science', 'UI/UX Design']}
+          options={courseOptions.length ? courseOptions : ['Web & App Dev', 'Data Science', 'UI/UX Design']}
+          value={selectedCourse}
+          onChange={onCourseChange}
         />
         <CustomSelect
           label="Batch"
           defaultOption="All batches"
-          options={['Batch-07', 'Batch-08', 'Batch-09']}
+          options={batchOptions.length ? batchOptions : ['Batch-07', 'Batch-08', 'Batch-09']}
+          value={selectedBatch}
+          onChange={onBatchChange}
         />
         <CustomSelect
           label="Team"
           defaultOption="All teams"
-          options={['Team Alpha', 'Team Beta', 'Team Gamma', 'Unassigned']}
+          options={teamOptions.length ? teamOptions : ['Team Alpha', 'Team Beta', 'Team Gamma', 'Unassigned']}
+          value={selectedTeam}
+          onChange={onTeamChange}
         />
       </div>
 

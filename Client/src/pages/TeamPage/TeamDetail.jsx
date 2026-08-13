@@ -61,8 +61,7 @@ export default function TeamDetails({ teamId, onClose }) {
         if (isMounted) setIsLoading(false);
       }
     }
-
-    loadData();
+  loadData();
 
     return () => {
       isMounted = false;
