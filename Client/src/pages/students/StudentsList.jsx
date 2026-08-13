@@ -25,6 +25,11 @@ const StudentsList = () => {
   const [isAddStudentModalOpen, setIsAddStudentModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   
+  // Filter States
+  const [selectedCourse, setSelectedCourse] = useState('All courses');
+  const [selectedBatch, setSelectedBatch] = useState('All batches');
+  const [selectedTeam, setSelectedTeam] = useState('All teams');
+
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -70,10 +75,10 @@ const StudentsList = () => {
     fetchStudentsData();
   }, [searchQuery]); // Re-fetch when search changes
 
-  // Reset to first page on search
+  // Reset to first page on search or filter change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery]);
+  }, [searchQuery, selectedCourse, selectedBatch, selectedTeam]);
 
   // Listen for 'Add Student' click from the DashboardLayout TopBar
   useEffect(() => {
@@ -82,8 +87,21 @@ const StudentsList = () => {
     return () => window.removeEventListener('openAddStudent', handleOpenModal);
   }, []);
 
-  const totalPages = Math.ceil(students.length / itemsPerPage);
-  const paginatedData = students.slice(
+  // Generate dynamic filter options from the fetched students
+  const courseOptions = [...new Set(students.map(s => s.course))].filter(Boolean);
+  const batchOptions = [...new Set(students.map(s => s.batch))].filter(Boolean);
+  const teamOptions = [...new Set(students.map(s => s.team))].filter(Boolean);
+
+  // Apply frontend filters
+  const filteredStudents = students.filter(student => {
+    const matchCourse = selectedCourse === 'All courses' || student.course === selectedCourse;
+    const matchBatch = selectedBatch === 'All batches' || student.batch === selectedBatch;
+    const matchTeam = selectedTeam === 'All teams' || student.team === selectedTeam;
+    return matchCourse && matchBatch && matchTeam;
+  });
+
+  const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
+  const paginatedData = filteredStudents.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -97,6 +115,15 @@ const StudentsList = () => {
         <StudentToolbar 
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
+          selectedCourse={selectedCourse}
+          onCourseChange={setSelectedCourse}
+          courseOptions={courseOptions}
+          selectedBatch={selectedBatch}
+          onBatchChange={setSelectedBatch}
+          batchOptions={batchOptions}
+          selectedTeam={selectedTeam}
+          onTeamChange={setSelectedTeam}
+          teamOptions={teamOptions}
         />
         
         {isLoading ? (
@@ -107,11 +134,11 @@ const StudentsList = () => {
           <StudentTable students={paginatedData} onRefresh={fetchStudentsData} />
         )}
         
-        {!isLoading && students.length > 0 && (
+        {!isLoading && filteredStudents.length > 0 && (
           <StudentPagination 
             currentPage={currentPage}
             totalPages={totalPages}
-            totalItems={students.length}
+            totalItems={filteredStudents.length}
             itemsPerPage={itemsPerPage}
             onPageChange={setCurrentPage}
           />

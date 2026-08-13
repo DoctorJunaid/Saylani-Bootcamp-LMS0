@@ -7,33 +7,46 @@ import StudentRecordModal from '../../components/attendanceComponents/StudentRec
 
 import toast from 'react-hot-toast';
 
+import { getStudents } from '../../api/student.api';
+
 const todayStr = new Date().toISOString().split('T')[0];
-const mockAttendanceData = [
-  { id: 1, rollNo: '100235', name: 'Bilal Ahmed', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 2, rollNo: '100236', name: 'Sana Malik', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 3, rollNo: '100237', name: 'Hamza Sheikh', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 4, rollNo: '100238', name: 'Fatima Noor', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 5, rollNo: '100239', name: 'Usman Tariq', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 6, rollNo: '100243', name: 'Hakim', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 7, rollNo: '100435', name: 'Junaid', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 8, rollNo: '100436', name: 'Ayesha Khan', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 9, rollNo: '100437', name: 'Ali Raza', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 10, rollNo: '100438', name: 'Zainab Abbas', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 11, rollNo: '100439', name: 'Omar Farooq', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 12, rollNo: '100440', name: 'Hira Mani', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 13, rollNo: '100441', name: 'Saad Tariq', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 14, rollNo: '100442', name: 'Khadija Shah', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-  { id: 15, rollNo: '100443', name: 'Musa Khan', date: todayStr, status: 'Not marked', note: null, checkInTime: null, checkOutTime: null },
-];
 
 const AttendanceList = () => {
-  const [data, setData] = useState(mockAttendanceData);
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDate, setSelectedDate] = useState(todayStr);
   const [currentPage, setCurrentPage] = useState(1);
   const [isTakeAttendanceModalOpen, setIsTakeAttendanceModalOpen] = useState(false);
   const [selectedStudentForRecord, setSelectedStudentForRecord] = useState(null);
   const itemsPerPage = 10;
+
+  const loadStudents = async (dateStr) => {
+    setIsLoading(true);
+    try {
+      const response = await getStudents();
+      const mappedData = response.students.map(student => ({
+        id: student._id,
+        rollNo: student.rollNumber,
+        name: student.name,
+        date: dateStr,
+        status: 'Not marked',
+        note: null,
+        checkInTime: null,
+        checkOutTime: null
+      }));
+      setData(mappedData);
+    } catch (error) {
+      console.error("Error loading students:", error);
+      toast.error("Failed to load students");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadStudents(selectedDate);
+  }, [selectedDate]);
 
   // Reset to first page when searching or changing date
   useEffect(() => {
@@ -74,7 +87,7 @@ const AttendanceList = () => {
       });
       return updatedData;
     });
-    toast.success("Bulk attendance saved successfully");
+    toast.success("Attendance saved successfully");
   };
 
   // Filter Data
@@ -147,20 +160,30 @@ const AttendanceList = () => {
         />
 
         {/* Table Container */}
-        <div className="border border-[var(--color-surface-highest)] rounded-[var(--radius-lg)] overflow-hidden">
-          <AttendanceTable 
-            attendanceData={paginatedData} 
-            onStatusChange={handleStatusChange}
-            onStudentClick={(student) => setSelectedStudentForRecord(student)}
-          />
-          
-          <AttendancePagination 
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={filteredData.length}
-            itemsPerPage={itemsPerPage}
-            onPageChange={setCurrentPage}
-          />
+        <div className="border border-[var(--color-surface-highest)] rounded-[var(--radius-lg)] overflow-visible min-h-[300px]">
+          {isLoading ? (
+            <div className="h-[300px] flex justify-center items-center">
+               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+            </div>
+          ) : (
+            <>
+              <AttendanceTable 
+                attendanceData={paginatedData} 
+                onStatusChange={handleStatusChange}
+                onStudentClick={(student) => setSelectedStudentForRecord(student)}
+              />
+              
+              {filteredData.length > 0 && (
+                <AttendancePagination 
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={filteredData.length}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={setCurrentPage}
+                />
+              )}
+            </>
+          )}
         </div>
 
       </div>

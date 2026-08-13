@@ -17,7 +17,8 @@ const topBarConfig = {
     showButton: true,
     buttonText: "Add Student",
     buttonIcon: Plus,
-    onButtonClick: () => window.dispatchEvent(new CustomEvent('openAddStudent')),
+    onButtonClick: () =>
+      window.dispatchEvent(new CustomEvent("openAddStudent")),
   },
   "/attendance": {
     title: "Attendance",
@@ -26,7 +27,8 @@ const topBarConfig = {
     showButton: true,
     buttonText: "Take Attendance",
     buttonIcon: CalendarCheck,
-    onButtonClick: () => window.dispatchEvent(new CustomEvent('openTakeAttendance')),
+    onButtonClick: () =>
+      window.dispatchEvent(new CustomEvent("openTakeAttendance")),
   },
   "/teams": {
     title: "Teams",
@@ -35,7 +37,8 @@ const topBarConfig = {
     showButton: true,
     buttonText: "Create Team",
     buttonIcon: UsersRound,
-    onButtonClick: () => window.dispatchEvent(new CustomEvent("openCreateTeamModal")),
+    onButtonClick: () =>
+      window.dispatchEvent(new CustomEvent("openCreateTeamModal")),
   },
   "/tasks": {
     title: "Tasks",
@@ -74,7 +77,7 @@ export default function DashboardLayout() {
           buttonIcon={config.buttonIcon}
           onButtonClick={config.onButtonClick}
         />
-        <main className="flex-1 overflow-auto bg-[var(--color-background)]">
+        <main className="flex-1 overflow-auto bg-background">
           <Outlet />
         </main>
       </div>

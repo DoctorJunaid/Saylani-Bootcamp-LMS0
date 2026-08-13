@@ -3,9 +3,14 @@ import { X } from "lucide-react";
 import StatusBadge from "../../components/team/StatusBadge";
 import ProjectCard from "../../components/team/ProjectCard";
 import MemberCard from "../../components/team/MemberCrad";
-import { fetchTeamById, updateTeam, addMemberToTeam, removeMemberFromTeam, fetchUnassignedStudents } from "../../Data/teams";
+import {
+  fetchTeamById,
+  updateTeam,
+  addMemberToTeam,
+  removeMemberFromTeam,
+  fetchUnassignedStudents,
+} from "../../Data/teams";
 import { getStudentData } from "../../api/axios";
-
 
 export default function TeamDetails({ teamId, onClose }) {
   const [team, setTeam] = useState(null);
@@ -32,17 +37,20 @@ export default function TeamDetails({ teamId, onClose }) {
     async function loadData() {
       setIsLoading(true);
       setError(null);
+
       try {
         const token = localStorage.getItem("token");
         const [teamData, unassignedStudents] = await Promise.all([
           fetchTeamById(teamId),
           fetchUnassignedStudents().catch(async () => {
             // Fallback to getStudentData if unassigned-students route fails
-            const res = await getStudentData(token).catch(() => ({ students: [] }));
+            const res = await getStudentData(token).catch(() => ({
+              students: [],
+            }));
             return res?.students || [];
-          })
+          }),
         ]);
-        
+
         if (isMounted) {
           setTeam(teamData);
           setAllStudents(unassignedStudents || []);
@@ -55,38 +63,40 @@ export default function TeamDetails({ teamId, onClose }) {
     }
   loadData();
 
-  return () => {
-    isMounted = false;
-  };
-}, [teamId]);
+    return () => {
+      isMounted = false;
+    };
+  }, [teamId]);
 
   const projects = team?.projects?.length
     ? team.projects
     : team?.project
-    ? [team.project]
-    : [];
+      ? [team.project]
+      : [];
 
   const members = team?.members ?? [];
-  const memberIds = new Set(members.map(m => m._id || m.id));
+  const memberIds = new Set(members.map((m) => m._id || m.id));
 
   // Available students to add (unassigned & not already in team)
   const availableStudents = useMemo(() => {
-    return allStudents.filter(s => !s.team_id && !memberIds.has(s._id || s.id));
+    return allStudents.filter(
+      (s) => !s.team_id && !memberIds.has(s._id || s.id),
+    );
   }, [allStudents, memberIds]);
 
   async function handleAddMember() {
     if (selectedStudentIds.length === 0) return;
-    
+
     setIsUpdating(true);
     try {
       for (const studentId of selectedStudentIds) {
         await addMemberToTeam(teamId, studentId);
       }
       setSelectedStudentIds([]);
-      
+
       const [freshTeam, freshUnassigned] = await Promise.all([
         fetchTeamById(teamId),
-        fetchUnassignedStudents().catch(() => [])
+        fetchUnassignedStudents().catch(() => []),
       ]);
       setTeam(freshTeam);
       setAllStudents(freshUnassigned);
@@ -103,10 +113,10 @@ export default function TeamDetails({ teamId, onClose }) {
     setIsUpdating(true);
     try {
       await removeMemberFromTeam(teamId, memberIdToRemove);
-      
+
       const [freshTeam, freshUnassigned] = await Promise.all([
         fetchTeamById(teamId),
-        fetchUnassignedStudents().catch(() => [])
+        fetchUnassignedStudents().catch(() => []),
       ]);
       setTeam(freshTeam);
       setAllStudents(freshUnassigned);
@@ -123,7 +133,7 @@ export default function TeamDetails({ teamId, onClose }) {
       onClick={onClose}
     >
       <div
-        className="bg-surface rounded-2xl shadow-xl w-full max-w-[1100px] flex flex-col h-[90vh] overflow-hidden border border-border"
+        className="bg-surface rounded-2xl shadow-xl w-full max-w-275 flex flex-col h-[90vh] overflow-hidden border border-border"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Sticky Header */}
@@ -138,7 +148,7 @@ export default function TeamDetails({ teamId, onClose }) {
               </p>
             )}
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="p-sm hover:bg-surface-high rounded-full transition-colors text-text-muted hover:text-text"
           >
@@ -149,7 +159,21 @@ export default function TeamDetails({ teamId, onClose }) {
         <div className="p-xl overflow-y-auto flex-1 bg-background">
           {!isLoading && error && (
             <div className="bg-error/10 text-error p-md rounded-lg text-sm mb-lg border border-error/20 flex items-center gap-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
               Failed to load team: {error}
             </div>
           )}
@@ -164,20 +188,29 @@ export default function TeamDetails({ teamId, onClose }) {
 
           {!isLoading && !error && team && (
             <div className="flex flex-col gap-xl">
-              
               {/* Overview Cards */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
                 <div className="bg-surface p-lg rounded-xl border border-border shadow-sm flex flex-col justify-center items-start">
-                  <span className="text-sm text-text-muted font-medium mb-1">Status</span>
+                  <span className="text-sm text-text-muted font-medium mb-1">
+                    Status
+                  </span>
                   <StatusBadge status={team.status} />
                 </div>
                 <div className="bg-surface p-lg rounded-xl border border-border shadow-sm flex flex-col justify-center items-start">
-                  <span className="text-sm text-text-muted font-medium mb-1">Total Members</span>
-                  <span className="text-2xl font-bold text-text">{members.length}</span>
+                  <span className="text-sm text-text-muted font-medium mb-1">
+                    Total Members
+                  </span>
+                  <span className="text-2xl font-bold text-text">
+                    {members.length}
+                  </span>
                 </div>
                 <div className="bg-surface p-lg rounded-xl border border-border shadow-sm flex flex-col justify-center items-start">
-                  <span className="text-sm text-text-muted font-medium mb-1">Total Projects</span>
-                  <span className="text-2xl font-bold text-text">{projects.length}</span>
+                  <span className="text-sm text-text-muted font-medium mb-1">
+                    Total Projects
+                  </span>
+                  <span className="text-2xl font-bold text-text">
+                    {projects.length}
+                  </span>
                 </div>
               </div>
 
@@ -198,11 +231,11 @@ export default function TeamDetails({ teamId, onClose }) {
                 ) : (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-md">
                     {projects.map((project) => (
-                     <ProjectCard
+                      <ProjectCard
                         key={project._id ?? project.id ?? project.title}
                         project={project}
                         onRefresh={loadTeam}
-                    />
+                      />
                     ))}
                   </div>
                 )}
@@ -214,30 +247,45 @@ export default function TeamDetails({ teamId, onClose }) {
                   <h2 className="text-xl font-weight-bold text-text">
                     Team Members
                   </h2>
-                  
+
                   {/* Add Member UI */}
                   <div className="flex flex-col gap-sm items-end">
-                    <div className="max-h-40 overflow-y-auto border border-border rounded-lg p-2 bg-surface-low min-w-[280px]">
+                    <div className="max-h-40 overflow-y-auto border border-border rounded-lg p-2 bg-surface-low min-w-70">
                       {availableStudents.length === 0 ? (
-                        <p className="text-sm text-text-muted p-2 text-center">No available students</p>
+                        <p className="text-sm text-text-muted p-2 text-center">
+                          No available students
+                        </p>
                       ) : (
-                        availableStudents.map(student => (
-                          <label key={student._id || student.id} className="flex items-center gap-3 p-2 hover:bg-surface rounded-md cursor-pointer transition-colors">
+                        availableStudents.map((student) => (
+                          <label
+                            key={student._id || student.id}
+                            className="flex items-center gap-3 p-2 hover:bg-surface rounded-md cursor-pointer transition-colors"
+                          >
                             <input
                               type="checkbox"
-                              checked={selectedStudentIds.includes(student._id || student.id)}
+                              checked={selectedStudentIds.includes(
+                                student._id || student.id,
+                              )}
                               onChange={(e) => {
                                 const id = student._id || student.id;
                                 if (e.target.checked) {
-                                  setSelectedStudentIds(prev => [...prev, id]);
+                                  setSelectedStudentIds((prev) => [
+                                    ...prev,
+                                    id,
+                                  ]);
                                 } else {
-                                  setSelectedStudentIds(prev => prev.filter(x => x !== id));
+                                  setSelectedStudentIds((prev) =>
+                                    prev.filter((x) => x !== id),
+                                  );
                                 }
                               }}
                               className="w-4 h-4 accent-primary rounded border-border"
                             />
                             <span className="text-sm font-medium text-text">
-                              {student.name} <span className="text-text-muted font-normal">({student.rollNumber})</span>
+                              {student.name}{" "}
+                              <span className="text-text-muted font-normal">
+                                ({student.rollNumber})
+                              </span>
                             </span>
                           </label>
                         ))
@@ -262,10 +310,10 @@ export default function TeamDetails({ teamId, onClose }) {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-md">
                     {members.map((member) => (
-                      <MemberCard 
-                        key={member._id ?? member.id ?? member.email} 
-                        member={member} 
-                        onRemove={handleRemoveMember} 
+                      <MemberCard
+                        key={member._id ?? member.id ?? member.email}
+                        member={member}
+                        onRemove={handleRemoveMember}
                       />
                     ))}
                   </div>
@@ -288,4 +336,3 @@ export default function TeamDetails({ teamId, onClose }) {
     </div>
   );
 }
-
