@@ -20,8 +20,8 @@ import { NavLink } from "react-router-dom";
 import api, {
   getStudentData,
   getTeamData,
-  getTaskData,
-  getPendingTaskData,
+  // getTaskData,
+  // getPendingTaskData,
 } from "../../api/axios";
 
 // Initial student attendance data for today (with timestamps for top ordering)

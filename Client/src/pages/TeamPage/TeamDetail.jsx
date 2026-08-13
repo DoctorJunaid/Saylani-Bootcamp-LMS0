@@ -27,14 +27,7 @@ export default function TeamDetails({ teamId, onClose }) {
   };
 
   useEffect(() => {
-  let isMounted = true;
-
-  async function loadData() {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const token = localStorage.getItem("token");
+    let isMounted = true;
 
     async function loadData() {
       setIsLoading(true);
@@ -60,8 +53,6 @@ export default function TeamDetails({ teamId, onClose }) {
         if (isMounted) setIsLoading(false);
       }
     }
-  }
-
   loadData();
 
   return () => {
