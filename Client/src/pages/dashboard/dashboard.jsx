@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   GraduationCap,
   UserCheck,
@@ -18,132 +18,10 @@ import {
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
-  getStudentData,
-  getTeamData,
   getTaskData,
+  getDashboardStats,
+  getAttendanceByDate,
 } from "../../api/axios";
-
-// Initial student attendance data for today (with timestamps for top ordering)
-const initialAttendanceData = [
-  {
-    id: 1,
-    rollNo: "100238",
-    name: "Fatima Noor",
-    course: "Web & App Dev",
-    checkIn: "09:00 AM",
-    checkOut: "05:00 PM",
-    status: "Present",
-    lastUpdated: 1770735600000,
-  },
-  {
-    id: 2,
-    rollNo: "100236",
-    name: "Sana Malik",
-    course: "AI & Data Science",
-    checkIn: "09:15 AM",
-    checkOut: "04:45 PM",
-    status: "Present",
-    lastUpdated: 1770736500000,
-  },
-  {
-    id: 3,
-    rollNo: "100235",
-    name: "Bilal Ahmed",
-    course: "Graphic Design",
-    checkIn: "09:30 AM",
-    checkOut: "--",
-    status: "--",
-    lastUpdated: 1770737400000,
-  },
-  {
-    id: 4,
-    rollNo: "123456",
-    name: "Ayesha Khan",
-    course: "Web & App Dev",
-    checkIn: "08:55 AM",
-    checkOut: "05:00 PM",
-    status: "Present",
-    lastUpdated: 1770735300000,
-  },
-  {
-    id: 5,
-    rollNo: "100239",
-    name: "Usman Tariq",
-    course: "Cyber Security",
-    checkIn: "--",
-    checkOut: "--",
-    status: "--",
-    lastUpdated: 1770700000000,
-  },
-  {
-    id: 6,
-    rollNo: "100240",
-    name: "Zainab Abbas",
-    course: "UI/UX Design",
-    checkIn: "09:10 AM",
-    checkOut: "05:15 PM",
-    status: "Present",
-    lastUpdated: 1770736200000,
-  },
-  {
-    id: 7,
-    rollNo: "100241",
-    name: "Ali Raza",
-    course: "MERN Stack",
-    checkIn: "08:45 AM",
-    checkOut: "05:00 PM",
-    status: "Present",
-    lastUpdated: 1770734700000,
-  },
-  {
-    id: 8,
-    rollNo: "100242",
-    name: "Hira Mani",
-    course: "Graphic Design",
-    checkIn: "09:40 AM",
-    checkOut: "--",
-    status: "Leave",
-    lastUpdated: 1770738000000,
-  },
-];
-
-const tasks = [
-  {
-    title: "Wireframe portfolio builder",
-    student: "Fatima Noor",
-    rollNumber: "100238",
-    dueDate: "Jul 30, 2026",
-    status: "Completed",
-  },
-  {
-    title: "Clean patient dataset",
-    student: "Sana Malik",
-    rollNumber: "100236",
-    dueDate: "Jul 31, 2026",
-    status: "In Progress",
-  },
-  {
-    title: "Setup Express API",
-    student: "Bilal Ahmed",
-    rollNumber: "100235",
-    dueDate: "Aug 01, 2026",
-    status: "Pending",
-  },
-  {
-    title: "Build product listing page",
-    student: "Ayesha Khan",
-    rollNumber: "123456",
-    dueDate: "Aug 02, 2026",
-    status: "In Progress",
-  },
-  {
-    title: "Design system tokens",
-    student: "Usman Tariq",
-    rollNumber: "100239",
-    dueDate: "Aug 03, 2026",
-    status: "In Progress",
-  },
-];
 
 const taskStatusStyles = {
   Completed:
@@ -233,85 +111,57 @@ function TaskRow({ title, student, rollNumber, dueDate, status }) {
 }
 
 export default function Dashboard() {
-  const [attendanceData, setAttendanceData] = useState(initialAttendanceData);
+  const [attendanceData, setAttendanceData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
-  // student data api fetching
-  const [students, setStudents] = useState({ students: [] });
-  const [teams, setTeams] = useState([]);
   const [task, setTask] = useState([]);
+  const [stats, setStats] = useState({});
+  const [loadError, setLoadError] = useState("");
 
-  //total students count
+  // Load the values displayed on the dashboard from their real API responses.
   useEffect(() => {
-    const fetchStudents = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("No token found in localStorage.");
-          return;
-        }
-        const data = await getStudentData(token);
-        setStudents(data ?? { students: [] });
+        const today = new Date().toISOString().slice(0, 10);
+        const [statsResponse, attendanceResponse, taskResponse] = await Promise.all([
+          getDashboardStats(),
+          getAttendanceByDate(today),
+          getTaskData(),
+        ]);
+
+        setStats(statsResponse?.data ?? {});
+        setAttendanceData(
+          (attendanceResponse?.attendance ?? []).map((record) => ({
+            id: record._id,
+            rollNo: record.student_id?.rollNumber ?? "--",
+            name: record.student_id?.name ?? "Unknown student",
+            course: record.student_id?.course ?? "--",
+            checkIn: record.checkInTime || "--",
+            checkOut: record.checkOutTime || "--",
+            status: record.status ?? "Not marked",
+            lastUpdated: new Date(record.updatedAt).getTime(),
+          })),
+        );
+        setTask(taskResponse?.data ?? []);
       } catch (error) {
-        console.error(error);
+        console.error("Failed to load dashboard data:", error);
+        setLoadError(
+          error.response?.data?.message ||
+            "Dashboard data could not be loaded. Please sign in again and retry.",
+        );
       }
     };
 
-    fetchStudents();
+    fetchDashboardData();
   }, []);
 
-  //total teams count
-  useEffect(() => {
-    const fetchTeams = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("No token found in localStorage.");
-          return;
-        }
-        const data = await getTeamData(token);
-        setTeams(data?.data ?? []);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchTeams();
-  }, []);
-
-  //pending tasks count
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("No token found in localStorage.");
-          return;
-        }
-        const data = await getTaskData(token);
-        setTask(data?.data ?? []);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchTasks();
-  }, []);
-
-  // Dynamically calculated stats from state
-  const totalStudents = students?.students?.length ?? 0;
-  const totalTeams = teams.length;
-  const totalTasks = task.length;
-  const totalPendingTasks = task.filter(t => t.status === "Pending").length;
-  const presentCount = useMemo(
-    () => attendanceData.filter((s) => s.status === "Present").length,
-    [attendanceData],
-  );
-  const absentCount = useMemo(
-    () => attendanceData.filter((s) => s.status === "Absent").length,
-    [attendanceData],
-  );
+  // Dynamically calculated stats from API response
+  const totalStudents = stats.totalStudents || 0;
+  const totalTeams = stats.totalTeams || 0;
+  const totalPendingTasks = stats.pendingTasks || 0;
+  const presentCount = stats.attendanceToday?.present ?? 0;
+  const absentCount = stats.attendanceToday?.absent ?? 0;
 
   const statCards = [
     {
@@ -457,6 +307,12 @@ export default function Dashboard() {
           <StatCard key={card.label} {...card} />
         ))}
       </div>
+
+      {loadError && (
+        <p className="rounded-lg border border-[var(--color-error)]/20 bg-[var(--color-error)]/10 px-4 py-3 text-sm text-[var(--color-error)]">
+          {loadError}
+        </p>
+      )}
 
       {/* Main Grid Section: Today's Attendance Table + Task Summary */}
       <div className="grid grid-cols-1 gap-[var(--spacing-lg)] lg:grid-cols-3">
@@ -652,9 +508,22 @@ export default function Dashboard() {
           </div>
 
           <div className="flex-1">
-            {tasks.map((task) => (
-              <TaskRow key={task.title} {...task} />
-            ))}
+            {task.length ? (
+              task.map((item) => (
+                <TaskRow
+                  key={item._id}
+                  title={item.title}
+                  student={item.studentId?.name ?? "Unknown student"}
+                  rollNumber={item.studentId?.rollNumber ?? "--"}
+                  dueDate={item.dueDate ? new Date(item.dueDate).toLocaleDateString() : "--"}
+                  status={item.status?.replace("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase()) ?? "Pending"}
+                />
+              ))
+            ) : (
+              <p className="py-6 text-center text-sm text-[var(--color-text-muted)]">
+                No tasks found.
+              </p>
+            )}
           </div>
         </div>
       </div>
