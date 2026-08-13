@@ -18,9 +18,7 @@ export const getAllTeamsService = async () => {
         projectsByTeam[tid].push(p);
     });
 
-    const teams = await Team.find()
-        .populate("members")
-        .lean();
+    
 
     const result = await Promise.all(
         teams.map(async(team)=>{
