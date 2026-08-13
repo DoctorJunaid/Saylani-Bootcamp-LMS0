@@ -20,8 +20,9 @@ import { NavLink } from "react-router-dom";
 import {
   getTaskData,
   getDashboardStats,
-  getAttendanceByDate,
+  
 } from "../../api/axios";
+import {getAttendanceByDate} from "../../Services/attendance.services.js"
 
 const taskStatusStyles = {
   Completed:

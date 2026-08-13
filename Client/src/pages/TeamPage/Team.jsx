@@ -5,7 +5,7 @@ import TeamGrid from "../../components/team/TeamGrid";
 import CreateTeamModal from "../../components/team/CreateTeamModel";
 import TeamDetails from "./TeamDetail";
 import { fetchTeams, createTeam } from "../../Data/teams";
-import { fetchProjects } from "../../Data/project";
+import { fetchProjects } from "../../Data/projects";
 
 /**
  * TeamsPage

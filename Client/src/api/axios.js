@@ -1,10 +1,12 @@
 import axios from "axios";
 
+
+
 const api = axios.create({
-  baseURL: "https://saylani-bootcamp-lms-0.vercel.app",
+  baseURL: import.meta.env.VITE_API_URL || "https://saylani-bootcamp-lms-0.vercel.app",
 });
 
-// Automatically attach the Bearer token from localStorage to every request
+// Interceptor to attach JWT token to all requests automatically
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -13,9 +15,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 export const getStudentData = async () => {
@@ -33,11 +33,14 @@ export const getTaskData = async () => {
   return response.data;
 };
 
+export const getPendingTaskData = async () => {
+  const response = await api.get("/api/tasks?status=pending");
+  return response.data;
+};
+
 export const getDashboardStats = async () => {
   const response = await api.get("/api/dashboard/stats");
   return response.data;
 };
-
-
 
 export default api;
