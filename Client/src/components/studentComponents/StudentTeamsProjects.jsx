@@ -36,10 +36,10 @@ const StudentTeamsProjects = () => {
               </div>
               
               <div className="flex flex-col">
-                <span className="text-xs font-bold text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors">
+                <span className="text-sm font-bold text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors">
                   {team.title}
                 </span>
-                <span className="text-[10px] font-medium text-[var(--color-text-muted)] mt-0.5">
+                <span className="text-xs font-medium text-[var(--color-text-muted)] mt-0.5">
                   {team.subtitle}
                 </span>
               </div>

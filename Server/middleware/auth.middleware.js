@@ -5,7 +5,7 @@ import Admin from "../models/admin.Model.js";
         try {
             // reuqest to Authorization header lo
             const authHeader = req.headers.authorization;
-            console.log(authHeader)
+            // console.log(authHeader)
             // check karo k token deya gya ha ya nhi
             if (!authHeader){
                 // return mean response bhejne ke baad function ko yahin stop kar do.
@@ -15,7 +15,7 @@ import Admin from "../models/admin.Model.js";
             }
             // Bearer ke baad actual JWT token nikalo
             const token = authHeader.split(" ")[1];//[1]:ka matlab second item  and split(" ") Space par string ko tod do:
-            console.log(token)
+            // console.log(token)
             if(!token){
                 return res.status(401).json({
                     message: "invalid authorization format"
@@ -36,7 +36,7 @@ import Admin from "../models/admin.Model.js";
                 });
               }
 
-            console.log(decoded)
+            // console.log(decoded)
             // Check  karo user Admin ha ya nhi 
             if (decoded.role !== "admin")//ye middleware authentication + authorization dono ka small part kar raha hai:
                 {
