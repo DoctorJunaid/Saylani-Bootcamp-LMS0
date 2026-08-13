@@ -33,4 +33,14 @@ export const getTaskData = async () => {
   return response.data;
 };
 
+export const getDashboardStats = async () => {
+  const response = await api.get("/api/dashboard/stats");
+  return response.data;
+};
+
+export const getAttendanceByDate = async (date) => {
+  const response = await api.get(`/api/attendance/${date}`);
+  return response.data;
+};
+
 export default api;
