@@ -2,7 +2,7 @@ import React from "react";
 import { LuList, LuCalendar, LuPlus } from "react-icons/lu";
 import Button from "../Button";
 
-const TaskHeader = () => {
+const TaskHeader = ({ onCreateClick }) => {
   const [view, setView] = React.useState("list");
 
   return (
@@ -48,7 +48,7 @@ const TaskHeader = () => {
         {/* New Task Button */}
         <button
           type="button"
-          onClick={() => alert("New Task modal/action")}
+          onClick={onCreateClick}
           className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-[var(--color-primary)] text-[var(--color-on-primary)] hover:opacity-90 shadow-[var(--shadow-sm)] cursor-pointer transition-all"
         >
           <LuPlus className="h-4 w-4" />

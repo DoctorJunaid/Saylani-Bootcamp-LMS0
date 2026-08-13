@@ -11,122 +11,7 @@ const ASSIGNEE_OPTIONS = [
   { name: "Sir Ibrahim Khan", avatarText: "IK", avatarBg: "bg-purple-100 text-purple-700" },
 ];
 
-// Searchable Assignee Selector Component
-const SearchableAssigneeSelect = ({ options, selectedName, onSelect }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const selectedOption =
-    options.find((opt) => opt.name === selectedName) || options[0];
-
-  const filteredOptions = options.filter((opt) =>
-    opt.name.toLowerCase().includes(searchQuery.trim().toLowerCase())
-  );
-
-  return (
-    <div className="relative w-full" ref={containerRef}>
-      {/* Trigger Button */}
-      <button
-        type="button"
-        onClick={() => {
-          setIsOpen((prev) => !prev);
-          setSearchQuery("");
-        }}
-        className={`w-full flex items-center justify-between gap-2 px-4 py-2.5 bg-[var(--color-surface)] border rounded-lg text-sm text-[var(--color-text)] transition-colors cursor-pointer text-left ${
-          isOpen
-            ? "border-[var(--color-primary)] ring-1 ring-[var(--color-primary)]"
-            : "border-[var(--color-border)] hover:border-[var(--color-outline)]"
-        }`}
-      >
-        <div className="flex items-center gap-2.5 truncate">
-          <div
-            className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${selectedOption.avatarBg}`}
-          >
-            {selectedOption.avatarText}
-          </div>
-          <span className="truncate font-medium">{selectedOption.name}</span>
-        </div>
-        <LuChevronDown
-          className={`h-4 w-4 shrink-0 text-[var(--color-text-muted)] transition-transform duration-[var(--duration-fast)] ${
-            isOpen ? "rotate-180 text-[var(--color-primary)]" : ""
-          }`}
-        />
-      </button>
-
-      {/* Searchable Dropdown Popup */}
-      {isOpen && (
-        <div className="absolute left-0 z-30 mt-1 w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-md)] p-2 focus:outline-none animate-in fade-in zoom-in-95 duration-100">
-          {/* Search Input */}
-          <div className="relative mb-2">
-            <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--color-text-muted)]" />
-            <input
-              type="text"
-              autoFocus
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search user by name..."
-              className="w-full pl-8 pr-3 py-1.5 bg-[var(--color-surface-low)] border border-[var(--color-border)] rounded-lg text-xs sm:text-sm text-[var(--color-text)] placeholder-[var(--color-text-muted)]/70 focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors"
-            />
-          </div>
-
-          {/* User List */}
-          <div className="max-h-48 overflow-y-auto flex flex-col gap-0.5">
-            {filteredOptions.length > 0 ? (
-              filteredOptions.map((opt) => {
-                const isSelected = opt.name === selectedName;
-                return (
-                  <button
-                    key={opt.name}
-                    type="button"
-                    onClick={() => {
-                      onSelect(opt.name);
-                      setIsOpen(false);
-                      setSearchQuery("");
-                    }}
-                    className={`w-full flex items-center justify-between px-3 py-2 text-xs sm:text-sm rounded-lg transition-colors cursor-pointer text-left ${
-                      isSelected
-                        ? "bg-[var(--color-primary)] text-[var(--color-on-primary)] font-medium"
-                        : "text-[var(--color-text)] hover:bg-[var(--color-surface-low)]"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5 truncate">
-                      <div
-                        className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
-                          isSelected ? "bg-white/20 text-white" : opt.avatarBg
-                        }`}
-                      >
-                        {opt.avatarText}
-                      </div>
-                      <span className="truncate">{opt.name}</span>
-                    </div>
-                    {isSelected && (
-                      <LuCheck className="h-4 w-4 shrink-0 text-[var(--color-on-primary)]" />
-                    )}
-                  </button>
-                );
-              })
-            ) : (
-              <div className="px-3 py-4 text-center text-xs text-[var(--color-text-muted)]">
-                No users found matching "{searchQuery}"
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
+// Removed SearchableAssigneeSelect component in favor of native select
 
 // Helper to convert date strings to YYYY-MM-DD for input type="date"
 const toDateInputValue = (dateStr) => {
@@ -149,15 +34,16 @@ const toDateInputValue = (dateStr) => {
   return "";
 };
 
-const EditTaskModal = ({ task, onClose, onSave, mode = "edit" }) => {
+const EditTaskModal = ({ task, onClose, onSave, mode = "edit", dynamicAssignees }) => {
   const isCreate = mode === "create" || !task;
+
+  const assigneeList = dynamicAssignees || ASSIGNEE_OPTIONS;
 
   const [title, setTitle] = useState(task?.title || "");
   const [subtitle, setSubtitle] = useState(task?.subtitle || "");
-  const [priority, setPriority] = useState(task?.priority || "Medium");
   const [status, setStatus] = useState(task?.status || "Pending");
   const [assignedToName, setAssignedToName] = useState(
-    task?.assignedTo?.name || ASSIGNEE_OPTIONS[0].name
+    task?.assignedTo?.name || (assigneeList.length > 0 ? assigneeList[0].name : "")
   );
   const [dueDate, setDueDate] = useState(toDateInputValue(task?.dueDate));
 
@@ -165,16 +51,14 @@ const EditTaskModal = ({ task, onClose, onSave, mode = "edit" }) => {
     if (task) {
       setTitle(task.title || "");
       setSubtitle(task.subtitle || "");
-      setPriority(task.priority || "Medium");
       setStatus(task.status || "Pending");
-      setAssignedToName(task.assignedTo?.name || ASSIGNEE_OPTIONS[0].name);
+      setAssignedToName(task.assignedTo?.name || (assigneeList.length > 0 ? assigneeList[0].name : ""));
       setDueDate(toDateInputValue(task.dueDate));
     } else {
       setTitle("");
       setSubtitle("");
-      setPriority("Medium");
       setStatus("Pending");
-      setAssignedToName(ASSIGNEE_OPTIONS[0].name);
+      setAssignedToName(assigneeList.length > 0 ? assigneeList[0].name : "");
       const today = new Date().toISOString().split("T")[0];
       setDueDate(today);
     }
@@ -183,7 +67,7 @@ const EditTaskModal = ({ task, onClose, onSave, mode = "edit" }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const selectedAssignee =
-      ASSIGNEE_OPTIONS.find((a) => a.name === assignedToName) || {
+      assigneeList.find((a) => a.name === assignedToName) || {
         name: assignedToName,
         avatarText: assignedToName.slice(0, 2).toUpperCase(),
         avatarBg: "bg-blue-100 text-blue-700",
@@ -193,7 +77,6 @@ const EditTaskModal = ({ task, onClose, onSave, mode = "edit" }) => {
       id: task?.id || Date.now(),
       title,
       subtitle,
-      priority,
       status,
       updateStatus: status,
       assignedTo: selectedAssignee,
@@ -261,25 +144,6 @@ const EditTaskModal = ({ task, onClose, onSave, mode = "edit" }) => {
                 />
               </div>
 
-              {/* Priority */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs sm:text-sm font-semibold text-[var(--color-text)]">
-                  Priority
-                </label>
-                <div className="relative">
-                  <select
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors appearance-none cursor-pointer pr-10"
-                  >
-                    <option value="High">High</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Low">Low</option>
-                  </select>
-                  <LuChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-text-muted)] pointer-events-none" />
-                </div>
-              </div>
-
               {/* Status */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs sm:text-sm font-semibold text-[var(--color-text)]">
@@ -299,16 +163,23 @@ const EditTaskModal = ({ task, onClose, onSave, mode = "edit" }) => {
                 </div>
               </div>
 
-              {/* Assigned To (Searchable) */}
+              {/* Assigned To */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs sm:text-sm font-semibold text-[var(--color-text)]">
                   Assigned To
                 </label>
-                <SearchableAssigneeSelect
-                  options={ASSIGNEE_OPTIONS}
-                  selectedName={assignedToName}
-                  onSelect={(name) => setAssignedToName(name)}
-                />
+                <div className="relative">
+                  <select
+                    value={assignedToName}
+                    onChange={(e) => setAssignedToName(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors appearance-none cursor-pointer pr-10"
+                  >
+                    {assigneeList.map((opt) => (
+                      <option key={opt.name} value={opt.name}>{opt.name}</option>
+                    ))}
+                  </select>
+                  <LuChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-text-muted)] pointer-events-none" />
+                </div>
               </div>
 
               {/* Due Date (HTML5 Date Input with calendar picker) */}

@@ -4,14 +4,17 @@ import Project from "../models/project.Model.js";
 
 // @desc get all teams
 
+// export const getAllTeamsService = async () => {
+//     return await Team.find().populate("members");
+// }
 export const getAllTeamsService = async () => {
     const teams = await Team.find().populate("members").lean();
     const projects = await Project.find({ teamId: { $in: teams.map(t => t._id) } }).lean();
-    
+
     const projectsByTeam = {};
     projects.forEach(p => {
         const tid = p.teamId.toString();
-        if(!projectsByTeam[tid]) projectsByTeam[tid] = [];
+        if (!projectsByTeam[tid]) projectsByTeam[tid] = [];
         projectsByTeam[tid].push(p);
     });
 
@@ -23,6 +26,9 @@ export const getAllTeamsService = async () => {
 
 // @desc get team by id
 
+// export const getTeamByIdService = async (id) => {
+//     return await Team.findById(id).populate("members");
+// }
 export const getTeamByIdService = async (id) => {
     const team = await Team.findById(id).populate("members").lean();
     if (team) {
@@ -34,7 +40,11 @@ export const getTeamByIdService = async (id) => {
 // @desc create team
 
 export const createTeamService = async (teamData) => {
-    return await Team.create(teamData);
+    const team = await Team.create(teamData);
+    if (teamData.members && teamData.members.length > 0) {
+        await Student.updateMany({ _id: { $in: teamData.members } }, { team_id: team._id });
+    }
+    return team;
 }
 
 // @desc update team
@@ -46,11 +56,24 @@ export const updateTeamService = async (id, teamData) => {
 // @desc delete team
 
 export const deleteTeamService = async (id) => {
-    return await Team.findByIdAndDelete(id);
+    const team = await Team.findByIdAndDelete(id);
+    if (team) {
+        // Reset team_id for all students in this team
+        await Student.updateMany({ team_id: id }, { team_id: null });
+        // Reset teamId for all projects assigned to this team
+        await Project.updateMany({ teamId: id }, { teamId: null });
+    }
+    return team;
 }
 
 // @desc add members to team
 export const addMemberToTeamService = async (teamId, studentId) => {
+    const student = await Student.findById(studentId);
+    if (!student)
+        throw new Error("Student not found");
+    if (student.team_id) throw new Error("Student is already assigned to a team!");
+    student.team_id = teamId;
+    await student.save();
     return await Team.findByIdAndUpdate(
         teamId,
         {
@@ -63,12 +86,15 @@ export const addMemberToTeamService = async (teamId, studentId) => {
             runValidators: true
         }
     ).populate("members");
+
 };
 
 
 // @desc remove member from team
 
 export const removeMemberFromTeamService = async (teamId, studentId) => {
+    await Student.findByIdAndUpdate(studentId, { team_id: null });
+
     return await Team.findByIdAndUpdate(
         teamId,
         {
@@ -86,6 +112,11 @@ export const removeMemberFromTeamService = async (teamId, studentId) => {
 // @desc    remove  selected   members from team
 
 export const removeSelectedMembersFromTeamService = async (teamId, studentIds) => {
+    await Student.updateMany(
+        { _id: { $in: studentIds } },
+        { team_id: null }
+    );
+
     return await Team.findByIdAndUpdate(
         teamId,
         {
@@ -115,11 +146,7 @@ export const getUnassignedTeamsService = async () => {
 // @desc    get unassigned students from all teams
 
 export const getUnassignedStudentsService = async () => {
-    const teams = await Team.find().select("members");
-
-    const assignedStudentIds = teams.flatMap(team => team.members);
-
     return await Student.find({
-        _id: { $nin: assignedStudentIds }
+        $or: [{ team_id: null }, { team_id: { $exists: false } }]
     });
 };

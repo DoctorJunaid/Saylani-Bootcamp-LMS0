@@ -3,7 +3,8 @@ import { createProjectService, getProjectsService, getProjectByIdService, update
 // Create Project Controller 
 export const createProjectController = async (req, res)=>{
     try {
-        const project = await createProjectService(req.body);
+        const { title, description, dueDate, status, progress, teamId } = req.body;
+        const project = await createProjectService({ title, description, dueDate, status, progress, teamId });
         res.status(201).json({
             message:"Project created successfully",
             project
@@ -11,7 +12,7 @@ export const createProjectController = async (req, res)=>{
     }
     catch (error)
     {
-        res.status(500).json({
+        res.status(400).json({
             message:error.message
         })
     }
@@ -40,6 +41,9 @@ export const getProjectsController = async (req, res)=>{
 export const getProjectByIdController = async (req, res)=>{
     try {
         const project = await getProjectByIdService(req.params.id);
+        if (!project) {
+            return res.status(404).json({ message: "Project not found" });
+        }
         res.status(200).json({
             message:"Project fetched successfully",
             project
@@ -57,7 +61,19 @@ export const getProjectByIdController = async (req, res)=>{
 // Update Project Controller
 export const updateProjectController = async (req, res)=>{
     try {
-        const project = await updateProjectService(req.params.id, req.body);
+        const { title, description, dueDate, status, progress, teamId } = req.body;
+        const updateData = {
+            ...(title !== undefined && { title }),
+            ...(description !== undefined && { description }),
+            ...(dueDate !== undefined && { dueDate }),
+            ...(status !== undefined && { status }),
+            ...(progress !== undefined && { progress }),
+            ...(teamId !== undefined && { teamId })
+        };
+        const project = await updateProjectService(req.params.id, updateData);
+        if (!project) {
+            return res.status(404).json({ message: "Project not found" });
+        }
         res.status(200).json({
             message:"Project updated successfully",
             project
@@ -65,7 +81,7 @@ export const updateProjectController = async (req, res)=>{
     }
     catch (error)
     {
-        res.status(500).json({
+        res.status(400).json({
             message:error.message
         })
     }

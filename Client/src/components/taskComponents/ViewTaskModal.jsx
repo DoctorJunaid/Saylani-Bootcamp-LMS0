@@ -1,5 +1,12 @@
 import React from "react";
-import { LuX, LuFileText, LuCalendar, LuUser, LuFlag, LuCircleCheck } from "react-icons/lu";
+import {
+  LuX,
+  LuFileText,
+  LuCalendar,
+  LuUser,
+  LuFlag,
+  LuCircleCheck,
+} from "react-icons/lu";
 
 const PriorityBadge = ({ priority }) => {
   let badgeStyle = "bg-gray-100 text-gray-700 border-gray-200";
@@ -12,10 +19,13 @@ const PriorityBadge = ({ priority }) => {
   }
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${badgeStyle}`}>
+    <span
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${badgeStyle}`}
+    >
       {priority}
     </span>
   );
+  ``;
 };
 
 const formatDisplayDate = (dateStr) => {
@@ -24,7 +34,11 @@ const formatDisplayDate = (dateStr) => {
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
     const [year, month, day] = dateStr.split("-");
     const d = new Date(year, month - 1, day);
-    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    return d.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   }
   return dateStr;
 };
@@ -40,7 +54,9 @@ const StatusBadge = ({ status }) => {
   }
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${badgeStyle}`}>
+    <span
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${badgeStyle}`}
+    >
       {status}
     </span>
   );
@@ -65,8 +81,12 @@ const ViewTaskModal = ({ task, onClose }) => {
               <LuFileText className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-[var(--color-text)]">Task Details</h2>
-              <p className="text-xs text-[var(--color-text-muted)]">ID: #{task.id}</p>
+              <h2 className="text-lg font-bold text-[var(--color-text)]">
+                Task Details
+              </h2>
+              <p className="text-xs text-[var(--color-text-muted)]">
+                ID: #{task.id}
+              </p>
             </div>
           </div>
           <button
@@ -120,7 +140,9 @@ const ViewTaskModal = ({ task, onClose }) => {
                 <LuUser className="h-3.5 w-3.5" /> Assigned To
               </span>
               <div className="flex items-center gap-2 mt-0.5">
-                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold ${task.assignedTo?.avatarBg}`}>
+                <div
+                  className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold ${task.assignedTo?.avatarBg}`}
+                >
                   {task.assignedTo?.avatarText}
                 </div>
                 <span className="text-xs font-medium text-[var(--color-text)]">
