@@ -9,6 +9,7 @@ import adminRouter from "./routes/admin.Routes.js";
 import { protectAdmin } from "./middleware/auth.middleware.js";
 import attendanceRoutes from "./routes/attendance.Routes.js";
 import dashboardRouter from "./routes/dashboard.Routes.js";
+import notificationRoutes from "./routes/notification.Routes.js";
 
 const app = express();
 
@@ -17,7 +18,7 @@ app.use(express.json());
 
 const corsOptions = {
   origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
 };
 
@@ -53,6 +54,7 @@ app.use("/api/teams", protectAdmin, teamRoutes);
 app.use("/api/projects", protectAdmin, projectRoutes);
 app.use("/api/attendance", protectAdmin, attendanceRoutes);
 app.use("/api/dashboard", protectAdmin, dashboardRouter);
+app.use("/api/notifications", protectAdmin, notificationRoutes);
 
 // App instance ko export karein taake server.js ya test files ise use kar sakein
 export default app;

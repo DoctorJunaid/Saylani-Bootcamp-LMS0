@@ -1,34 +1,75 @@
 import { useState, useEffect, useMemo } from 'react';
 import { X, Download, Calendar, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import { getStudentAttendanceHistory } from '../../Services/attendance.services.js';
+import { formatLongLocalDate, toYmd } from '../../utils/localDate';
+
+/** Recover business YYYY-MM-DD from stored UTC-midnight attendance date */
+function attendanceRecordYmd(rawDate) {
+  if (!rawDate) return '';
+  if (typeof rawDate === 'string' && /^\d{4}-\d{2}-\d{2}/.test(rawDate)) {
+    return rawDate.slice(0, 10);
+  }
+  const d = new Date(rawDate);
+  if (Number.isNaN(d.getTime())) return '';
+  // Stored as UTC midnight for that calendar day
+  return d.toISOString().slice(0, 10);
+}
+
+const StatusBadge = ({ status }) => {
+  let badgeStyle = 'bg-[var(--color-surface-high)] text-[var(--color-text-muted)]';
+  switch (status) {
+    case 'Present':
+      badgeStyle = 'bg-[#dcfce7] text-[#16a34a]';
+      break;
+    case 'Leave':
+      badgeStyle = 'bg-[#ffedd5] text-[#ea580c]';
+      break;
+    case 'Absent':
+      badgeStyle = 'bg-[#fee2e2] text-[#ef4444]';
+      break;
+    default:
+      break;
+  }
+
+  return (
+    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${badgeStyle}`}>
+      {status}
+    </span>
+  );
+};
+
+const StatCard = ({ title, value, icon: Icon, colorClass }) => (
+  <div className="bg-[var(--color-surface)] border border-[var(--color-surface-highest)] rounded-xl p-4 flex items-center justify-between shadow-sm">
+    <div>
+      <p className="text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">{title}</p>
+      <p className="text-2xl font-bold mt-1 text-[var(--color-text)]">{value}</p>
+    </div>
+    <div className={`p-3 rounded-lg ${colorClass}`}>
+      <Icon className="h-6 w-6" />
+    </div>
+  </div>
+);
 
 const StudentRecordModal = ({ student, onClose }) => {
-  if (!student) return null;
-
   const [history, setHistory] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [, setIsLoading] = useState(true);
   const [filterDate, setFilterDate] = useState('');
 
   useEffect(() => {
     const fetchHistory = async () => {
-      const studentId = student.id || student._id;
+      const studentId = student?.studentId || student?.id || student?._id;
       if (!studentId) return;
       setIsLoading(true);
       try {
         const response = await getStudentAttendanceHistory(studentId);
         const records = (response?.attendance || []).map((r) => {
-          const dateObj = new Date(r.date);
-          const dateStr = dateObj.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          });
+          const ymd = attendanceRecordYmd(r.date);
           return {
             id: r._id,
-            rollNo: student.rollNo || student.rollNumber,
-            name: student.name,
-            date: dateStr,
-            rawDate: r.date,
+            rollNo: student?.rollNo || student?.rollNumber,
+            name: student?.name,
+            date: ymd ? formatLongLocalDate(ymd) : '',
+            rawDate: ymd,
             status: r.status || 'Not marked',
             checkInTime: r.checkInTime || null,
             checkOutTime: r.checkOutTime || null,
@@ -49,18 +90,8 @@ const StudentRecordModal = ({ student, onClose }) => {
   // Filter history
   const filteredHistory = useMemo(() => {
     if (!filterDate) return history;
-    
-    const dateObj = new Date(filterDate);
-    const formattedFilter = dateObj.toLocaleDateString('en-US', {
-      year: 'numeric', month: 'long', day: 'numeric'
-    });
-
-    return history.filter(
-      (record) =>
-        record.date.includes(formattedFilter) ||
-        record.date.includes(filterDate) ||
-        (record.rawDate && String(record.rawDate).startsWith(filterDate))
-    );
+    const ymd = toYmd(filterDate);
+    return history.filter((record) => record.rawDate === ymd);
   }, [filterDate, history]);
 
   // Calculate Statistics
@@ -71,7 +102,7 @@ const StudentRecordModal = ({ student, onClose }) => {
   const presentPercentage = totalClasses === 0 ? 0 : Math.round((presentCount / totalClasses) * 100);
 
   const handleDownloadCsv = () => {
-    const headers = ['Roll No', 'Student Name', 'Date', 'Status', 'Check In', 'Check Out', 'Note'];
+    const headers = ['Roll No', 'Student Name', 'Date', 'Status', 'Check In', 'Check Out', 'Reason'];
     
     const escapeCsvValue = (val) => {
       if (val == null) return '';
@@ -101,47 +132,13 @@ const StudentRecordModal = ({ student, onClose }) => {
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    link.setAttribute("download", `${student.name.replace(/\s+/g, '_')}_Attendance_Record.csv`);
+    link.setAttribute("download", `${(student?.name || 'student').replace(/\s+/g, '_')}_Attendance_Record.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
-  const StatusBadge = ({ status }) => {
-    let badgeStyle = '';
-    switch (status) {
-      case 'Present':
-        badgeStyle = 'bg-[#dcfce7] text-[#16a34a]';
-        break;
-      case 'Leave':
-        badgeStyle = 'bg-[#ffedd5] text-[#ea580c]';
-        break;
-      case 'Absent':
-        badgeStyle = 'bg-[#fee2e2] text-[#ef4444]';
-        break;
-      default:
-        badgeStyle = 'bg-[var(--color-surface-high)] text-[var(--color-text-muted)]';
-        break;
-    }
-  
-    return (
-      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${badgeStyle}`}>
-        {status}
-      </span>
-    );
-  };
-
-  const StatCard = ({ title, value, icon: Icon, colorClass }) => (
-    <div className="bg-[var(--color-surface)] border border-[var(--color-surface-highest)] rounded-xl p-4 flex items-center justify-between shadow-sm">
-      <div>
-        <p className="text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">{title}</p>
-        <p className="text-2xl font-bold mt-1 text-[var(--color-text)]">{value}</p>
-      </div>
-      <div className={`p-3 rounded-lg ${colorClass}`}>
-        <Icon className="h-6 w-6" />
-      </div>
-    </div>
-  );
+  if (!student) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -225,7 +222,7 @@ const StudentRecordModal = ({ student, onClose }) => {
                     <th className="px-6 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Check In</th>
                     <th className="px-6 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Check Out</th>
                     <th className="px-6 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Note</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Reason</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--color-surface-highest)] text-sm">

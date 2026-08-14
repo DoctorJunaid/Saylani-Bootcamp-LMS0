@@ -7,7 +7,7 @@ export const loginAdminController = async(req , res)=>{
         // Check fields
         if(!email || !password){
             return res.status(400).json({message : "Email and passowrd are requried!"});
-        };
+        }
 
         // Login
         const result = await loginAdmin(email, password);

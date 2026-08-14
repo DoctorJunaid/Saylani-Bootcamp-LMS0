@@ -1,5 +1,9 @@
-    import Attendance from "../models/attendence.Model.js";
-import { getAttencdanceByDate, getOverAllAttendanceStatus, getStudentAttendacehistory, markAttendance } from "../services/attendance.Service.js";
+import {
+    getAttencdanceByDate,
+    getOverAllAttendanceStatus,
+    getStudentAttendacehistory,
+    markAttendance,
+} from "../services/attendance.Service.js";
 
 
 // Mark Attendance

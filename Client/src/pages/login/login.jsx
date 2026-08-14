@@ -21,18 +21,16 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const data = await loginAdmin(email, password);
+      await loginAdmin(email, password);
 
-
-      toast.success("Login successfully!", {
-        position: "top-center",
-      });
+      toast.success("Login successfully!");
 
       navigate("/dashboard");
 
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
+          error.response?.data?.erroMessage ||
           "Invalid Email or password"
       );
     } finally {
@@ -41,12 +39,12 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-2">
+    <div className="min-h-dvh lg:h-dvh lg:grid lg:grid-cols-2 lg:overflow-hidden">
 
       {/* Left Side - Dark Blue Background */}
-      <div className="hidden flex-col justify-between bg-[#004a75] p-10 text-white lg:flex xl:p-16">
+      <div className="hidden h-full flex-col justify-center bg-[#004a75] p-8 text-white lg:flex xl:p-12">
 
-        <div className="flex flex-1 max-w-[500px] flex-col">
+        <div className="max-w-[500px] flex flex-col">
 
           <div>
             <h2 className="text-2xl font-bold tracking-tight">
@@ -64,7 +62,7 @@ export default function Login() {
             <img
               src="/admin-login-logo.png"
               alt="SMIT Logo"
-              className="h-90 w-auto object-contain"
+              className="h-75 xl:h-64 w-auto max-h-[90vh] object-contain"
             />
 
           </div>
@@ -79,7 +77,7 @@ export default function Login() {
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-16 xl:px-24">
+      <div className="flex min-h-dvh flex-col justify-center px-6 py-8 sm:px-12 lg:min-h-0 lg:px-16 xl:px-24">
 
         <div className="mx-auto w-full max-w-[420px]">
 

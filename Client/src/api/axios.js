@@ -1,9 +1,7 @@
 import axios from "axios";
 
-
-
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "https://saylani-bootcamp-lms-0.vercel.app",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:9000",
 });
 
 // Interceptor to attach JWT token to all requests automatically
@@ -38,8 +36,9 @@ export const getPendingTaskData = async () => {
   return response.data;
 };
 
-export const getDashboardStats = async () => {
-  const response = await api.get("/api/dashboard/stats");
+export const getDashboardStats = async (dateStr) => {
+  const params = dateStr ? { date: dateStr } : {};
+  const response = await api.get("/api/dashboard/stats", { params });
   return response.data;
 };
 

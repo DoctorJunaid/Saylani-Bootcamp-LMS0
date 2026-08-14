@@ -22,7 +22,8 @@ export const fetchProjects = async () => {
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
-      "Failed to fetch projects"
+      "Failed to fetch projects",
+      { cause: error },
     );
   }
 };
@@ -37,7 +38,8 @@ export const fetchProjectById = async (projectId) => {
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
-      "Failed to fetch project"
+      "Failed to fetch project",
+      { cause: error },
     );
   }
 };

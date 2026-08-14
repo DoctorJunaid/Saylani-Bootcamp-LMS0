@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import Student from "./student.Model.js";
 
 export const attendanceSchema = new mongoose.Schema({
 
@@ -12,8 +11,7 @@ export const attendanceSchema = new mongoose.Schema({
     date:{
         type:Date,
         required:true,
-        default: Date.now,
-
+        // No Date.now — day key must come from the selected YYYY-MM-DD
     },
     status:{
         type:String,

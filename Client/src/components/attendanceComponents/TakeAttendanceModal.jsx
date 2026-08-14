@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { X, CheckCircle2 } from 'lucide-react';
+import { formatLongLocalDate, getLocalToday } from '../../utils/localDate';
 
-const TakeAttendanceModal = ({ students, onClose, onSave }) => {
+const TakeAttendanceModal = ({ students, onClose, onSave, selectedDate }) => {
   // Initialize attendance draft state with any existing statuses
   const [draft, setDraft] = useState(() => {
     const initialState = {};
@@ -15,17 +16,26 @@ const TakeAttendanceModal = ({ students, onClose, onSave }) => {
 
   const [checkInTimes, setCheckInTimes] = useState({});
 
+  // Backend field is still `note`; UI label is "Reason"
+  const [reasons, setReasons] = useState(() => {
+    const initial = {};
+    students.forEach((s) => {
+      if (s.note) initial[s.id] = s.note;
+    });
+    return initial;
+  });
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [lockedSessionIds, setLockedSessionIds] = useState(new Set());
   const tableContainerRef = useRef(null);
   const rowRefs = useRef({});
 
-  const isStudentLocked = (id) => {
+  const isStudentLocked = useCallback((id) => {
     const s = students.find((x) => x.id === id);
     return (s && s.status !== 'Not marked') || lockedSessionIds.has(id);
-  };
+  }, [students, lockedSessionIds]);
 
-  const handleMoveToRow = (newIndex) => {
+  const handleMoveToRow = useCallback((newIndex) => {
     const currentStudentId = students[activeIndex]?.id;
     if (currentStudentId) {
       setLockedSessionIds(prev => {
@@ -35,7 +45,7 @@ const TakeAttendanceModal = ({ students, onClose, onSave }) => {
       });
     }
     setActiveIndex(newIndex);
-  };
+  }, [students, activeIndex]);
 
   // Auto-mark the focused student as 'P' if they don't have a status yet and are not locked
   useEffect(() => {
@@ -51,14 +61,9 @@ const TakeAttendanceModal = ({ students, onClose, onSave }) => {
         return prev;
       });
     }
-  }, [activeIndex, students, lockedSessionIds]);
+  }, [activeIndex, students, lockedSessionIds, isStudentLocked]);
 
-  const currentDate = new Date().toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  const currentDate = formatLongLocalDate(selectedDate || getLocalToday());
 
   // Handle keyboard events globally when modal is open
   useEffect(() => {
@@ -106,7 +111,7 @@ const TakeAttendanceModal = ({ students, onClose, onSave }) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeIndex, students, lockedSessionIds]);
+  }, [activeIndex, students, lockedSessionIds, handleMoveToRow, isStudentLocked]);
 
   // Auto-scroll to active row
   useEffect(() => {
@@ -156,6 +161,7 @@ const TakeAttendanceModal = ({ students, onClose, onSave }) => {
         id: s.id,
         status: statusMap[draftStatus] || 'Not marked',
         checkInTime: draftStatus === 'P' ? time : null,
+        note: (reasons[s.id] ?? s.note ?? '').trim(),
       };
     });
     
@@ -237,7 +243,7 @@ const TakeAttendanceModal = ({ students, onClose, onSave }) => {
                 <th className="px-6 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Roll No</th>
                 <th className="px-6 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Student Name</th>
                 <th className="px-6 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Note</th>
+                <th className="px-6 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Reason</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--color-surface-highest)] text-sm">
@@ -298,10 +304,17 @@ const TakeAttendanceModal = ({ students, onClose, onSave }) => {
                         />
                       </div>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="px-6 py-3" onClick={(e) => e.stopPropagation()}>
                       <input 
                         type="text" 
-                        placeholder="Add note..."
+                        value={reasons[student.id] || ''}
+                        onChange={(e) =>
+                          setReasons((prev) => ({
+                            ...prev,
+                            [student.id]: e.target.value,
+                          }))
+                        }
+                        placeholder="Add reason..."
                         className={`w-full bg-transparent border-none focus:ring-0 text-xs font-medium text-[var(--color-text)] placeholder-[var(--color-text-muted)] outline-none ${
                           isActive ? 'opacity-100' : 'opacity-50'
                         }`}

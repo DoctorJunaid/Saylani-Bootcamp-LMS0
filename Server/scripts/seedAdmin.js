@@ -18,7 +18,7 @@ const seedAdmin = async () => {
               }
               
     // create admin
-     const admin = await Admin.create({
+     await Admin.create({
       name: "Super admin",
       email: process.env.ADMIN_EMAIL,
       password,

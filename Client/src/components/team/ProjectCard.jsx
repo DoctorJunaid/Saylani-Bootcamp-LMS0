@@ -1,62 +1,4 @@
-// import StatusBadge from "./StatusBadge";
-// function ProgressBar({ value }) {
-//   return (
-//     <div className="w-full bg-[var(--color-surface-high)] rounded-full h-1.5 mt-1 overflow-hidden">
-//       <div 
-//         className="h-1.5 rounded-full bg-[var(--color-primary)] transition-all duration-500" 
-//         style={{ width: `${Math.min(Math.max(value || 0, 0), 100)}%` }}
-//       ></div>
-//     </div>
-//   );
-// }
-
-// function formatDeadline(isoDate) {
-//   if (!isoDate) return "No deadline set";
-
-//   const date = new Date(isoDate);
-//   if (Number.isNaN(date.getTime())) return isoDate;
-
-//   return new Intl.DateTimeFormat("en-GB", {
-//     day: "numeric",
-//     month: "short",
-//     year: "numeric",
-//   }).format(date);
-// }
-
-// export default function ProjectCard({ project, onRefresh }) {
-//   const { title, description, deadline, status, progress } = project;
-
-//   return (
-//     <div className="bg-surface-low border border-border rounded-lg p-md">
-//       <div className="flex items-start justify-between gap-sm">
-//         <h4 className="text-base font-weight-semibold text-text">{title}</h4>
-//         <StatusBadge status={status} />
-//       </div>
-
-//       {description && (
-//         <p className="text-sm text-text-muted mt-xs">{description}</p>
-//       )}
-
-//       <p className="text-sm text-text-muted mt-sm">
-//         Deadline {formatDeadline(deadline)}
-//       </p>
-
-//       <div className="mt-md">
-//         <ProgressBar value={progress} />
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
+import { LuPencil, LuTrash2 } from "react-icons/lu";
 import StatusBadge from "../../components/team/StatusBadge";
 
 function formatDeadline(isoDate) {
@@ -65,142 +7,95 @@ function formatDeadline(isoDate) {
   const date = new Date(isoDate);
   if (Number.isNaN(date.getTime())) return isoDate;
 
-  return new Intl.DateTimeFormat("en-CA").format(date); // "2026-08-18" style, jaisa image me tha
-}
-
-function EyeIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  );
-}
-
-function PencilIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-    </svg>
-  );
-}
-
-function TrashIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M3 6h18" />
-      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-    </svg>
-  );
+  return new Intl.DateTimeFormat("en-CA").format(date);
 }
 
 /**
  * ProjectCard
- * ---------------------------------------------------------------
- * Ab yeh ek asli table row (`<tr>`) hai — isko `<table><tbody>`
- * ke andar use karna hai (neeche ProjectsPage.jsx me example hai).
- *
- * Data props same hain, kuch nahi badla:
- *   project = { title, description, deadline, status, progress }
- *   onRefresh — jaisa tha waisa hi accept hota hai
- *
- * `teamName` ek naya OPTIONAL prop hai — sirf "TEAM" column
- * dikhane ke liye (image me yeh column tha). Agar aap pass nahi
- * karenge to "—" dikhega, jaisa image ki pehli row me tha.
- *
- * `onView` / `onEdit` / `onDelete` — UI-only action buttons hain,
- * koi backend call yahan invent nahi ki gayi. Apne existing
- * update/delete handlers inhe pass kar dein.
+ * - variant="row" (default): table row for Projects page
+ * - variant="card": card for View Team Assigned Projects
+ * - hideEdit: hide Edit (View Team uses true; keeps Delete)
  */
 export default function ProjectCard({
   project,
   teamName,
-  onRefresh,
-  onView,
   onEdit,
   onDelete,
+  variant = "row",
+  hideEdit = false,
 }) {
-  const { title, description, deadline, status } = project;
+  const { title, description, deadline, dueDate } = project;
+  const status = project.status;
+  const deadlineLabel = formatDeadline(dueDate || deadline);
+
+  const actionButtons = (
+    <div className="inline-flex items-center justify-end gap-2">
+      {!hideEdit && (
+        <button
+          type="button"
+          onClick={() => onEdit?.(project)}
+          aria-label="Edit project"
+          className="p-1.5 rounded-lg text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10 cursor-pointer transition-colors"
+        >
+          <LuPencil className="h-4 w-4" />
+        </button>
+      )}
+      <button
+        type="button"
+        onClick={() => onDelete?.(project)}
+        aria-label="Delete project"
+        className="p-1.5 rounded-lg text-[var(--color-error)] hover:bg-[var(--color-error)]/10 cursor-pointer transition-colors"
+      >
+        <LuTrash2 className="h-4 w-4" />
+      </button>
+    </div>
+  );
+
+  if (variant === "card") {
+    return (
+      <div className="bg-surface-low border border-border rounded-lg p-md flex flex-col gap-sm min-w-0">
+        <div className="flex items-start justify-between gap-sm">
+          <div className="min-w-0 flex-1">
+            <h4 className="text-sm font-weight-semibold text-text break-words">{title}</h4>
+            {description ? (
+              <p className="text-xs text-text-muted mt-xs line-clamp-2 break-words">{description}</p>
+            ) : null}
+          </div>
+          <div className="shrink-0">{actionButtons}</div>
+        </div>
+        <div className="flex items-center justify-between gap-sm">
+          <StatusBadge status={status} />
+          <span className="text-xs text-text-muted truncate">{deadlineLabel}</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <tr className="border-b border-border last:border-b-0 hover:bg-surface-low transition-colors duration-fast">
-      <td className="py-md pl-lg pr-md align-top ">
-        <p className="text-sm font-bold text-text">{title}</p>
+      <td className="px-3 py-4 align-middle min-w-0">
+        <p className="text-sm font-bold text-text break-words line-clamp-2">{title}</p>
         {description && (
-          <p className="text-xs text-text-muted mt-xs">{description}</p>
+          <p className="text-xs text-text-muted mt-xs break-words line-clamp-2">{description}</p>
         )}
       </td>
 
-      <td className="py-md pr-md align-top text-sm text-text-muted">
-        {teamName ?? project.team?.name ?? project.teamName ?? "—"}
+      <td className="px-3 py-4 align-middle text-sm text-text-muted min-w-0">
+        <span className="break-words line-clamp-2">
+          {teamName ?? project.teamId?.name ?? project.team?.name ?? project.teamName ?? "—"}
+        </span>
       </td>
 
-      <td className="py-md pr-md align-top">
+      <td className="px-3 py-4 align-middle">
         <StatusBadge status={status} />
       </td>
 
-      <td className="py-md pr-md align-top text-sm text-text-muted">
-        {formatDeadline(deadline)}
+      <td className="px-3 py-4 align-middle text-sm text-text-muted whitespace-nowrap">
+        {deadlineLabel}
       </td>
 
-      <td className="py-md pr-lg align-top">
-        <div className="flex items-center gap-md">
-          <button
-            type="button"
-            onClick={() => onView?.(project)}
-            aria-label="View project"
-            className="text-text-muted hover:opacity-70 transition-opacity duration-fast"
-          >
-            <EyeIcon />
-          </button>
-          <button
-            type="button"
-            onClick={() => onEdit?.(project)}
-            aria-label="Edit project"
-            className="text-primary hover:opacity-70 transition-opacity duration-fast"
-          >
-            <PencilIcon />
-          </button>
-          <button
-            type="button"
-            onClick={() => onDelete?.(project)}
-            aria-label="Delete project"
-            className="text-error hover:opacity-70 transition-opacity duration-fast"
-          >
-            <TrashIcon />
-          </button>
-        </div>
+      <td className="px-3 py-4 align-middle text-right">
+        {actionButtons}
       </td>
     </tr>
   );

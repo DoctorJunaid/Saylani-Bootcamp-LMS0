@@ -1,4 +1,3 @@
-import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const StudentPagination = ({ currentPage, totalPages, totalItems, itemsPerPage, onPageChange }) => {
