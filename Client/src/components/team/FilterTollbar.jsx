@@ -1,116 +1,89 @@
-import { useState } from "react";
+import {
+  Search,
+  Users,
+  CircleDashed,
+  Loader,
+  Eye,
+  CheckCircle2,
+} from "lucide-react";
+import StatusFilterCards from "./StatusFilterCards";
 
 /**
  * FilterToolbar
  * ---------------------------------------------------------------
- * Top bar: search icon (click to expand into input) + status
- * filter pills with live counts.
+ * Status filter cards on top, always-visible search bar below.
  *
- * Props:
- *  - counts: { all, not_started, in_progress, completed } (numbers)
- *  - activeFilter: "all" | "not_started" | "in_progress" | "completed"
- *  - onFilterChange: (filter: string) => void
- *  - searchQuery: string
- *  - onSearchChange: (value: string) => void
+ * NOTE: Do not use max-w-md / max-w-sm here — in this project's
+ * Tailwind theme those map to --spacing-md (16px) / --spacing-sm (8px).
  */
 
-const FILTERS = [
-  { key: "all", label: "All Teams" },
-  { key: "not_started", label: "Not Started" },
-  { key: "in_progress", label: "In Progress" },
-  { key: "under_review", label: "Under Review" },
-  { key: "completed", label: "Completed" },
-  
+const DEFAULT_FILTERS = [
+  {
+    key: "all",
+    label: "All Teams",
+    icon: Users,
+    tone: "text-[var(--color-primary)]",
+  },
+  {
+    key: "not_started",
+    label: "Not Started",
+    icon: CircleDashed,
+    tone: "text-[var(--color-text-muted)]",
+  },
+  {
+    key: "in_progress",
+    label: "In Progress",
+    icon: Loader,
+    tone: "text-[var(--color-warning)]",
+  },
+  {
+    key: "under_review",
+    label: "Under Review",
+    icon: Eye,
+    tone: "text-[var(--color-secondary)]",
+  },
+  {
+    key: "completed",
+    label: "Completed",
+    icon: CheckCircle2,
+    tone: "text-[var(--color-success)]",
+  },
 ];
 
-function SearchIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.3-4.3" />
-    </svg>
-  );
-}
-
 export default function FilterToolbar({
+  filters = DEFAULT_FILTERS,
   counts,
   activeFilter,
   onFilterChange,
-  searchQuery,
+  searchQuery = "",
   onSearchChange,
+  searchPlaceholder = "Search...",
+  isLoading = false,
 }) {
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-
-  function handleSearchToggle() {
-    if (isSearchOpen && searchQuery) {
-      onSearchChange("");
-    }
-    setIsSearchOpen((open) => !open);
-  }
-
   return (
-    <div className="flex flex-wrap items-center justify-between gap-md pb-lg border-b border-border">
-      {/* Search */}
-      <div className="flex items-center gap-sm">
-        <button
-          type="button"
-          onClick={handleSearchToggle}
-          aria-label="Search teams"
-          className="flex items-center justify-center bg-surface border border-border rounded-lg p-sm text-text-muted hover:text-text transition-colors duration-fast"
-        >
-          <SearchIcon />
-        </button>
+    <div className="flex flex-col gap-3 w-full">
+      <StatusFilterCards
+        filters={filters}
+        counts={counts}
+        activeFilter={activeFilter}
+        onFilterChange={onFilterChange}
+        isLoading={isLoading}
+      />
 
-        {isSearchOpen && (
-          <input
-            type="text"
-            autoFocus
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search teams..."
-            className="bg-surface border border-border rounded-lg px-md py-sm text-sm text-text placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors duration-fast"
-          />
-        )}
-      </div>
-
-      {/* Filter pills */}
-      <div className="flex items-center gap-sm flex-wrap">
-        {FILTERS.map(({ key, label }) => {
-          const isActive = activeFilter === key;
-          return (
-            <button
-              key={key}
-              type="button"
-              onClick={() => onFilterChange(key)}
-              className={`flex items-center gap-sm rounded-md px-md py-sm text-sm font-weight-medium transition-colors duration-fast ${
-                isActive
-                  ? "bg-primary text-on-primary"
-                  : "bg-surface-container text-text hover:bg-surface-high"
-              }`}
-            >
-              {label}
-              <span
-                className={`inline-flex items-center justify-center min-w-[20px] rounded-md px-xs text-xs font-weight-semibold ${
-                  isActive
-                    ? "bg-on-primary/20 text-on-primary"
-                    : "bg-surface-high text-text-muted"
-                }`}
-              >
-                {counts[key] ?? 0}
-              </span>
-            </button>
-          );
-        })}
+      {/* Full-width search — always typeable */}
+      <div className="relative w-full max-w-[28rem]">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 z-[1]">
+          <Search className="h-4 w-4 text-[var(--color-text-muted)]" />
+        </div>
+        <input
+          type="text"
+          value={searchQuery ?? ""}
+          onChange={(e) => onSearchChange?.(e.target.value)}
+          placeholder={searchPlaceholder}
+          aria-label={searchPlaceholder}
+          autoComplete="off"
+          className="relative z-0 block w-full min-w-0 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] py-2.5 pl-10 pr-3 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] transition-colors focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
+        />
       </div>
     </div>
   );

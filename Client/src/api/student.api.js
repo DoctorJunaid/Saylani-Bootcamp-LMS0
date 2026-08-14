@@ -1,6 +1,7 @@
 export {
   getStudents,
   getStudentById,
+  getStudentProfile,
   createStudent,
   updateStudent,
   deleteStudent,

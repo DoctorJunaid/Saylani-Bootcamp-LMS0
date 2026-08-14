@@ -1,14 +1,27 @@
-import React from 'react';
-import { Search, Download, ClipboardCheck } from 'lucide-react';
+import { Search, Download } from 'lucide-react';
 import CustomSelect from '../CustomSelect';
 
-const AttendanceToolbar = ({ searchQuery, onSearchChange, selectedDate, onDateChange, onDownloadCsv, onTakeAttendanceClick }) => {
+const AttendanceToolbar = ({
+  searchQuery,
+  onSearchChange,
+  selectedDate,
+  onDateChange,
+  onDownloadCsv,
+  viewMode = 'Daily',
+  onViewModeChange,
+  rangeLabel = '',
+}) => {
   return (
     <div className="flex flex-col gap-1.5 pb-2 pt-1 w-full -mt-1">
       
       {/* Top Row: Heading */}
-      <div className="w-full">
+      <div className="w-full flex flex-col sm:flex-row sm:items-end sm:justify-between gap-1">
         <h2 className="text-xl font-bold text-[var(--color-text)] tracking-tight leading-none">Attendance Records</h2>
+        {rangeLabel ? (
+          <p className="text-xs font-medium text-[var(--color-text-muted)]">
+            {viewMode}: {rangeLabel}
+          </p>
+        ) : null}
       </div>
 
       {/* Bottom Row: Date, Search, and Actions */}
@@ -41,11 +54,12 @@ const AttendanceToolbar = ({ searchQuery, onSearchChange, selectedDate, onDateCh
       {/* Right side: Filters & Actions */}
       <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto shrink-0 justify-end">
         
-        {/* Dropdown */}
+        {/* Daily / Weekly / Monthly */}
         <CustomSelect 
-          label="Filter"
-          defaultOption="Daily"
-          options={['Weekly', 'Monthly']}
+          label="View period"
+          value={viewMode}
+          onChange={onViewModeChange}
+          options={['Daily', 'Weekly', 'Monthly']}
         />
 
         {/* Download CSV Button */}
@@ -59,7 +73,7 @@ const AttendanceToolbar = ({ searchQuery, onSearchChange, selectedDate, onDateCh
 
       </div>
 
-      </div> {/* <-- Closes Bottom Row */}
+      </div>
     </div>
   );
 };

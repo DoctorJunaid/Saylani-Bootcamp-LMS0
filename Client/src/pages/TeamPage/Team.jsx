@@ -1,11 +1,55 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  Users,
+  CircleDashed,
+  Loader,
+  Eye,
+  CheckCircle2,
+} from "lucide-react";
 import FilterToolbar from "../../components/team/FilterTollbar";
 import TeamGrid from "../../components/team/TeamGrid";
 import CreateTeamModal from "../../components/team/CreateTeamModel";
 import TeamDetails from "./TeamDetail";
 import { fetchTeams, createTeam } from "../../Data/teams";
-import { fetchProjects } from "../../Data/projects";
+import {
+  deriveTeamStatusFromProjects,
+  getTeamProjects,
+  normalizeProjectStatusKey,
+} from "../../components/team/deriveTeamStatus";
+
+/** Status keys match project-derived team status (see deriveTeamStatus). */
+const TEAM_FILTERS = [
+  {
+    key: "all",
+    label: "All Teams",
+    icon: Users,
+    tone: "text-[var(--color-primary)]",
+  },
+  {
+    key: "not_started",
+    label: "Not Started",
+    icon: CircleDashed,
+    tone: "text-[var(--color-text-muted)]",
+  },
+  {
+    key: "in_progress",
+    label: "In Progress",
+    icon: Loader,
+    tone: "text-[var(--color-warning)]",
+  },
+  {
+    key: "under_review",
+    label: "Under Review",
+    icon: Eye,
+    tone: "text-[var(--color-secondary)]",
+  },
+  {
+    key: "completed",
+    label: "Completed",
+    icon: CheckCircle2,
+    tone: "text-[var(--color-success)]",
+  },
+];
 
 /**
  * TeamsPage
@@ -15,23 +59,26 @@ import { fetchProjects } from "../../Data/projects";
  *  2. loading / error state manage karna
  *  3. status filter + search apply karna (client-side)
  *  4. FilterToolbar + TeamGrid ko render karna
- *
- * "View team" click hone par abhi console.log ho raha hai —
- * isko apni routing (react-router / next navigation) se replace
- * kar dena, e.g. navigate(`/teams/${teamId}`)
  */
 
 export default function TeamsPage() {
   const [teams, setTeams] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [projects, setProjects] = useState([]);
-
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
+
+  async function reloadTeams() {
+    try {
+      const data = await fetchTeams();
+      setTeams(data);
+    } catch (err) {
+      setError(err.message ?? "Unknown error");
+    }
+  }
 
   useEffect(() => {
     const handleOpenCreateTeamModal = () => {
@@ -67,23 +114,29 @@ export default function TeamsPage() {
     };
   }, []);
 
-  // Counts for the filter pills — derived from the full team list,
-  // so numbers stay correct even while a filter/search is active.
-  const counts = useMemo(
-    () => ({
+  // Counts / filters use status derived from assigned projects (not Team.status default).
+  const counts = useMemo(() => {
+    const keys = teams.map((t) =>
+      normalizeProjectStatusKey(
+        deriveTeamStatusFromProjects(getTeamProjects(t)),
+      ),
+    );
+    return {
       all: teams.length,
-      not_started: teams.filter((t) => t.status === "not_started").length,
-      in_progress: teams.filter((t) => t.status === "in_progress").length,
-      completed: teams.filter((t) => t.status === "completed").length,
-      under_review: teams.filter((t) => t.status === "under_review").length
-    }),
-    [teams]
-  );
+      not_started: keys.filter((k) => k === "not_started").length,
+      in_progress: keys.filter((k) => k === "in_progress").length,
+      completed: keys.filter((k) => k === "completed").length,
+      under_review: keys.filter((k) => k === "under_review").length,
+    };
+  }, [teams]);
 
   const filteredTeams = useMemo(() => {
     return teams.filter((team) => {
+      const derivedKey = normalizeProjectStatusKey(
+        deriveTeamStatusFromProjects(getTeamProjects(team)),
+      );
       const matchesFilter =
-        activeFilter === "all" || team.status === activeFilter;
+        activeFilter === "all" || derivedKey === activeFilter;
 
       const matchesSearch = team.name
         .toLowerCase()
@@ -105,18 +158,21 @@ export default function TeamsPage() {
   }
 
   return (
-    <div className="bg-background min-h-screen">
-      <div className="max-w-[var(--container)] mx-auto px-lg py-2xl">
+    <div className="bg-background min-h-screen p-3 sm:p-4">
+      <div className="max-w-[var(--container)] mx-auto flex flex-col gap-3">
 
         <FilterToolbar
+          filters={TEAM_FILTERS}
           counts={counts}
           activeFilter={activeFilter}
           onFilterChange={setActiveFilter}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
+          searchPlaceholder="Search teams..."
+          isLoading={isLoading}
         />
 
-        <div className="mt-lg">
+        <div>
           <TeamGrid
             teams={filteredTeams}
             isLoading={isLoading}
@@ -133,9 +189,10 @@ export default function TeamsPage() {
       />
 
       {selectedTeamId && (
-        <TeamDetails 
-          teamId={selectedTeamId} 
-          onClose={() => setSelectedTeamId(null)} 
+        <TeamDetails
+          teamId={selectedTeamId}
+          onClose={() => setSelectedTeamId(null)}
+          onTeamUpdated={reloadTeams}
         />
       )}
     </div>

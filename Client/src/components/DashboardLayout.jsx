@@ -1,17 +1,8 @@
+import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { Plus, CalendarCheck, UsersRound, ClipboardList } from "lucide-react";
+import { Plus, CalendarCheck, UsersRound, ListTodo, FolderKanban } from "lucide-react";
 import SideNavBar from "./sideNavbar";
 import TopBar from "./TopBar";
-
-// Shared "Coming soon" notification array – you can replace per page later
-const comingSoonNotif = [
-  {
-    id: "coming-soon",
-    title: "Coming soon",
-    description: "Notification features are under development.",
-    time: "Just now",
-  },
-];
 
 const topBarConfig = {
   "/dashboard": {
@@ -19,82 +10,110 @@ const topBarConfig = {
     subtitle: "Overview of your bootcamp",
     showNotification: true,
     showButton: false,
-    notifications: comingSoonNotif,
   },
   "/students": {
     title: "Students",
     subtitle: "Manage all enrolled students",
-    showNotification: true,
+    showNotification: false,
     showButton: true,
     buttonText: "Add Student",
     buttonIcon: Plus,
-    onButtonClick: () => window.dispatchEvent(new CustomEvent('openAddStudent')),
-    notifications: comingSoonNotif,
+    onButtonClick: () => window.dispatchEvent(new CustomEvent("openAddStudent")),
   },
   "/attendance": {
     title: "Attendance",
     subtitle: "Track daily attendance records",
-    showNotification: true,
+    showNotification: false,
     showButton: true,
     buttonText: "Take Attendance",
     buttonIcon: CalendarCheck,
-    onButtonClick: () => window.dispatchEvent(new CustomEvent('openTakeAttendance')),
-    notifications: comingSoonNotif,
+    onButtonClick: () =>
+      window.dispatchEvent(new CustomEvent("openTakeAttendance")),
   },
   "/teams": {
     title: "Teams",
     subtitle: "View and manage project teams",
-    showNotification: false,   // bell hidden on Teams page
+    showNotification: false,
     showButton: true,
     buttonText: "Create Team",
     buttonIcon: UsersRound,
-    onButtonClick: () => window.dispatchEvent(new CustomEvent("openCreateTeamModal")),
-    notifications: comingSoonNotif,
+    onButtonClick: () =>
+      window.dispatchEvent(new CustomEvent("openCreateTeamModal")),
+  },
+  "/projects": {
+    title: "Projects",
+    subtitle: "Manage and view all projects.",
+    showNotification: false,
+    showButton: true,
+    buttonText: "Create Project",
+    buttonIcon: FolderKanban,
+    onButtonClick: () =>
+      window.dispatchEvent(new CustomEvent("openCreateProjectModal")),
   },
   "/tasks": {
     title: "Tasks",
     subtitle: "Assign and review student tasks",
-    showNotification: true,
+    showNotification: false,
     showButton: true,
     buttonText: "New Task",
-    buttonIcon: ClipboardList,
-    onButtonClick: () => alert("New Task clicked"),
-    notifications: comingSoonNotif,
+    buttonIcon: ListTodo,
+    onButtonClick: () =>
+      window.dispatchEvent(new CustomEvent("openCreateTask")),
   },
-  // Add more routes if you want custom top bar for new pages:
-  // "/projects": { ... },
-  // "/students/:id" is tricky because of dynamic param, but fallback will handle it
 };
 
 export default function DashboardLayout() {
   const location = useLocation();
   const currentPath = location.pathname;
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
-  const config = topBarConfig[currentPath] ||
-    (currentPath.startsWith("/team") ? topBarConfig["/teams"] : null) || {
+  // Lock body scroll when mobile drawer is open
+  useEffect(() => {
+    if (!mobileNavOpen) return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [mobileNavOpen]);
+
+  const config =
+    topBarConfig[currentPath] ||
+    (currentPath.startsWith("/students/")
+      ? {
+          title: "Student Profile",
+          subtitle: "View student details and activity",
+          showNotification: false,
+          showButton: false,
+        }
+      : null) ||
+    (currentPath.startsWith("/team")
+      ? { ...topBarConfig["/teams"], showButton: false }
+      : null) || {
       title: "Bootcamp LMS",
       subtitle: "",
       showNotification: false,
       showButton: false,
-      notifications: [],
     };
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <SideNavBar />
-      <div className="flex flex-1 flex-col overflow-auto">
+    <div className="flex h-dvh max-h-dvh overflow-hidden">
+      <SideNavBar
+        mobileOpen={mobileNavOpen}
+        onMobileClose={() => setMobileNavOpen(false)}
+      />
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <TopBar
           title={config.title}
           subtitle={config.subtitle}
-          showNotification={config.showNotification}
-          onNotificationClick={() => console.log("Notification clicked")}
+          showNotification={config.showNotification === true}
           showButton={config.showButton}
           buttonText={config.buttonText}
           buttonIcon={config.buttonIcon}
           onButtonClick={config.onButtonClick}
-          notifications={config.notifications || []}
+          onMenuClick={() => setMobileNavOpen(true)}
         />
-        <main className="flex-1 overflow-auto bg-[var(--color-background)]">
+        <main className="min-h-0 flex-1 overflow-auto bg-[var(--color-background)]">
           <Outlet />
         </main>
       </div>

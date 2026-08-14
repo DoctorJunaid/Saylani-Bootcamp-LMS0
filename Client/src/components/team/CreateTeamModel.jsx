@@ -63,7 +63,7 @@ export default function CreateTeamModal({ isOpen, onClose, onCreate }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-lg"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
       onClick={handleClose}
     >
       <div

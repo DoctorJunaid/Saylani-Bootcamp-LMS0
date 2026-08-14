@@ -14,7 +14,18 @@ import { Toaster } from "react-hot-toast";
 function App() {
   return (
     <BrowserRouter>
-      <Toaster position="top-right" reverseOrder={false} />
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+        toastOptions={{
+          success: {
+            position: "top-center",
+          },
+          error: {
+            position: "top-right",
+          },
+        }}
+      />
       <Routes>
         <Route path="/login" element={<Login />} />
 

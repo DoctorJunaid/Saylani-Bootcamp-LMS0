@@ -13,6 +13,12 @@ export const getStudentById = async (id) => {
   return response.data;
 };
 
+// Full dynamic student profile
+export const getStudentProfile = async (id) => {
+  const response = await api.get(`/api/student/${id}/profile`);
+  return response.data;
+};
+
 // Create new student
 export const createStudent = async (studentData) => {
   const response = await api.post("/api/student", studentData);
