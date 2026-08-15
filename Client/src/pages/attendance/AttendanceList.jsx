@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import AttendanceToolbar from '../../components/attendanceComponents/AttendanceToolbar';
 import AttendanceTable from '../../components/attendanceComponents/AttendanceTable';
