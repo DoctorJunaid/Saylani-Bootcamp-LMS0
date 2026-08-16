@@ -145,7 +145,7 @@ const TaskTable = ({
       <div className="overflow-x-auto">
         <table className="w-full text-left min-w-[680px]">
           <thead>
-            <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface-low)]/50">
+            <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface-low)]/80">
               <th className="px-4 py-3.5 w-10">
                 <input
                   type="checkbox"

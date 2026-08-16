@@ -1,4 +1,10 @@
-import { useState, useRef, useEffect, useLayoutEffect } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+} from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, Check } from "lucide-react";
 
@@ -20,9 +26,11 @@ export default function CustomSelect({
   const menuRef = useRef(null);
 
   const selected = value !== undefined ? value : internalSelected;
-  const listOptions = defaultOption ? [defaultOption, ...(options || [])] : options || [];
+  const listOptions = defaultOption
+    ? [defaultOption, ...(options || [])]
+    : options || [];
 
-  const updateMenuPosition = () => {
+  const updateMenuPosition = useCallback(() => {
     const btn = ref.current;
     if (!btn) return;
 
@@ -30,15 +38,20 @@ export default function CustomSelect({
     const viewportH = window.innerHeight;
     const viewportW = window.innerWidth;
     const gap = 4;
-    const maxMenuH = Math.min(280, viewportH - 16); // enough room to scroll all teams
+    const maxMenuH = Math.min(280, viewportH - 16);
     const spaceBelow = viewportH - rect.bottom - gap;
     const spaceAbove = rect.top - gap;
     const openUp = spaceBelow < 160 && spaceAbove > spaceBelow;
     const available = openUp ? spaceAbove : spaceBelow;
-    const height = Math.max(120, Math.min(maxMenuH, available));
+    const height =
+      size === "sm"
+        ? Math.min(160, Math.max(available, 72))
+        : Math.max(120, Math.min(maxMenuH, available));
 
-    const width = Math.max(rect.width, 160);
-    let left = rect.left;
+    const width =
+      size === "sm" ? Math.max(rect.width, 92) : Math.max(rect.width, 160);
+    let left = size === "sm" ? rect.right - width : rect.left;
+    if (left < 8) left = 8;
     if (left + width > viewportW - 8) left = Math.max(8, viewportW - width - 8);
 
     setMenuStyle({
@@ -51,12 +64,12 @@ export default function CustomSelect({
         ? { bottom: viewportH - rect.top + gap }
         : { top: rect.bottom + gap }),
     });
-  };
+  }, [size]);
 
   useLayoutEffect(() => {
     if (!open) return;
     updateMenuPosition();
-  }, [open, listOptions.length]);
+  }, [open, listOptions.length, updateMenuPosition]);
 
   useEffect(() => {
     if (!open) return;
@@ -81,7 +94,7 @@ export default function CustomSelect({
       window.removeEventListener("resize", onReposition);
       window.removeEventListener("scroll", onReposition, true);
     };
-  }, [open]);
+  }, [open, updateMenuPosition]);
 
   const handleSelect = (opt) => {
     if (onChange) onChange(opt);
@@ -90,20 +103,24 @@ export default function CustomSelect({
   };
 
   const sizeClasses =
-    size === "sm" ? "px-2 py-1 rounded-md text-xs" : "px-4 py-2.5 rounded-lg text-sm";
+    size === "sm"
+      ? "px-2 py-1 rounded-md text-xs"
+      : "px-4 py-2.5 rounded-lg text-sm";
 
   const itemSizeClasses =
     size === "sm" ? "px-2 py-1.5 text-xs" : "px-4 py-2 text-sm";
 
+  const widthClasses = size === "sm" ? "w-auto" : "w-full sm:w-auto";
+
   return (
-    <div ref={ref} className={`relative w-full sm:w-auto ${className}`}>
+    <div ref={ref} className={`relative ${widthClasses} ${className}`.trim()}>
       <button
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={label}
         onClick={() => setOpen((o) => !o)}
-        className={`flex items-center justify-between gap-2 w-full sm:w-auto border border-[var(--color-primary)] font-medium cursor-pointer transition-all duration-[var(--duration-fast)] ${sizeClasses} ${
+        className={`flex items-center justify-between gap-2 ${widthClasses} border border-[var(--color-primary)] font-medium cursor-pointer transition-all duration-[var(--duration-fast)] ${sizeClasses} ${
           open
             ? "bg-[var(--color-primary-container)]/10 text-[var(--color-primary)]"
             : "bg-[var(--color-primary)] text-[var(--color-on-primary)] hover:opacity-90"

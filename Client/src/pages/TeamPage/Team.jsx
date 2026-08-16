@@ -10,6 +10,7 @@ import FilterToolbar from "../../components/team/FilterTollbar";
 import TeamGrid from "../../components/team/TeamGrid";
 import CreateTeamModal from "../../components/team/CreateTeamModel";
 import TeamDetails from "./TeamDetail";
+import PageShell from "../../components/ui/PageShell";
 import { fetchTeams, createTeam } from "../../Data/teams";
 import {
   deriveTeamStatusFromProjects,
@@ -158,29 +159,24 @@ export default function TeamsPage() {
   }
 
   return (
-    <div className="bg-background min-h-screen p-3 sm:p-4">
-      <div className="max-w-[var(--container)] mx-auto flex flex-col gap-3">
+    <PageShell>
+      <FilterToolbar
+        filters={TEAM_FILTERS}
+        counts={counts}
+        activeFilter={activeFilter}
+        onFilterChange={setActiveFilter}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder="Search teams..."
+        isLoading={isLoading}
+      />
 
-        <FilterToolbar
-          filters={TEAM_FILTERS}
-          counts={counts}
-          activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          searchPlaceholder="Search teams..."
-          isLoading={isLoading}
-        />
-
-        <div>
-          <TeamGrid
-            teams={filteredTeams}
-            isLoading={isLoading}
-            error={error}
-            onViewTeam={handleViewTeam}
-          />
-        </div>
-      </div>
+      <TeamGrid
+        teams={filteredTeams}
+        isLoading={isLoading}
+        error={error}
+        onViewTeam={handleViewTeam}
+      />
 
       <CreateTeamModal
         isOpen={isCreateModalOpen}
@@ -195,6 +191,6 @@ export default function TeamsPage() {
           onTeamUpdated={reloadTeams}
         />
       )}
-    </div>
+    </PageShell>
   );
 }

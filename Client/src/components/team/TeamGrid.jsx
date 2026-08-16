@@ -1,7 +1,8 @@
+import { UsersRound } from "lucide-react";
 import TeamCard from "./TeamsCard";
 import TeamCardSkeleton from "./TeamsCardSkeleton";
+import EmptyState from "../ui/EmptyState";
 
-/** Wider cards (min 300px) so project / deadline / status stay on one line */
 const GRID_CLASS =
   "grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
 
@@ -24,7 +25,11 @@ export default function TeamGrid({ teams, isLoading, error, onViewTeam }) {
 
   if (!teams || teams.length === 0) {
     return (
-      <p className="text-sm text-text-muted">Abhi koi team nahi bani.</p>
+      <EmptyState
+        icon={UsersRound}
+        title="No teams yet"
+        description="Create a team to assign students and projects."
+      />
     );
   }
 

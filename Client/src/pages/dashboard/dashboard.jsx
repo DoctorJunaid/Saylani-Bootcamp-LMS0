@@ -50,16 +50,17 @@ const getCurrentTimeString = () => {
 
 function StatCard({ label, value, icon: Icon, tone }) {
   return (
-    <div className="flex items-start justify-between rounded-[var(--radius-xl)] border border-[var(--color-surface-high)] bg-[var(--color-surface)] p-[var(--spacing-lg)] shadow-[var(--shadow-sm)] transition-all duration-[var(--duration-normal)] hover:shadow-[var(--shadow-md)]">
-      <div>
-        <p className="text-sm font-medium text-[var(--color-text-muted)]">
+    <div className="group relative flex items-start justify-between overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-[var(--shadow-sm)] transition-all duration-[var(--duration-normal)] hover:-translate-y-1 hover:border-[var(--color-primary)]/30 hover:shadow-[var(--shadow-md)] sm:p-5">
+      <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-[var(--color-primary)]/5 transition-transform duration-[var(--duration-normal)] group-hover:scale-125" />
+      <div className="relative min-w-0">
+        <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)] sm:text-sm sm:normal-case sm:tracking-normal sm:font-medium">
           {label}
         </p>
-        <p className="mt-[var(--spacing-xs)] text-2xl font-bold text-[var(--color-text)]">
+        <p className="mt-1.5 text-3xl font-bold tracking-tight text-[var(--color-text)]">
           {value}
         </p>
       </div>
-      <div className={`rounded-lg  ${tone}`}>
+      <div className={`app-stat-icon relative shrink-0 ${tone}`}>
         <Icon size={22} strokeWidth={2} />
       </div>
     </div>
@@ -107,9 +108,11 @@ function StatusBadge({ status }) {
   );
 }
 
-function TaskRow({ title, student, rollNumber, dueDate, status }) {
+function TaskRow({ title, student, rollNumber, teamName, dueDate, status }) {
+  const teamLabel = teamName || "Unassigned";
+
   return (
-    <div className="rounded-[var(--radius-md)] border-b border-[var(--color-surface-high)] px-1 py-2.5 transition-colors duration-[var(--duration-fast)] last:border-b-0 hover:bg-[var(--color-surface-low)]">
+    <div className="rounded-[var(--radius-lg)] border border-transparent px-2.5 py-3 transition-all duration-[var(--duration-fast)] last:border-b-0 hover:border-[var(--color-border)] hover:bg-[var(--color-surface-low)] hover:shadow-sm">
       <div className="flex items-start justify-between gap-2">
         <p
           className="min-w-0 flex-1 text-[13px] font-semibold leading-snug text-[var(--color-text)] break-words"
@@ -118,19 +121,26 @@ function TaskRow({ title, student, rollNumber, dueDate, status }) {
           {title}
         </p>
         <span
-          className={`mt-0.5 shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold leading-none ${taskStatusStyles[status] || taskStatusStyles.Pending}`}
+          className={`mt-0.5 shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-semibold leading-none ${taskStatusStyles[status] || taskStatusStyles.Pending}`}
         >
           {status}
         </span>
       </div>
-      <div className="mt-1.5 space-y-0.5 text-[11px] leading-snug text-[var(--color-text-muted)]">
+      <div className="mt-2 space-y-1 text-[11px] leading-snug text-[var(--color-text-muted)]">
         <p className="truncate font-semibold text-[var(--color-text)]" title={student}>
           {student}
         </p>
-        <p className="truncate" title={`Roll ${rollNumber} · due ${dueDate}`}>
+        <p className="truncate" title={`Roll ${rollNumber}`}>
           Roll {rollNumber}
-          {" · due "}
-          {dueDate}
+        </p>
+        <p
+          className="truncate font-semibold text-[var(--color-primary)]"
+          title={`Team: ${teamLabel}`}
+        >
+          Team: {teamLabel}
+        </p>
+        <p className="truncate" title={`Due ${dueDate}`}>
+          Due {dueDate}
         </p>
       </div>
     </div>
@@ -428,12 +438,12 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex max-w-full flex-col gap-3 font-plus-jakarta-sans p-3 sm:p-4">
+    <div className="mx-auto flex max-w-[1400px] flex-col gap-4 p-3 sm:gap-5 sm:p-5 lg:p-6">
       {/* Stat cards */}
       {isLoading ? (
         <DashboardStatCardsSkeleton />
       ) : (
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {statCards.map((card) => (
             <StatCard key={card.label} {...card} />
           ))}
@@ -447,9 +457,9 @@ export default function Dashboard() {
       )}
 
       {/* Main Grid Section: Today's Attendance Table + Task Summary */}
-      <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
         {/* Today's Attendance Student List Card (Spans 2 columns on lg) */}
-        <div className="flex flex-col gap-2 rounded-[var(--radius-xl)] border border-[var(--color-surface-high)] bg-[var(--color-surface)] p-3 sm:p-4 shadow-[var(--shadow-sm)] transition-shadow duration-[var(--duration-normal)] hover:shadow-[var(--shadow-md)] lg:col-span-2 min-w-0">
+        <div className="app-panel flex min-w-0 flex-col gap-3 p-4 sm:p-5 lg:col-span-2">
           {/* Section Header */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-[var(--color-surface-high)] pb-[var(--spacing-md)]">
             <div className="flex items-center gap-[var(--spacing-sm)]">
@@ -635,7 +645,7 @@ export default function Dashboard() {
         </div>
 
         {/* Task summary — grows with tasks up to max height, then vertical scroll only */}
-        <div className="flex w-full min-w-0 flex-col rounded-[var(--radius-xl)] border border-[var(--color-surface-high)] bg-[var(--color-surface)] p-3 sm:p-4 shadow-[var(--shadow-sm)] transition-shadow duration-[var(--duration-normal)] hover:shadow-[var(--shadow-md)] lg:col-span-1 lg:self-start max-h-[28rem] overflow-hidden">
+        <div className="app-panel flex max-h-[28rem] w-full min-w-0 flex-col overflow-hidden p-4 sm:p-5 lg:col-span-1 lg:self-start">
           <div className="mb-2 flex shrink-0 items-start justify-between gap-2 border-b border-[var(--color-surface-high)] pb-2">
             <div className="flex min-w-0 items-center gap-[var(--spacing-sm)]">
               <div className="shrink-0 rounded-lg p-1 text-[var(--color-primary)]">
@@ -663,13 +673,14 @@ export default function Dashboard() {
                   title={item.title}
                   student={item.studentId.name}
                   rollNumber={item.studentId.rollNumber ?? "--"}
+                  teamName={item.studentId.team_id?.name || null}
                   dueDate={item.dueDate ? new Date(item.dueDate).toLocaleDateString() : "--"}
                   status={item.status?.replace("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase()) ?? "Pending"}
                 />
               ))
             ) : (
-              <p className="py-6 text-center text-sm text-[var(--color-text-muted)]">
-                No tasks found.
+              <p className="py-10 text-center text-sm text-[var(--color-text-muted)]">
+                No tasks found for today.
               </p>
             )}
           </div>

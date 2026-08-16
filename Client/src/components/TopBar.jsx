@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, Menu, Plus } from "lucide-react";
+import { Bell, Menu, Moon, Plus, Sun } from "lucide-react";
 import NotificationPanel from "./NotificationPanel";
+import { useTheme } from "../hooks/useTheme";
 import {
   fetchNotifications,
   fetchUnreadNotificationCount,
@@ -23,6 +24,7 @@ export default function TopBar({
   onMenuClick,
 }) {
   const navigate = useNavigate();
+  const { isDark, toggleTheme } = useTheme();
   const [showPanel, setShowPanel] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -99,39 +101,60 @@ export default function TopBar({
     }
   };
 
+  const iconBtnClass =
+    "relative cursor-pointer rounded-lg bg-primary p-2.5 text-on-primary shadow-sm transition-all duration-200 hover:bg-on-primary-container hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container focus-visible:ring-offset-2";
+
   return (
-    <header className="flex items-center justify-between gap-3 border-b border-border bg-surface px-3 py-3 sm:px-4 sm:py-4 lg:px-6">
+    <header className="relative flex h-[var(--app-header-height)] shrink-0 items-center justify-between gap-3 border-b border-border bg-surface/90 px-3 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-md sm:px-4 lg:px-6">
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[var(--color-primary)]/35 to-transparent"
+        aria-hidden
+      />
       <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
         {onMenuClick && (
           <button
             type="button"
             onClick={onMenuClick}
             aria-label="Open menu"
-            className="cursor-pointer shrink-0 rounded-md border border-border p-2 text-text-muted transition-colors hover:bg-surface-low hover:text-text lg:hidden"
+            className="cursor-pointer shrink-0 rounded-lg border border-border p-2 text-text-muted transition-colors hover:bg-surface-low hover:text-text lg:hidden"
           >
             <Menu size={20} strokeWidth={2} />
           </button>
         )}
         <div className="min-w-0">
-          <h1 className="truncate text-base font-semibold text-text sm:text-lg">
+          <h1 className="truncate text-lg font-bold tracking-tight text-text sm:text-xl">
             {title}
           </h1>
           {subtitle && (
-            <p className="mt-0.5 hidden truncate text-sm font-normal text-text-muted sm:block">
+            <p className="mt-0.5 hidden truncate text-sm font-normal leading-tight text-text-muted sm:block">
               {subtitle}
             </p>
           )}
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2 sm:gap-4">
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        <button
+          type="button"
+          onClick={toggleTheme}
+          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          title={isDark ? "Light mode" : "Dark mode"}
+          className={iconBtnClass}
+        >
+          {isDark ? (
+            <Sun size={20} strokeWidth={2} />
+          ) : (
+            <Moon size={20} strokeWidth={2} />
+          )}
+        </button>
+
         {showNotification && (
           <div className="relative">
             <button
               type="button"
               onClick={handleBellClick}
               aria-label="Notifications"
-              className="relative cursor-pointer rounded-md bg-primary p-2 text-on-primary transition-colors duration-200 hover:bg-on-primary-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container focus-visible:ring-offset-2"
+              className={iconBtnClass}
             >
               <Bell size={20} strokeWidth={2} />
               {unreadCount > 0 && (
@@ -158,7 +181,7 @@ export default function TopBar({
           <button
             type="button"
             onClick={onButtonClick}
-            className="flex cursor-pointer items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-on-primary transition-colors duration-200 hover:bg-on-primary-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container focus-visible:ring-offset-2 sm:px-4"
+            className="flex cursor-pointer items-center gap-1.5 rounded-lg bg-primary px-3 py-2.5 text-sm font-semibold text-on-primary shadow-sm transition-all duration-200 hover:bg-on-primary-container hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container focus-visible:ring-offset-2 sm:px-4"
           >
             <ButtonIcon size={16} strokeWidth={2.5} />
             <span className="hidden sm:inline">{buttonText}</span>

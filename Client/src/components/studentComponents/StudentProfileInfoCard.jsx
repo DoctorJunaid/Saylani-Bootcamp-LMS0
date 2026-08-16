@@ -42,10 +42,10 @@ const StudentProfileInfoCard = ({ profile }) => {
   const attendance = profile.attendance || {};
 
   return (
-    <div className="bg-[var(--color-surface)] rounded-[var(--radius-xl)] shadow-[var(--shadow-sm)] border border-[var(--color-border)] p-6 lg:p-8 flex flex-col lg:flex-row gap-8 lg:gap-12 mb-6">
+    <div className="app-panel mb-6 flex flex-col gap-8 p-6 lg:flex-row lg:gap-12 lg:p-8">
       <div className="flex-[1.5] flex flex-col sm:flex-row gap-6">
         <div
-          className={`w-24 h-24 rounded-lg flex items-center justify-center shrink-0 overflow-hidden ${bg} ${text} text-3xl font-bold`}
+          className={`flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl text-3xl font-bold shadow-sm ${bg} ${text}`}
         >
           {initials}
         </div>

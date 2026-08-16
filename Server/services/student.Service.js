@@ -108,7 +108,7 @@ export const createStudent = async (studentData) => {
   const incomingTeamId = resolveIncomingTeamId(studentData);
 
   if (!rollNumber || !name || !course || !batch) {
-    throw new Error("All fields are requried");
+    throw new Error("All fields are required");
   }
 
   if (!email) {

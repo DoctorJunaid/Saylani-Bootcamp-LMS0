@@ -2,7 +2,6 @@ import Skeleton from "../ui/Skeleton";
 
 /**
  * Dashboard-style clickable status cards used as filters on Teams / Projects / Tasks.
- * Optional per-filter: icon (lucide component), tone (tailwind text color class).
  */
 export default function StatusFilterCards({
   filters,
@@ -14,8 +13,8 @@ export default function StatusFilterCards({
   const count = filters?.length ?? 4;
   const gridClass =
     count <= 4
-      ? "grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4"
-      : "grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5";
+      ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
+      : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5";
 
   if (isLoading) {
     return (
@@ -23,13 +22,13 @@ export default function StatusFilterCards({
         {Array.from({ length: count }).map((_, i) => (
           <div
             key={i}
-            className="flex items-start justify-between rounded-[var(--radius-xl)] border border-[var(--color-surface-high)] bg-[var(--color-surface)] p-[var(--spacing-lg)] shadow-[var(--shadow-sm)]"
+            className="flex items-start justify-between rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-[var(--shadow-sm)] sm:p-5"
           >
             <div className="w-full">
               <Skeleton className="h-3.5 w-24" />
               <Skeleton className="mt-2 h-7 w-12" />
             </div>
-            <Skeleton className="h-8 w-8 rounded-lg shrink-0" />
+            <Skeleton className="h-10 w-10 rounded-lg shrink-0" />
           </div>
         ))}
       </div>
@@ -48,22 +47,23 @@ export default function StatusFilterCards({
             role="tab"
             aria-selected={isActive}
             onClick={() => onFilterChange(key)}
-            className={`flex items-start justify-between text-left rounded-[var(--radius-xl)] border bg-[var(--color-surface)] p-[var(--spacing-lg)] shadow-[var(--shadow-sm)] transition-all duration-[var(--duration-normal)] cursor-pointer hover:shadow-[var(--shadow-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-container)] ${
+            className={`group relative flex items-start justify-between overflow-hidden rounded-[var(--radius-xl)] border bg-[var(--color-surface)] p-4 text-left shadow-[var(--shadow-sm)] transition-all duration-[var(--duration-normal)] cursor-pointer hover:-translate-y-1 hover:shadow-[var(--shadow-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-container)] sm:p-5 ${
               isActive
-                ? "border-[var(--color-primary)] ring-1 ring-[var(--color-primary)]/30 bg-[var(--color-primary-container)]/10"
-                : "border-[var(--color-surface-high)]"
+                ? "border-[var(--color-primary)] ring-2 ring-[var(--color-primary)]/20 bg-[color-mix(in_srgb,var(--color-primary)_8%,var(--color-surface))]"
+                : "border-[var(--color-border)] hover:border-[var(--color-primary)]/30"
             }`}
           >
-            <div className="min-w-0 pr-2">
+            <div className="pointer-events-none absolute -right-4 -top-4 h-20 w-20 rounded-full bg-[var(--color-primary)]/5 transition-transform group-hover:scale-110" />
+            <div className="relative min-w-0 pr-2">
               <p className="text-sm font-medium text-[var(--color-text-muted)]">
                 {label}
               </p>
-              <p className="mt-[var(--spacing-xs)] text-2xl font-bold text-[var(--color-text)]">
+              <p className="mt-1.5 text-3xl font-bold tracking-tight text-[var(--color-text)]">
                 {counts[key] ?? 0}
               </p>
             </div>
             {Icon ? (
-              <div className={`rounded-lg shrink-0 ${iconTone}`}>
+              <div className={`app-stat-icon relative shrink-0 ${iconTone}`}>
                 <Icon size={22} strokeWidth={2} aria-hidden />
               </div>
             ) : null}

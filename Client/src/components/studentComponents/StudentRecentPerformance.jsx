@@ -23,7 +23,7 @@ const StudentRecentPerformance = ({ tasks = [] }) => {
   const list = Array.isArray(tasks) ? tasks : [];
 
   return (
-    <div className="bg-[var(--color-surface)] rounded-[var(--radius-xl)] shadow-[var(--shadow-sm)] border border-[var(--color-border)] p-6 flex-1 flex flex-col h-full">
+    <div className="app-panel flex h-full flex-1 flex-col p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-[var(--color-text)] tracking-tight">
           Recent Performance

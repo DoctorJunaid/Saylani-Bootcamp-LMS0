@@ -23,7 +23,7 @@ export const loginAdmin = async (email , password)=>{
 
     return{
         token,
-        amdin:{
+        admin:{
             id:admin._id,
             name:admin.name,
             email:admin.email,

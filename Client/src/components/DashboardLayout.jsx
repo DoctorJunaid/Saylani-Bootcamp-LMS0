@@ -113,7 +113,7 @@ export default function DashboardLayout() {
           onButtonClick={config.onButtonClick}
           onMenuClick={() => setMobileNavOpen(true)}
         />
-        <main className="min-h-0 flex-1 overflow-auto bg-[var(--color-background)]">
+        <main className="app-main min-h-0 flex-1 overflow-auto">
           <Outlet />
         </main>
       </div>

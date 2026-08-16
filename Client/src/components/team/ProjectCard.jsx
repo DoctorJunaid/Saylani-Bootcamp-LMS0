@@ -72,29 +72,29 @@ export default function ProjectCard({
   }
 
   return (
-    <tr className="border-b border-border last:border-b-0 hover:bg-surface-low transition-colors duration-fast">
-      <td className="px-3 py-4 align-middle min-w-0">
+    <tr className="border-b border-border last:border-b-0 transition-colors duration-fast hover:bg-[color-mix(in_srgb,var(--color-primary)_4%,var(--color-surface))]">
+      <td className="px-4 py-4 align-middle min-w-0">
         <p className="text-sm font-bold text-text break-words line-clamp-2">{title}</p>
         {description && (
           <p className="text-xs text-text-muted mt-xs break-words line-clamp-2">{description}</p>
         )}
       </td>
 
-      <td className="px-3 py-4 align-middle text-sm text-text-muted min-w-0">
+      <td className="px-4 py-4 align-middle text-sm text-text-muted min-w-0">
         <span className="break-words line-clamp-2">
           {teamName ?? project.teamId?.name ?? project.team?.name ?? project.teamName ?? "—"}
         </span>
       </td>
 
-      <td className="px-3 py-4 align-middle">
+      <td className="px-4 py-4 align-middle">
         <StatusBadge status={status} />
       </td>
 
-      <td className="px-3 py-4 align-middle text-sm text-text-muted whitespace-nowrap">
+      <td className="px-4 py-4 align-middle text-sm text-text-muted whitespace-nowrap">
         {deadlineLabel}
       </td>
 
-      <td className="px-3 py-4 align-middle text-right">
+      <td className="px-4 py-4 align-middle text-right">
         {actionButtons}
       </td>
     </tr>

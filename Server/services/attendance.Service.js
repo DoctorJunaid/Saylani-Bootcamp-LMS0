@@ -3,7 +3,6 @@ import Student from "../models/student.Model.js";
 import {
   assertYmd,
   getAttendanceDayRange,
-  isSundayYmd,
   toAttendanceDate,
 } from "../utils/attendanceDate.js";
 import { syncDerivedNotifications } from "./notification.Service.js";
@@ -11,11 +10,6 @@ import { syncDerivedNotifications } from "./notification.Service.js";
 // MARK / UPDATE ATTENDANCE (upsert for student_id + that calendar day only)
 export const markAttendance = async (students, date) => {
   const ymd = assertYmd(date);
-
-  if (isSundayYmd(ymd)) {
-    throw new Error("Attendance cannot be marked on Sunday");
-  }
-
   const dayDate = toAttendanceDate(ymd);
   const { start, end } = getAttendanceDayRange(ymd);
   const attendanceRecords = [];
@@ -97,7 +91,7 @@ export const getAttencdanceByDate = async (date) => {
 export const getStudentAttendacehistory = async (studentId) => {
   const student = await Student.findById(studentId);
   if (!student) {
-    throw new Error("Stduent not found");
+    throw new Error("Student not found");
   }
 
   const attendance = await Attendance.find({ student_id: studentId }).sort({
