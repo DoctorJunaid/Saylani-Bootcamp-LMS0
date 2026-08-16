@@ -38,7 +38,7 @@ const AttendanceTable = ({ attendanceData, onStatusChange, onStudentClick }) => 
           <col className="w-[14%]" />
         </colgroup>
         <thead>
-          <tr className="border-b border-[var(--color-surface-highest)]">
+          <tr className="border-b border-[var(--color-surface-highest)] bg-[var(--color-surface-low)]/80">
             <th className={`${headPad} px-3`}>Roll No</th>
             <th className={headPad}>Student</th>
             <th className={headPad}>Date</th>
@@ -88,13 +88,12 @@ const AttendanceTable = ({ attendanceData, onStatusChange, onStudentClick }) => 
               </td>
 
               <td className={`${cellPad} text-right`}>
-                <div className="inline-flex justify-end w-full">
+                <div className="inline-flex justify-end">
                   <CustomSelect
                     label="Status"
                     value={record.status === 'Not marked' ? 'Set' : record.status}
                     options={['Present', 'Leave', 'Absent']}
                     onChange={(val) => onStatusChange(record, val)}
-                    className="w-full max-w-[110px] sm:!w-auto"
                     size="sm"
                   />
                 </div>

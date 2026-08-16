@@ -16,6 +16,7 @@ import {
   normalizeTaskStatus,
   taskStatusKey,
 } from "../../utils/taskStatus";
+import PageShell, { PagePanel } from "../../components/ui/PageShell";
 import dayjs from "dayjs";
 
 function formatTaskDueDate(dueDate) {
@@ -207,24 +208,22 @@ const Task = () => {
   }));
 
   return (
-    <div className="bg-[var(--color-background)] min-h-screen p-3 sm:p-4">
-      <div className="max-w-[var(--container)] mx-auto flex flex-col gap-3">
-        <TaskStats
-          counts={counts}
-          activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
-          isLoading={loading}
-        />
+    <PageShell>
+      <TaskStats
+        counts={counts}
+        activeFilter={activeFilter}
+        onFilterChange={setActiveFilter}
+        isLoading={loading}
+      />
 
-        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-lg)] p-3 sm:p-4 shadow-[var(--shadow-sm)]">
-          <TaskTable
-            externalTasks={filteredTasks}
-            loading={loading}
-            onEditTask={handleEditTask}
-            onDeleteTasks={handleDeleteTasks}
-          />
-        </div>
-      </div>
+      <PagePanel className="p-3 sm:p-4">
+        <TaskTable
+          externalTasks={filteredTasks}
+          loading={loading}
+          onEditTask={handleEditTask}
+          onDeleteTasks={handleDeleteTasks}
+        />
+      </PagePanel>
 
       {createModalOpen && (
         <EditTaskModal
@@ -243,7 +242,7 @@ const Task = () => {
         count={deleteConfirmState?.ids?.length || 0}
         isDeleting={isDeleting}
       />
-    </div>
+    </PageShell>
   );
 };
 

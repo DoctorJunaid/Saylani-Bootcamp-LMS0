@@ -17,6 +17,7 @@ import ProjectCard from "../../components/team/ProjectCard";
 import CreateProjectModal from "./CreateProjectModal";
 import ProjectDetailsModal from "./ProjectDetailsModal";
 import ProjectTableSkeleton from "./ProjectTableSkeleton";
+import PageShell, { PagePanel } from "../../components/ui/PageShell";
 
 /** Matches Project model status enum (Title Case) + filter keys. */
 const PROJECT_FILTERS = [
@@ -173,73 +174,69 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="bg-background min-h-screen p-3 sm:p-4">
-      <div className="max-w-[var(--container)] mx-auto flex flex-col gap-3">
-        <FilterToolbar
-          filters={PROJECT_FILTERS}
-          counts={counts}
-          activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          searchPlaceholder="Search projects..."
-          isLoading={isLoading}
-        />
+    <PageShell>
+      <FilterToolbar
+        filters={PROJECT_FILTERS}
+        counts={counts}
+        activeFilter={activeFilter}
+        onFilterChange={setActiveFilter}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder="Search projects..."
+        isLoading={isLoading}
+      />
 
-        <div>
-          {isLoading ? (
-            <ProjectTableSkeleton />
-          ) : error ? (
-            <div className="text-center py-10 text-error">{error}</div>
-          ) : filteredProjects.length === 0 ? (
-            <div className="text-center py-10 text-text-muted">
-              No projects found.
-            </div>
-          ) : (
-            <div className="bg-surface border border-border rounded-xl shadow-sm overflow-x-auto">
-              <table className="w-full table-fixed text-left min-w-[720px] border-collapse">
-                <colgroup>
-                  <col className="w-[32%]" />
-                  <col className="w-[18%]" />
-                  <col className="w-[18%]" />
-                  <col className="w-[18%]" />
-                  <col className="w-[14%]" />
-                </colgroup>
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="px-3 py-4 text-xs font-semibold text-text-muted uppercase tracking-wider align-middle">
-                      Project
-                    </th>
-                    <th className="px-3 py-4 text-xs font-semibold text-text-muted uppercase tracking-wider align-middle">
-                      Team
-                    </th>
-                    <th className="px-3 py-4 text-xs font-semibold text-text-muted uppercase tracking-wider align-middle">
-                      Status
-                    </th>
-                    <th className="px-3 py-4 text-xs font-semibold text-text-muted uppercase tracking-wider align-middle">
-                      Deadline
-                    </th>
-                    <th className="px-3 py-4 text-xs font-semibold text-text-muted uppercase tracking-wider align-middle text-right">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredProjects.map((project) => (
-                    <ProjectCard
-                      key={project._id || project.id}
-                      project={project}
-                      teamName={project.teamId?.name || project.teamName}
-                      onEdit={handleEditProject}
-                      onDelete={handleDeleteClick}
-                    />
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </div>
+      {isLoading ? (
+        <ProjectTableSkeleton />
+      ) : error ? (
+        <PagePanel className="py-10 text-center text-error">{error}</PagePanel>
+      ) : filteredProjects.length === 0 ? (
+        <PagePanel className="py-10 text-center text-text-muted">
+          No projects found.
+        </PagePanel>
+      ) : (
+        <PagePanel padded={false} className="overflow-x-auto">
+          <table className="w-full table-fixed text-left min-w-[720px] border-collapse">
+            <colgroup>
+              <col className="w-[32%]" />
+              <col className="w-[18%]" />
+              <col className="w-[18%]" />
+              <col className="w-[18%]" />
+              <col className="w-[14%]" />
+            </colgroup>
+            <thead>
+              <tr className="border-b border-border bg-[var(--color-surface-low)]/90">
+                <th className="px-4 py-4 text-xs font-semibold text-text-muted uppercase tracking-wider align-middle">
+                  Project
+                </th>
+                <th className="px-4 py-4 text-xs font-semibold text-text-muted uppercase tracking-wider align-middle">
+                  Team
+                </th>
+                <th className="px-4 py-4 text-xs font-semibold text-text-muted uppercase tracking-wider align-middle">
+                  Status
+                </th>
+                <th className="px-4 py-4 text-xs font-semibold text-text-muted uppercase tracking-wider align-middle">
+                  Deadline
+                </th>
+                <th className="px-4 py-4 text-xs font-semibold text-text-muted uppercase tracking-wider align-middle text-right">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredProjects.map((project) => (
+                <ProjectCard
+                  key={project._id || project.id}
+                  project={project}
+                  teamName={project.teamId?.name || project.teamName}
+                  onEdit={handleEditProject}
+                  onDelete={handleDeleteClick}
+                />
+              ))}
+            </tbody>
+          </table>
+        </PagePanel>
+      )}
 
       <CreateProjectModal
         isOpen={isCreateModalOpen}
@@ -255,7 +252,6 @@ export default function ProjectsPage() {
         />
       )}
 
-      {/* Simple delete confirm: Delete + Cancel only */}
       {projectToDelete && (
         <div
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
@@ -286,6 +282,6 @@ export default function ProjectsPage() {
           </div>
         </div>
       )}
-    </div>
+    </PageShell>
   );
 }

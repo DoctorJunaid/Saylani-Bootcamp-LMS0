@@ -24,7 +24,7 @@ export const getStudentController = async (req, res) => {
   try {
     const students = await getStudents(req.query);
     res.status(200).json({
-      message: "Students fetched Sucessfully",
+      message: "Students fetched successfully",
       students,
     });
   } catch (error) {
@@ -57,7 +57,7 @@ export const getStudentByIdController = async (req, res) => {
   try {
     const student = await getStudentById(req.params.id);
     res.status(200).json({
-      message: "Student fetched sucessfully!",
+      message: "Student fetched successfully!",
       student,
     });
   } catch (error) {
@@ -70,7 +70,7 @@ export const updateStudentController = async (req, res) => {
   try {
     const student = await updateStudent(req.params.id, req.body);
     res.status(200).json({
-      message: "Student Updated Sucessfully!",
+      message: "Student updated successfully!",
       student,
     });
   } catch (error) {
@@ -85,7 +85,7 @@ export const deleteStudentController = async (req, res) => {
   try {
     await deleteStudent(req.params.id);
     res.status(200).json({
-      message: "Student Deleted Sucessfully",
+      message: "Student deleted successfully",
     });
   } catch (error) {
     res.status(500).json({

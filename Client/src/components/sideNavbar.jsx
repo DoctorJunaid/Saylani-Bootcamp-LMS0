@@ -71,7 +71,7 @@ export default function SideNavBar({ mobileOpen = false, onMobileClose }) {
 
       <aside
         className={[
-          "flex h-screen flex-col border-r border-border bg-surface font-sans transition-all duration-normal ease-in-out",
+          "flex h-screen flex-col border-r border-border bg-surface/98 font-sans shadow-[4px_0_24px_rgba(0,0,0,0.05)] backdrop-blur-sm transition-all duration-normal ease-in-out",
           // Mobile: off-canvas drawer
           "fixed inset-y-0 left-0 z-50 w-64 max-w-[85vw]",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
@@ -82,7 +82,7 @@ export default function SideNavBar({ mobileOpen = false, onMobileClose }) {
       >
         {/* Logo + collapse toggle (collapse only on desktop) */}
         <div
-          className={`flex h-21 items-center border-b border-surface-high px-md transition-all duration-normal ${
+          className={`flex h-[var(--app-header-height)] shrink-0 items-center border-b border-border px-md transition-all duration-normal ${
             collapsed ? "lg:justify-center" : "justify-between"
           }`}
         >
@@ -94,7 +94,7 @@ export default function SideNavBar({ mobileOpen = false, onMobileClose }) {
             <img
               src="/logo.png"
               alt="SMIT logo"
-              className="block h-16 w-auto max-w-[160px] object-contain transition-all duration-200"
+              className="block h-16 w-auto max-w-[200px] object-contain transition-all duration-200"
             />
           </div>
 
@@ -123,18 +123,24 @@ export default function SideNavBar({ mobileOpen = false, onMobileClose }) {
                   onClick={onMobileClose}
                   className={({ isActive }) =>
                     [
-                      "group relative flex items-center rounded-lg py-2.5 text-sm transition-colors duration-fast cursor-pointer",
+                      "group relative flex items-center rounded-lg py-2.5 text-sm transition-all duration-fast cursor-pointer",
                       collapsed
                         ? "justify-start gap-sm px-md lg:justify-center lg:gap-0 lg:px-sm"
                         : "gap-sm px-md",
                       isActive
-                        ? "bg-primary-container/15 font-medium text-primary"
+                        ? "bg-primary/10 font-semibold text-primary shadow-sm ring-1 ring-primary/15"
                         : "text-text-muted hover:bg-surface-low hover:text-text",
                     ].join(" ")
                   }
                 >
                   {({ isActive }) => (
                     <>
+                      {isActive && (
+                        <span
+                          className="absolute left-0 top-1/2 h-7 w-1 -translate-y-1/2 rounded-r-full bg-primary"
+                          aria-hidden
+                        />
+                      )}
                       <Icon
                         size={20}
                         strokeWidth={2}

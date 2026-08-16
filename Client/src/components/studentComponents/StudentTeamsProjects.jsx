@@ -16,7 +16,7 @@ const StudentTeamsProjects = ({ team = null, projects = [] }) => {
   const projectList = projects?.length ? projects : team?.projects || [];
 
   return (
-    <div className="bg-[var(--color-surface)] rounded-[var(--radius-xl)] shadow-[var(--shadow-sm)] border border-[var(--color-border)] p-6 w-full lg:w-[400px] flex flex-col h-full shrink-0">
+    <div className="app-panel flex h-full w-full shrink-0 flex-col p-6 lg:w-[400px]">
       <h3 className="text-lg font-bold text-[var(--color-text)] tracking-tight mb-6">
         Teams & Projects
       </h3>

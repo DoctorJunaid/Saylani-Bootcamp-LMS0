@@ -72,7 +72,7 @@ export default function FilterToolbar({
 
       {/* Full-width search — always typeable */}
       <div className="relative w-full max-w-[28rem]">
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 z-[1]">
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-[1] flex items-center pl-3.5">
           <Search className="h-4 w-4 text-[var(--color-text-muted)]" />
         </div>
         <input
@@ -82,7 +82,7 @@ export default function FilterToolbar({
           placeholder={searchPlaceholder}
           aria-label={searchPlaceholder}
           autoComplete="off"
-          className="relative z-0 block w-full min-w-0 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] py-2.5 pl-10 pr-3 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] transition-colors focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
+          className="relative z-0 block w-full min-w-0 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] py-3 pl-11 pr-3 text-sm text-[var(--color-text)] shadow-[var(--shadow-sm)] placeholder:text-[var(--color-text-muted)] transition-all focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20"
         />
       </div>
     </div>

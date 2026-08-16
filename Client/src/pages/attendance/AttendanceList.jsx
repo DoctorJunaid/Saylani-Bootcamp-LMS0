@@ -5,6 +5,7 @@ import AttendanceTableSkeleton from '../../components/attendanceComponents/Atten
 import AttendancePagination from '../../components/attendanceComponents/AttendancePagination';
 import TakeAttendanceModal from '../../components/attendanceComponents/TakeAttendanceModal';
 import StudentRecordModal from '../../components/attendanceComponents/StudentRecordModal';
+import PageShell, { PagePanel } from '../../components/ui/PageShell';
 
 import toast from 'react-hot-toast';
 
@@ -207,18 +208,32 @@ const AttendanceList = () => {
   };
 
   const handleStatusChange = async (record, newStatus) => {
-    const studentId = record.studentId || record.id;
+    const studentId = String(record.studentId || record.id || "");
+    if (!studentId) {
+      toast.error("Student id missing — cannot update attendance");
+      return;
+    }
+
     const date = toYmd(record.date || selectedDate);
-    const time = newStatus === 'Present'
-      ? new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-      : null;
+    const time =
+      newStatus === "Present"
+        ? new Date().toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        : null;
 
     setData((prev) =>
       prev.map((student) =>
         student.id === record.id
-          ? { ...student, status: newStatus, checkInTime: time }
-          : student
-      )
+          ? {
+              ...student,
+              status: newStatus,
+              checkInTime:
+                newStatus === "Present" ? time : student.checkInTime,
+            }
+          : student,
+      ),
     );
 
     try {
@@ -228,8 +243,12 @@ const AttendanceList = () => {
           {
             student_id: studentId,
             status: newStatus,
-            checkInTime: time || '',
-            note: record.note || '',
+            checkInTime:
+              newStatus === "Present"
+                ? time || record.checkInTime || ""
+                : record.checkInTime || "",
+            checkOutTime: record.checkOutTime || "",
+            note: record.note || "",
           },
         ],
       });
@@ -237,7 +256,9 @@ const AttendanceList = () => {
       loadAttendanceData(selectedDate, viewMode);
     } catch (error) {
       console.error("Failed to update attendance on server:", error);
-      toast.error(error.response?.data?.message || "Failed to persist attendance change");
+      toast.error(
+        error.response?.data?.message || "Failed to persist attendance change",
+      );
       loadAttendanceData(selectedDate, viewMode);
     }
   };
@@ -314,8 +335,8 @@ const AttendanceList = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-background)] p-3 sm:p-4">
-      <div className="bg-[var(--color-surface)] rounded-[var(--radius-xl)] shadow-[var(--shadow-md)] border border-[var(--color-border)] px-3 sm:px-4 pb-3 sm:pb-4 pt-3 flex flex-col gap-2">
+    <PageShell>
+      <PagePanel className="flex flex-col gap-3">
         <AttendanceToolbar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -327,7 +348,7 @@ const AttendanceList = () => {
           rangeLabel={rangeLabel}
         />
 
-        <div className="border border-[var(--color-surface-highest)] rounded-[var(--radius-lg)] overflow-visible min-h-[300px]">
+        <div className="min-h-[300px] overflow-visible rounded-[var(--radius-lg)] border border-[var(--color-surface-highest)] bg-[var(--color-surface-low)]/30">
           {isLoading ? (
             <AttendanceTableSkeleton />
           ) : (
@@ -350,7 +371,7 @@ const AttendanceList = () => {
             </>
           )}
         </div>
-      </div>
+      </PagePanel>
 
       {isTakeAttendanceModalOpen && (
         <TakeAttendanceModal
@@ -367,7 +388,7 @@ const AttendanceList = () => {
           onClose={() => setSelectedStudentForRecord(null)}
         />
       )}
-    </div>
+    </PageShell>
   );
 };
 

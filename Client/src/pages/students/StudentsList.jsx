@@ -4,6 +4,7 @@ import StudentTable from '../../components/studentComponents/StudentTable';
 import StudentTableSkeleton from '../../components/studentComponents/StudentTableSkeleton';
 import StudentPagination from '../../components/studentComponents/StudentPagination';
 import AddStudentModal from '../../components/studentComponents/AddStudentModal';
+import PageShell, { PagePanel } from '../../components/ui/PageShell';
 import { getStudents } from '../../api/student.api';
 import { getOverallAttendanceStats } from '../../Services/attendance.services';
 import toast from 'react-hot-toast';
@@ -127,8 +128,8 @@ const StudentsList = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[var(--color-background)] p-3 sm:p-4">
-      <div className="bg-[var(--color-surface)] rounded-[var(--radius-xl)] shadow-[var(--shadow-md)] border border-[var(--color-border)] p-3 sm:p-4 flex flex-col gap-3">
+    <PageShell>
+      <PagePanel className="flex flex-col gap-4">
         <StudentToolbar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -158,7 +159,7 @@ const StudentsList = () => {
             onPageChange={setCurrentPage}
           />
         )}
-      </div>
+      </PagePanel>
 
       {isAddStudentModalOpen && (
         <AddStudentModal
@@ -169,7 +170,7 @@ const StudentsList = () => {
           }}
         />
       )}
-    </div>
+    </PageShell>
   );
 };
 

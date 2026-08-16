@@ -53,7 +53,7 @@ const StudentTable = ({ students = [], onRefresh }) => {
           <col className="w-[8%]" />
         </colgroup>
         <thead>
-          <tr className="border-b border-[var(--color-border)]">
+          <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface-low)]/80">
             <th className="px-3 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Roll No</th>
             <th className="px-3 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Name</th>
             <th className="px-3 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Course</th>
