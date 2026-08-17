@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginAdmin } from "../../Services/auth.services";
+import { useAuth } from "../../context/authContextObject";
 import toast from "react-hot-toast";
 import {
   Eye,
@@ -22,6 +23,7 @@ const HIGHLIGHTS = [
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -32,12 +34,21 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      await loginAdmin(email, password);
+      const data = await loginAdmin(email, password);
+      const token = data?.token;
+      if (!token) {
+        throw new Error("Login succeeded but no token was returned");
+      }
+
+      // Must update AuthContext — ProtectedRoute reads this, not only localStorage
+      login(token);
       toast.success("Login successfully!");
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Invalid Email or password",
+        error.response?.data?.message ||
+          error.message ||
+          "Invalid Email or password",
       );
     } finally {
       setIsLoading(false);

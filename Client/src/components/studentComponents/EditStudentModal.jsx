@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import CustomSelect from "../CustomSelect";
 import { updateStudent } from "../../api/student.api";
@@ -136,9 +137,9 @@ const EditStudentModal = ({ student, onClose, onSuccess }) => {
 
   const teamOptions = teams.map((team) => team.name).filter(Boolean);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-[var(--color-surface)] rounded-[var(--radius-xl)] shadow-xl border border-[var(--color-border)] w-1/2 sm:w-3/4 md:w-1/2 max-h-[95vh] flex flex-col overflow-hidden">
+  return createPortal(
+    <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="bg-[var(--color-surface)] rounded-[var(--radius-xl)] shadow-xl border border-[var(--color-border)] w-full  max-h-[95vh] flex flex-col overflow-hidden sm:w-3/4 md:w-1/2">
         <div className="flex items-center justify-between p-6 pb-4 shrink-0">
           <h2 className="text-xl font-bold text-[var(--color-text)]">Edit Student</h2>
           <button
@@ -266,7 +267,8 @@ const EditStudentModal = ({ student, onClose, onSuccess }) => {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 

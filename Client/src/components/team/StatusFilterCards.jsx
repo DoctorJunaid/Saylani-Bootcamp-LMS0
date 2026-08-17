@@ -47,14 +47,13 @@ export default function StatusFilterCards({
             role="tab"
             aria-selected={isActive}
             onClick={() => onFilterChange(key)}
-            className={`group relative flex items-start justify-between overflow-hidden rounded-[var(--radius-xl)] border bg-[var(--color-surface)] p-4 text-left shadow-[var(--shadow-sm)] transition-all duration-[var(--duration-normal)] cursor-pointer hover:-translate-y-1 hover:shadow-[var(--shadow-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-container)] sm:p-5 ${
+            className={`group flex items-start justify-between rounded-[var(--radius-xl)] border bg-[var(--color-surface)] p-4 text-left shadow-[var(--shadow-sm)] transition-all duration-[var(--duration-normal)] cursor-pointer hover:-translate-y-1 hover:shadow-[var(--shadow-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-container)] sm:p-5 ${
               isActive
                 ? "border-[var(--color-primary)] ring-2 ring-[var(--color-primary)]/20 bg-[color-mix(in_srgb,var(--color-primary)_8%,var(--color-surface))]"
                 : "border-[var(--color-border)] hover:border-[var(--color-primary)]/30"
             }`}
           >
-            <div className="pointer-events-none absolute -right-4 -top-4 h-20 w-20 rounded-full bg-[var(--color-primary)]/5 transition-transform group-hover:scale-110" />
-            <div className="relative min-w-0 pr-2">
+            <div className="min-w-0 pr-2">
               <p className="text-sm font-medium text-[var(--color-text-muted)]">
                 {label}
               </p>
@@ -63,7 +62,7 @@ export default function StatusFilterCards({
               </p>
             </div>
             {Icon ? (
-              <div className={`app-stat-icon relative shrink-0 ${iconTone}`}>
+              <div className={`app-stat-icon shrink-0 ${iconTone}`}>
                 <Icon size={22} strokeWidth={2} aria-hidden />
               </div>
             ) : null}

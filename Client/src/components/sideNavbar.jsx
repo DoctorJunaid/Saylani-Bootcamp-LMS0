@@ -11,6 +11,7 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import LogoutConfirmModal from "./LogoutConfirmModal";
+import { useAuth } from "../context/authContextObject";
 
 const NAV_ITEMS = [
   {
@@ -50,9 +51,10 @@ export default function SideNavBar({ mobileOpen = false, onMobileClose }) {
   const [collapsed, setCollapsed] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleConfirmLogout = () => {
-    localStorage.removeItem("token");
+    logout();
     setShowLogoutConfirm(false);
     if (onMobileClose) onMobileClose();
     navigate("/login", { replace: true });

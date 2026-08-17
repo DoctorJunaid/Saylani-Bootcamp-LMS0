@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 function formatRelativeTime(value) {
@@ -29,13 +30,13 @@ export default function NotificationPanel({
 }) {
   const hasNotifications = notifications.length > 0;
 
-  return (
+  const panel = (
     <motion.div
       initial={{ opacity: 0, y: -10, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10, scale: 0.95 }}
       transition={{ duration: 0.15, ease: "easeOut" }}
-      className="absolute right-0 top-full z-50 mt-sm w-[min(20rem,calc(100vw-1.5rem))] rounded-lg border border-border bg-surface shadow-md"
+      className="fixed right-4 top-[calc(var(--app-header-height)+8px)] z-[9999] w-[min(20rem,calc(100vw-1.5rem))] rounded-lg border border-border bg-surface shadow-lg sm:right-6"
     >
       <div className="flex items-center justify-between border-b border-surface-high px-lg py-md">
         <h3 className="text-sm font-semibold text-text">Notifications</h3>
@@ -112,4 +113,6 @@ export default function NotificationPanel({
       </div>
     </motion.div>
   );
+
+  return createPortal(panel, document.body);
 }

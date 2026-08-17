@@ -3,18 +3,14 @@ import { ThemeContext } from "./themeContextObject";
 
 const STORAGE_KEY = "lms-theme";
 
+/** Default is always light. Only use dark when user explicitly saved it. */
 function getPreferredTheme() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved === "light" || saved === "dark") return saved;
+    if (saved === "dark") return "dark";
+    if (saved === "light") return "light";
   } catch {
     // ignore
-  }
-  if (
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  ) {
-    return "dark";
   }
   return "light";
 }
@@ -26,14 +22,7 @@ function applyThemeClass(theme) {
 }
 
 export function ThemeProvider({ children }) {
-  const [theme, setThemeState] = useState(() => {
-    if (typeof document !== "undefined") {
-      return document.documentElement.classList.contains("dark")
-        ? "dark"
-        : getPreferredTheme();
-    }
-    return "light";
-  });
+  const [theme, setThemeState] = useState(() => getPreferredTheme());
 
   useEffect(() => {
     applyThemeClass(theme);

@@ -50,9 +50,8 @@ const getCurrentTimeString = () => {
 
 function StatCard({ label, value, icon: Icon, tone }) {
   return (
-    <div className="group relative flex items-start justify-between overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-[var(--shadow-sm)] transition-all duration-[var(--duration-normal)] hover:-translate-y-1 hover:border-[var(--color-primary)]/30 hover:shadow-[var(--shadow-md)] sm:p-5">
-      <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-[var(--color-primary)]/5 transition-transform duration-[var(--duration-normal)] group-hover:scale-125" />
-      <div className="relative min-w-0">
+    <div className="group flex items-start justify-between rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-[var(--shadow-sm)] transition-all duration-[var(--duration-normal)] hover:-translate-y-1 hover:border-[var(--color-primary)]/30 hover:shadow-[var(--shadow-md)] sm:p-5">
+      <div className="min-w-0">
         <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)] sm:text-sm sm:normal-case sm:tracking-normal sm:font-medium">
           {label}
         </p>
@@ -60,7 +59,7 @@ function StatCard({ label, value, icon: Icon, tone }) {
           {value}
         </p>
       </div>
-      <div className={`app-stat-icon relative shrink-0 ${tone}`}>
+      <div className={`app-stat-icon shrink-0 ${tone}`}>
         <Icon size={22} strokeWidth={2} />
       </div>
     </div>
