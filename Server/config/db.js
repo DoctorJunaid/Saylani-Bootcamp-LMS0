@@ -1,22 +1,35 @@
 import mongoose from "mongoose";
 import { configDotenv } from "dotenv";
-import dns from "node:dns";
-dns.setServers(["8.8.8.8", "8.8.4.4"]);   // yeh line add karo
 configDotenv();
 
-
+let connectionPromise;
 
 export const connectDB = async () => {
-  
-  try {
-    const db = await mongoose.connect(process.env.MONGODB_URI, {
-    
-    });
-    console.log(`MongoDB connected: ${db.connection.host}`);
-  } catch (error) {
-    console.error("DB Error:", error.message);
-     process.exit(1);
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
   }
+
+  if (!process.env.MONGODB_URI) {
+    throw new Error("MONGODB_URI environment variable is not configured");
+  }
+
+  if (!connectionPromise) {
+    connectionPromise = mongoose
+      .connect(process.env.MONGODB_URI, {
+        serverSelectionTimeoutMS: 10_000,
+      })
+      .then((db) => {
+        console.log(`MongoDB connected: ${db.connection.host}`);
+        return db;
+      })
+      .catch((error) => {
+        connectionPromise = undefined;
+        console.error("Database connection error:", error.message);
+        throw error;
+      });
+  }
+
+  return connectionPromise;
 };
 
 
