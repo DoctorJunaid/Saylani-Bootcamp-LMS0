@@ -1,9 +1,66 @@
 import { useEffect, useMemo, useState } from "react";
-import { fetchProjects, createProject } from "../../Data/projects";
+import toast from "react-hot-toast";
+import {
+  FolderKanban,
+  CircleDashed,
+  Loader,
+  Eye,
+  CheckCircle2,
+} from "lucide-react";
+import {
+  fetchProjects,
+  createProject,
+  deleteProject,
+} from "../../Data/projects";
 import FilterToolbar from "../../components/team/FilterTollbar";
 import ProjectCard from "../../components/team/ProjectCard";
 import CreateProjectModal from "./CreateProjectModal";
 import ProjectDetailsModal from "./ProjectDetailsModal";
+import ProjectTableSkeleton from "./ProjectTableSkeleton";
+import PageShell, { PagePanel } from "../../components/ui/PageShell";
+
+/** Matches Project model status enum (Title Case) + filter keys. */
+const PROJECT_FILTERS = [
+  {
+    key: "all",
+    label: "All Projects",
+    icon: FolderKanban,
+    tone: "text-[var(--color-primary)]",
+  },
+  {
+    key: "not_started",
+    label: "Not Started",
+    icon: CircleDashed,
+    tone: "text-[var(--color-text-muted)]",
+  },
+  {
+    key: "in_progress",
+    label: "In Progress",
+    icon: Loader,
+    tone: "text-[var(--color-warning)]",
+  },
+  {
+    key: "under_review",
+    label: "Under Review",
+    icon: Eye,
+    tone: "text-[var(--color-secondary)]",
+  },
+  {
+    key: "completed",
+    label: "Completed",
+    icon: CheckCircle2,
+    tone: "text-[var(--color-success)]",
+  },
+];
+
+function matchesProjectStatus(status, filterKey) {
+  if (filterKey === "all") return true;
+  const normalized = String(status ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_");
+  return normalized === filterKey;
+}
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState([]);
@@ -15,6 +72,8 @@ export default function ProjectsPage() {
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [projectToDelete, setProjectToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const loadProjects = async () => {
     setIsLoading(true);
@@ -33,26 +92,44 @@ export default function ProjectsPage() {
     loadProjects();
   }, []);
 
+  useEffect(() => {
+    const handleOpenCreateProjectModal = () => {
+      setIsCreateModalOpen(true);
+    };
+    window.addEventListener(
+      "openCreateProjectModal",
+      handleOpenCreateProjectModal,
+    );
+    return () => {
+      window.removeEventListener(
+        "openCreateProjectModal",
+        handleOpenCreateProjectModal,
+      );
+    };
+  }, []);
+
   const counts = useMemo(
     () => ({
       all: projects.length,
-      not_started: projects.filter((p) => p.status === "Not Started" || p.status === "not_started").length,
-      in_progress: projects.filter((p) => p.status === "In Progress" || p.status === "in_progress").length,
-      completed: projects.filter((p) => p.status === "Completed" || p.status === "completed").length,
+      not_started: projects.filter((p) =>
+        matchesProjectStatus(p.status, "not_started"),
+      ).length,
+      in_progress: projects.filter((p) =>
+        matchesProjectStatus(p.status, "in_progress"),
+      ).length,
+      under_review: projects.filter((p) =>
+        matchesProjectStatus(p.status, "under_review"),
+      ).length,
+      completed: projects.filter((p) =>
+        matchesProjectStatus(p.status, "completed"),
+      ).length,
     }),
-    [projects]
+    [projects],
   );
 
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
-      // Handle both ui and backend casing formats for safety
-      let matchesFilter = activeFilter === "all";
-      if (!matchesFilter) {
-          const status = project.status?.toLowerCase();
-          if (activeFilter === "not_started") matchesFilter = status === "not started" || status === "not_started";
-          else if (activeFilter === "in_progress") matchesFilter = status === "in progress" || status === "in_progress";
-          else if (activeFilter === "completed") matchesFilter = status === "completed";
-      }
+      const matchesFilter = matchesProjectStatus(project.status, activeFilter);
 
       const matchesSearch = project.title
         .toLowerCase()
@@ -62,57 +139,104 @@ export default function ProjectsPage() {
     });
   }, [projects, activeFilter, searchQuery]);
 
-  function handleViewProject(project) {
+  function handleEditProject(project) {
     setSelectedProjectId(project._id || project.id);
   }
 
+  function handleDeleteClick(project) {
+    setProjectToDelete(project);
+  }
+
+  async function handleConfirmDelete() {
+    if (!projectToDelete || isDeleting) return;
+    const projectId = projectToDelete._id || projectToDelete.id;
+    if (!projectId) {
+      toast.error("Project id is missing");
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      await deleteProject(projectId);
+      toast.success("Project deleted successfully");
+      setProjectToDelete(null);
+      await loadProjects();
+    } catch (err) {
+      toast.error(err.message || "Failed to delete project");
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
   async function handleCreateProject(newProject) {
-    const savedProject = await createProject(newProject);
-    setProjects((prev) => [savedProject, ...prev]);
+    await createProject(newProject);
+    await loadProjects();
   }
 
   return (
-    <div className="bg-background min-h-screen">
-      <div className="max-w-[var(--container)] mx-auto px-lg py-2xl">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-3xl font-weight-bold text-text">Projects</h1>
-            <p className="text-text-muted mt-1">Manage and view all projects.</p>
-          </div>
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="bg-primary text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity"
-          >
-            Create Project
-          </button>
-        </div>
+    <PageShell>
+      <FilterToolbar
+        filters={PROJECT_FILTERS}
+        counts={counts}
+        activeFilter={activeFilter}
+        onFilterChange={setActiveFilter}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder="Search projects..."
+        isLoading={isLoading}
+      />
 
-        <FilterToolbar
-          counts={counts}
-          activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-        />
-
-        <div className="mt-lg">
-          {isLoading ? (
-            <div className="text-center py-10 text-text-muted">Loading projects...</div>
-          ) : error ? (
-            <div className="text-center py-10 text-error">{error}</div>
-          ) : filteredProjects.length === 0 ? (
-            <div className="text-center py-10 text-text-muted">No projects found.</div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+      {isLoading ? (
+        <ProjectTableSkeleton />
+      ) : error ? (
+        <PagePanel className="py-10 text-center text-error">{error}</PagePanel>
+      ) : filteredProjects.length === 0 ? (
+        <PagePanel className="py-10 text-center text-text-muted">
+          No projects found.
+        </PagePanel>
+      ) : (
+        <PagePanel padded={false} className="overflow-x-auto">
+          <table className="w-full table-fixed text-left min-w-[720px] border-collapse">
+            <colgroup>
+              <col className="w-[32%]" />
+              <col className="w-[18%]" />
+              <col className="w-[18%]" />
+              <col className="w-[18%]" />
+              <col className="w-[14%]" />
+            </colgroup>
+            <thead>
+              <tr className="border-b border-border bg-[var(--color-surface-low)]/90">
+                <th className="px-4 py-4 text-xs font-semibold text-text-muted uppercase tracking-wider align-middle">
+                  Project
+                </th>
+                <th className="px-4 py-4 text-xs font-semibold text-text-muted uppercase tracking-wider align-middle">
+                  Team
+                </th>
+                <th className="px-4 py-4 text-xs font-semibold text-text-muted uppercase tracking-wider align-middle">
+                  Status
+                </th>
+                <th className="px-4 py-4 text-xs font-semibold text-text-muted uppercase tracking-wider align-middle">
+                  Deadline
+                </th>
+                <th className="px-4 py-4 text-xs font-semibold text-text-muted uppercase tracking-wider align-middle text-right">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
               {filteredProjects.map((project) => (
-                <div key={project._id || project.id} onClick={() => handleViewProject(project)} className="cursor-pointer hover:shadow-md transition-shadow rounded-lg">
-                  <ProjectCard project={project} />
-                </div>
+                <ProjectCard
+                  key={project._id || project.id}
+                  project={project}
+                  teamName={project.teamId?.name || project.teamName}
+                  onEdit={handleEditProject}
+                  onDelete={handleDeleteClick}
+                />
               ))}
-            </div>
-          )}
-        </div>
-      </div>
+            </tbody>
+          </table>
+        </PagePanel>
+      )}
 
       <CreateProjectModal
         isOpen={isCreateModalOpen}
@@ -125,9 +249,39 @@ export default function ProjectsPage() {
           projectId={selectedProjectId}
           onClose={() => setSelectedProjectId(null)}
           onUpdate={loadProjects}
-
         />
       )}
-    </div>
+
+      {projectToDelete && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          onClick={() => !isDeleting && setProjectToDelete(null)}
+        >
+          <div
+            className="bg-surface rounded-xl border border-border shadow-xl w-full max-w-[220px] p-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-end gap-sm">
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => setProjectToDelete(null)}
+                className="px-md py-1.5 rounded-lg text-sm font-medium text-text-muted bg-surface-container hover:bg-surface-high disabled:opacity-60"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={handleConfirmDelete}
+                className="px-md py-1.5 rounded-lg text-sm font-medium text-white bg-error hover:opacity-90 disabled:opacity-60"
+              >
+                {isDeleting ? "..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </PageShell>
   );
 }

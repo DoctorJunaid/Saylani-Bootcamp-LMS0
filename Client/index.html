@@ -10,6 +10,19 @@
     <!-- Mobile Responsive -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Apply saved theme before paint (default: light — never auto OS dark) -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("lms-theme");
+          if (t !== "dark") t = "light";
+          if (t === "dark") document.documentElement.classList.add("dark");
+          else document.documentElement.classList.remove("dark");
+          document.documentElement.style.colorScheme = t;
+        } catch (e) {}
+      })();
+    </script>
+
     <!-- Primary Meta Tags -->
     <title>SMIT Portal - Saylani Welfare Int Trust</title>
     <meta name="title" content="SMIT Portal - Saylani Welfare Int Trust" />

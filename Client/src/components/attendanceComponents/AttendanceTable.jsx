@@ -1,26 +1,23 @@
-import React from 'react';
 import CustomSelect from '../CustomSelect';
 
+const statusBadgeStyles = {
+  Present: 'bg-[#dcfce7] text-[#16a34a]',
+  Leave: 'bg-[#ffedd5] text-[#ea580c]',
+  Absent: 'bg-[#fee2e2] text-[#ef4444]',
+  'Not marked': 'bg-[var(--color-surface-high)] text-[var(--color-text-muted)]',
+};
+
+const cellPad = 'px-3 py-4 align-middle';
+const headPad =
+  ' py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider align-middle';
+
 const StatusBadge = ({ status }) => {
-  let badgeStyle = '';
-  switch (status) {
-    case 'Present':
-      badgeStyle = 'bg-[#dcfce7] text-[#16a34a]';
-      break;
-    case 'Leave':
-      badgeStyle = 'bg-[#ffedd5] text-[#ea580c]';
-      break;
-    case 'Absent':
-      badgeStyle = 'bg-[#fee2e2] text-[#ef4444]';
-      break;
-    case 'Not marked':
-    default:
-      badgeStyle = 'bg-[var(--color-surface-high)] text-[var(--color-text-muted)]';
-      break;
-  }
+  const badgeStyle =
+    statusBadgeStyles[status] ||
+    'bg-[var(--color-surface-high)] text-[var(--color-text-muted)]';
 
   return (
-    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${badgeStyle}`}>
+    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${badgeStyle}`}>
       {status}
     </span>
   );
@@ -28,81 +25,89 @@ const StatusBadge = ({ status }) => {
 
 const AttendanceTable = ({ attendanceData, onStatusChange, onStudentClick }) => {
   return (
-    <div className="overflow-visible w-full">
-      <table className="w-full text-left whitespace-nowrap">
+    <div className="w-full max-sm:overflow-x-auto">
+      <table className="w-full table-fixed text-left max-sm:min-w-[780px]">
+        <colgroup>
+          <col className="w-[10%]" />
+          <col className="w-[16%]" />
+          <col className="w-[12%]" />
+          <col className="w-[10%]" />
+          <col className="w-[10%]" />
+          <col className="w-[14%]" />
+          <col className="w-[14%]" />
+          <col className="w-[14%]" />
+        </colgroup>
         <thead>
-          <tr className="border-b border-[var(--color-surface-highest)]">
-            <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Roll No</th>
-            <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Student</th>
-            <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Check In</th>
-            <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Check Out</th>
-            <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Status</th>
-            <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Note</th>
-            <th className="px-4 py-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider text-right">Change</th>
+          <tr className="border-b border-[var(--color-surface-highest)] bg-[var(--color-surface-low)]/80">
+            <th className={`${headPad} px-3`}>Roll No</th>
+            <th className={headPad}>Student</th>
+            <th className={headPad}>Date</th>
+            <th className={headPad}>Check In</th>
+            <th className={headPad}>Check Out</th>
+            <th className={`${headPad} px-4`}>Status</th>
+            <th className={headPad}>Reason</th>
+            <th className={`${headPad} text-right px-7`}>Change</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-[var(--color-surface-highest)] text-sm">
           {attendanceData.map((record) => (
             <tr key={record.id} className="hover:bg-[var(--color-surface-low)] transition-colors group">
-              
-              {/* Roll No */}
-              <td className="px-4 py-4 font-semibold text-[var(--color-text-muted)] text-[13px]">{record.rollNo}</td>
-              
-              {/* Student */}
-              <td className="px-4 py-4">
-                <span 
+              <td className={`${cellPad} font-semibold text-[var(--color-text-muted)] text-[13px]`}>
+                {record.rollNo}
+              </td>
+
+              <td className={`${cellPad} min-w-0`}>
+                <span
                   onClick={() => onStudentClick && onStudentClick(record)}
-                  className="font-semibold text-[#0284c7] cursor-pointer hover:underline"
+                  className="font-semibold text-[#0284c7] cursor-pointer hover:underline break-words line-clamp-2"
                 >
                   {record.name}
                 </span>
               </td>
 
-              {/* Check In */}
-              <td className="px-4 py-4 text-xs font-medium text-[var(--color-text-muted)]">
+              <td className={`${cellPad} text-xs font-medium text-[var(--color-text-muted)]`}>
+                <span className="break-words">{record.date || '—'}</span>
+              </td>
+
+              <td className={`${cellPad} text-xs font-medium text-[var(--color-text-muted)]`}>
                 {record.checkInTime || '—'}
               </td>
 
-              {/* Check Out */}
-              <td className="px-4 py-4 text-xs font-medium text-[var(--color-text-muted)]">
+              <td className={`${cellPad} text-xs font-medium text-[var(--color-text-muted)]`}>
                 {record.checkOutTime || '—'}
               </td>
-              
-              {/* Status */}
-              <td className="px-4 py-4">
+
+              <td className={cellPad}>
                 <StatusBadge status={record.status} />
               </td>
-              
-              {/* Note */}
-              <td className="px-4 py-4 text-xs font-medium text-[var(--color-text-muted)]">
-                {record.note || '—'}
+
+              <td className={`${cellPad} text-xs font-medium text-[var(--color-text-muted)] min-w-0`}>
+                <span className="line-clamp-2 break-words" title={record.note || ''}>
+                  {record.note || '—'}
+                </span>
               </td>
-              
-              {/* Change (Dropdown) */}
-              <td className="px-4 py-2 text-right">
-                <div className="flex justify-end">
+
+              <td className={`${cellPad} text-right`}>
+                <div className="inline-flex justify-end">
                   <CustomSelect
                     label="Status"
                     value={record.status === 'Not marked' ? 'Set' : record.status}
                     options={['Present', 'Leave', 'Absent']}
-                    onChange={(val) => onStatusChange(record.id, val)}
-                    className="w-[120px]"
+                    onChange={(val) => onStatusChange(record, val)}
                     size="sm"
                   />
                 </div>
               </td>
-
             </tr>
           ))}
-          
+
           {attendanceData.length === 0 && (
             <tr>
-            <td colSpan="7" className="px-4 py-12 text-center text-[var(--color-text-muted)]">
+              <td colSpan="8" className="px-3 py-12 text-center text-[var(--color-text-muted)]">
                 No attendance records found.
               </td>
             </tr>
           )}
-
         </tbody>
       </table>
     </div>

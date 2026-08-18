@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import {
   GraduationCap,
   UserCheck,
@@ -9,19 +9,24 @@ import {
   ClipboardCheck,
   Search,
   CheckCircle2,
-  XCircle,
-  AlertCircle,
-  Clock,
   UserCheck2,
-  LogOut,
   X,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   getTaskData,
   getDashboardStats,
-  getAttendanceByDate,
 } from "../../api/axios";
+import {
+  getAttendanceByDate,
+  markAttendance,
+} from "../../Services/attendance.services.js";
+import {
+  DashboardStatCardsSkeleton,
+  DashboardAttendanceTableSkeleton,
+  DashboardTasksSkeleton,
+} from "../../components/dashboard/DashboardSkeleton";
+import { getLocalToday } from "../../utils/localDate";
 
 const taskStatusStyles = {
   Completed:
@@ -45,16 +50,16 @@ const getCurrentTimeString = () => {
 
 function StatCard({ label, value, icon: Icon, tone }) {
   return (
-    <div className="flex items-start justify-between rounded-[var(--radius-xl)] border border-[var(--color-surface-high)] bg-[var(--color-surface)] p-[var(--spacing-lg)] shadow-[var(--shadow-sm)] transition-all duration-[var(--duration-normal)] hover:shadow-[var(--shadow-md)]">
-      <div>
-        <p className="text-sm font-medium text-[var(--color-text-muted)]">
+    <div className="group flex items-start justify-between rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-[var(--shadow-sm)] transition-all duration-[var(--duration-normal)] hover:-translate-y-1 hover:border-[var(--color-primary)]/30 hover:shadow-[var(--shadow-md)] sm:p-5">
+      <div className="min-w-0">
+        <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)] sm:text-sm sm:normal-case sm:tracking-normal sm:font-medium">
           {label}
         </p>
-        <p className="mt-[var(--spacing-xs)] text-2xl font-bold text-[var(--color-text)]">
+        <p className="mt-1.5 text-3xl font-bold tracking-tight text-[var(--color-text)]">
           {value}
         </p>
       </div>
-      <div className={`rounded-lg  ${tone}`}>
+      <div className={`app-stat-icon shrink-0 ${tone}`}>
         <Icon size={22} strokeWidth={2} />
       </div>
     </div>
@@ -64,53 +69,85 @@ function StatCard({ label, value, icon: Icon, tone }) {
 function StatusBadge({ status }) {
   if (status === "Present") {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold text-[var(--color-success)] border border-[var(--color-success)]/20">
-        <CheckCircle2 size={13} /> Present
-      </span>
-    );
-  }
-  if (status === "--") {
-    return (
-      <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold text-[var(--color-text-muted)] border border-[var(--color-surface-high)]/80">
-        --
+      <span
+        title="Present"
+        className="inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold text-[var(--color-success)] border border-[var(--color-success)]/20"
+      >
+        Present
       </span>
     );
   }
   if (status === "Absent") {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold text-[var(--color-error)] border border-[var(--color-error)]/20">
-        <XCircle size={13} /> Absent
+      <span
+        title="Absent"
+        className="inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold text-[var(--color-error)] border border-[var(--color-error)]/20"
+      >
+        Absent
+      </span>
+    );
+  }
+  if (status === "Leave") {
+    return (
+      <span
+        title="Leave"
+        className="inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold text-[var(--color-warning)] border border-[var(--color-warning)]/20"
+      >
+        Leave
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold text-[var(--color-warning)] border border-[var(--color-warning)]/20">
-      <AlertCircle size={13} /> Leave
+    <span
+      title="Not marked"
+      className="inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold text-[var(--color-text-muted)] border border-[var(--color-surface-high)]/80"
+    >
+      --
     </span>
   );
 }
 
-function TaskRow({ title, student, rollNumber, dueDate, status }) {
+function TaskRow({ title, student, rollNumber, teamName, dueDate, status }) {
+  const teamLabel = teamName || "Unassigned";
+
   return (
-    <div className="-mx-[var(--spacing-sm)] flex items-center justify-between rounded-[var(--radius-md)] border-b border-[var(--color-surface-high)] px-[var(--spacing-sm)] py-[var(--spacing-md)] transition-colors duration-[var(--duration-fast)] last:border-b-0 hover:bg-[var(--color-surface-low)]">
-      <div className="space-y-0.5">
-        <p className="text-sm font-semibold text-[var(--color-text)]">
+    <div className="rounded-[var(--radius-lg)] border border-transparent px-2.5 py-3 transition-all duration-[var(--duration-fast)] last:border-b-0 hover:border-[var(--color-border)] hover:bg-[var(--color-surface-low)] hover:shadow-sm">
+      <div className="flex items-start justify-between gap-2">
+        <p
+          className="min-w-0 flex-1 text-[13px] font-semibold leading-snug text-[var(--color-text)] break-words"
+          title={title}
+        >
           {title}
         </p>
-        <p className="text-xs text-[var(--color-text-muted)]">
-          {student} &middot; {rollNumber} &middot; due {dueDate}
+        <span
+          className={`mt-0.5 shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-semibold leading-none ${taskStatusStyles[status] || taskStatusStyles.Pending}`}
+        >
+          {status}
+        </span>
+      </div>
+      <div className="mt-2 space-y-1 text-[11px] leading-snug text-[var(--color-text-muted)]">
+        <p className="truncate font-semibold text-[var(--color-text)]" title={student}>
+          {student}
+        </p>
+        <p className="truncate" title={`Roll ${rollNumber}`}>
+          Roll {rollNumber}
+        </p>
+        <p
+          className="truncate font-semibold text-[var(--color-primary)]"
+          title={`Team: ${teamLabel}`}
+        >
+          Team: {teamLabel}
+        </p>
+        <p className="truncate" title={`Due ${dueDate}`}>
+          Due {dueDate}
         </p>
       </div>
-      <span
-        className={`whitespace-nowrap rounded-full px-[var(--spacing-md)] py-[var(--spacing-xs)] text-xs font-semibold ${taskStatusStyles[status]}`}
-      >
-        {status}
-      </span>
     </div>
   );
 }
 
 export default function Dashboard() {
+  const location = useLocation();
   const [attendanceData, setAttendanceData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [feedbackMessage, setFeedbackMessage] = useState("");
@@ -118,43 +155,77 @@ export default function Dashboard() {
   const [task, setTask] = useState([]);
   const [stats, setStats] = useState({});
   const [loadError, setLoadError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const trackedTodayRef = useRef(getLocalToday());
 
-  // Load the values displayed on the dashboard from their real API responses.
+  // Refetch whenever Dashboard becomes active so deleted/updated attendance is fresh.
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const today = new Date().toISOString().slice(0, 10);
+        setIsLoading(true);
+        setLoadError("");
+        // Browser LOCAL calendar day — never UTC toISOString (causes wrong-day Present)
+        const today = getLocalToday();
+        trackedTodayRef.current = today;
         const [statsResponse, attendanceResponse, taskResponse] = await Promise.all([
-          getDashboardStats(),
+          getDashboardStats(today),
           getAttendanceByDate(today),
           getTaskData(),
         ]);
 
         setStats(statsResponse?.data ?? {});
+
+        // Only keep records with a valid populated student — never show "Unknown student"
+        const validRecords = (attendanceResponse?.attendance ?? []).filter(
+          (record) => record?.student_id && record.student_id.name,
+        );
+
         setAttendanceData(
-          (attendanceResponse?.attendance ?? []).map((record) => ({
+          validRecords.map((record) => ({
             id: record._id,
-            rollNo: record.student_id?.rollNumber ?? "--",
-            name: record.student_id?.name ?? "Unknown student",
-            course: record.student_id?.course ?? "--",
+            studentId: record.student_id._id,
+            rollNo: record.student_id.rollNumber,
+            name: record.student_id.name,
+            course: record.student_id.course ?? "--",
             checkIn: record.checkInTime || "--",
             checkOut: record.checkOutTime || "--",
             status: record.status ?? "Not marked",
             lastUpdated: new Date(record.updatedAt).getTime(),
           })),
         );
-        setTask(taskResponse?.data ?? []);
+
+        // Skip tasks whose student was deleted (prevents "Unknown student")
+        const validTasks = (taskResponse?.data ?? []).filter(
+          (item) => item?.studentId && item.studentId.name,
+        );
+        setTask(validTasks);
       } catch (error) {
         console.error("Failed to load dashboard data:", error);
         setLoadError(
           error.response?.data?.message ||
             "Dashboard data could not be loaded. Please sign in again and retry.",
         );
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchDashboardData();
-  }, []);
+
+    const syncLocalDay = () => {
+      const today = getLocalToday();
+      if (today !== trackedTodayRef.current) {
+        fetchDashboardData();
+      }
+    };
+    const intervalId = setInterval(syncLocalDay, 30000);
+    window.addEventListener("focus", syncLocalDay);
+
+    return () => {
+      clearInterval(intervalId);
+      window.removeEventListener("focus", syncLocalDay);
+    };
+  }, [location.pathname, location.key]);
 
   // Dynamically calculated stats from API response
   const totalStudents = stats.totalStudents || 0;
@@ -192,7 +263,7 @@ export default function Dashboard() {
       label: "Pending Tasks",
       value: totalPendingTasks,
       icon: ClipboardList,
-      tone: "text-[var(--color-text)]",
+      tone: "text-[var(--color-secondary)]",
     },
   ];
 
@@ -212,74 +283,140 @@ export default function Dashboard() {
     );
   }, [attendanceData, searchQuery]);
 
-  // Mark student Present & update timestamp (moves them to the TOP)
-  const markStudentPresent = (studentId) => {
-    const timeNowStr = getCurrentTimeString();
-    const timestamp = Date.now();
-    let alreadyPresent = false;
+  // Persist Present to backend so Attendance page + refresh keep the same status
+  const handleMarkStudentPresent = async (rowId) => {
+    const student = attendanceData.find((s) => s.id === rowId);
+    if (!student) return;
 
-    setAttendanceData((prevData) =>
-      prevData.map((student) => {
-        if (student.id === studentId) {
-          if (student.status === "Present") {
-            alreadyPresent = true;
-            return student;
-          }
-
-          setFeedbackMessage(
-            `Marked "${student.name}" (${student.rollNo}) as Present at ${timeNowStr}!`,
-          );
-          setTimeout(() => setFeedbackMessage(""), 3500);
-          return {
-            ...student,
-            status: "Present",
-            checkIn: student.checkIn === "--" ? timeNowStr : student.checkIn,
-            lastUpdated: timestamp,
-          };
-        }
-        return student;
-      }),
-    );
-
-    if (alreadyPresent) {
+    if (student.status === "Present") {
       setFeedbackMessage(
         "This student is already marked Present and cannot be marked again.",
       );
       setTimeout(() => setFeedbackMessage(""), 3000);
+      return;
+    }
+
+    if (!student.studentId) {
+      setFeedbackMessage("Student record is missing. Cannot mark present.");
+      setTimeout(() => setFeedbackMessage(""), 3000);
+      return;
+    }
+
+    const timeNowStr = getCurrentTimeString();
+    const checkInTime =
+      student.checkIn === "--" ? timeNowStr : student.checkIn;
+    const previous = { ...student };
+
+    setAttendanceData((prevData) =>
+      prevData.map((s) =>
+        s.id === rowId
+          ? {
+              ...s,
+              status: "Present",
+              checkIn: checkInTime,
+              lastUpdated: Date.now(),
+            }
+          : s,
+      ),
+    );
+    setFeedbackMessage(
+      `Marked "${student.name}" (${student.rollNo}) as Present at ${timeNowStr}!`,
+    );
+    setTimeout(() => setFeedbackMessage(""), 3500);
+
+    try {
+      const today = getLocalToday();
+      await markAttendance({
+        date: today,
+        students: [
+          {
+            student_id: student.studentId,
+            status: "Present",
+            checkInTime,
+            checkOutTime: student.checkOut === "--" ? "" : student.checkOut,
+            note: "",
+          },
+        ],
+      });
+
+      const statsResponse = await getDashboardStats(today);
+      setStats(statsResponse?.data ?? {});
+    } catch (error) {
+      console.error("Failed to mark present:", error);
+      setAttendanceData((prevData) =>
+        prevData.map((s) => (s.id === rowId ? previous : s)),
+      );
+      setFeedbackMessage(
+        error.response?.data?.message ||
+          "Failed to save Present status. Please try again.",
+      );
+      setTimeout(() => setFeedbackMessage(""), 4000);
     }
   };
 
-  // Mark student Check Out & update timestamp (moves them to the TOP)
-  const markStudentCheckOut = (studentId) => {
-    const timeNowStr = getCurrentTimeString();
-    const timestamp = Date.now();
-    let alreadyCheckedOut = false;
+  // Persist Check Out to backend so it survives refresh
+  const handleMarkStudentCheckOut = async (rowId) => {
+    const student = attendanceData.find((s) => s.id === rowId);
+    if (!student) return;
 
-    setAttendanceData((prevData) =>
-      prevData.map((student) => {
-        if (student.id === studentId) {
-          if (student.checkOut !== "--") {
-            alreadyCheckedOut = true;
-            return student;
-          }
-
-          setFeedbackMessage(
-            `Checked out "${student.name}" (${student.rollNo}) at ${timeNowStr}!`,
-          );
-          setTimeout(() => setFeedbackMessage(""), 3500);
-          return {
-            ...student,
-            checkOut: timeNowStr,
-            lastUpdated: timestamp,
-          };
-        }
-        return student;
-      }),
-    );
-
-    if (alreadyCheckedOut) {
+    if (student.checkOut !== "--") {
       setFeedbackMessage("This student has already been checked out.");
       setTimeout(() => setFeedbackMessage(""), 3000);
+      return;
+    }
+
+    if (!student.studentId) {
+      setFeedbackMessage("Student record is missing. Cannot check out.");
+      setTimeout(() => setFeedbackMessage(""), 3000);
+      return;
+    }
+
+    const timeNowStr = getCurrentTimeString();
+    const previous = { ...student };
+
+    setAttendanceData((prevData) =>
+      prevData.map((s) =>
+        s.id === rowId
+          ? {
+              ...s,
+              checkOut: timeNowStr,
+              lastUpdated: Date.now(),
+            }
+          : s,
+      ),
+    );
+    setFeedbackMessage(
+      `Checked out "${student.name}" (${student.rollNo}) at ${timeNowStr}!`,
+    );
+    setTimeout(() => setFeedbackMessage(""), 3500);
+
+    try {
+      const today = getLocalToday();
+      await markAttendance({
+        date: today,
+        students: [
+          {
+            student_id: student.studentId,
+            status: student.status || "Present",
+            checkInTime: student.checkIn === "--" ? "" : student.checkIn,
+            checkOutTime: timeNowStr,
+            note: "",
+          },
+        ],
+      });
+
+      const statsResponse = await getDashboardStats(today);
+      setStats(statsResponse?.data ?? {});
+    } catch (error) {
+      console.error("Failed to check out:", error);
+      setAttendanceData((prevData) =>
+        prevData.map((s) => (s.id === rowId ? previous : s)),
+      );
+      setFeedbackMessage(
+        error.response?.data?.message ||
+          "Failed to save Check Out. Please try again.",
+      );
+      setTimeout(() => setFeedbackMessage(""), 4000);
     }
   };
 
@@ -290,7 +427,7 @@ export default function Dashboard() {
       (student) => student.status !== "Present",
     );
     if (studentToMark) {
-      markStudentPresent(studentToMark.id);
+      handleMarkStudentPresent(studentToMark.id);
     } else {
       setFeedbackMessage(
         "No student selected to mark Present. All visible students are already Present.",
@@ -300,13 +437,17 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex flex-col gap-[var(--spacing-lg)] font-plus-jakarta-sans p-[var(--spacing-lg)] max-w-full">
+    <div className="mx-auto flex max-w-[1400px] flex-col gap-4 p-3 sm:gap-5 sm:p-5 lg:p-6">
       {/* Stat cards */}
-      <div className="grid grid-cols-1 gap-[var(--spacing-md)] sm:grid-cols-2 lg:grid-cols-5">
-        {statCards.map((card) => (
-          <StatCard key={card.label} {...card} />
-        ))}
-      </div>
+      {isLoading ? (
+        <DashboardStatCardsSkeleton />
+      ) : (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {statCards.map((card) => (
+            <StatCard key={card.label} {...card} />
+          ))}
+        </div>
+      )}
 
       {loadError && (
         <p className="rounded-lg border border-[var(--color-error)]/20 bg-[var(--color-error)]/10 px-4 py-3 text-sm text-[var(--color-error)]">
@@ -315,9 +456,9 @@ export default function Dashboard() {
       )}
 
       {/* Main Grid Section: Today's Attendance Table + Task Summary */}
-      <div className="grid grid-cols-1 gap-[var(--spacing-lg)] lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
         {/* Today's Attendance Student List Card (Spans 2 columns on lg) */}
-        <div className="flex flex-col gap-[var(--spacing-md)] rounded-[var(--radius-xl)] border border-[var(--color-surface-high)] bg-[var(--color-surface)] p-[var(--spacing-lg)] shadow-[var(--shadow-sm)] transition-shadow duration-[var(--duration-normal)] hover:shadow-[var(--shadow-md)] lg:col-span-2">
+        <div className="app-panel flex min-w-0 flex-col gap-3 p-4 sm:p-5 lg:col-span-2">
           {/* Section Header */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-[var(--color-surface-high)] pb-[var(--spacing-md)]">
             <div className="flex items-center gap-[var(--spacing-sm)]">
@@ -354,8 +495,9 @@ export default function Dashboard() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search student by roll no, student name, or course..."
-                  className="w-full rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-background)] pl-10 pr-[var(--spacing-xl)] py-2 text-sm text-[var(--color-text)] placeholder-[var(--color-text-muted)] transition-all duration-[var(--duration-fast)] focus:border-[var(--color-primary)] focus:bg-[var(--color-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-container)]"
+                  placeholder="Search by name or roll nubmber..."
+                  disabled={isLoading}
+                  className="w-full rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-background)] pl-10 pr-[var(--spacing-xl)] py-2 text-sm text-[var(--color-text)] placeholder-[var(--color-text-muted)] transition-all duration-[var(--duration-fast)] focus:border-[var(--color-primary)] focus:bg-[var(--color-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-container)] disabled:opacity-60"
                 />
                 {searchQuery && (
                   <button
@@ -370,7 +512,8 @@ export default function Dashboard() {
 
               <button
                 type="submit"
-                className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-[var(--radius-lg)] bg-[var(--color-primary)] px-4 py-2 text-xs font-semibold text-[var(--color-on-primary)] transition-all duration-[var(--duration-fast)] hover:opacity-90 active:scale-[0.98] shadow-sm whitespace-nowrap"
+                disabled={isLoading}
+                className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-[var(--radius-lg)] bg-[var(--color-primary)] px-4 py-2 text-xs font-semibold text-[var(--color-on-primary)] transition-all duration-[var(--duration-fast)] hover:opacity-90 active:scale-[0.98] shadow-sm whitespace-nowrap disabled:opacity-60"
               >
                 <UserCheck2 size={16} strokeWidth={2.2} />
                 <span>Mark Present</span>
@@ -386,18 +529,30 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* Table Container with Responsive Horizontal Scroll */}
-          <div className="overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--color-surface-high)] mt-1">
-            <table className="w-full text-left text-sm border-collapse min-w-[650px]">
+          {/* Table / skeleton */}
+          {isLoading ? (
+            <DashboardAttendanceTableSkeleton />
+          ) : (
+          <div className="mt-1 min-w-0 rounded-[var(--radius-lg)] border border-[var(--color-surface-high)] max-sm:overflow-x-auto">
+            <table className="w-full table-fixed text-left text-xs border-collapse max-sm:min-w-[640px]">
+              <colgroup>
+                <col className="w-[12%]" />
+                <col className="w-[22%]" />
+                <col className="w-[16%]" />
+                <col className="w-[12%]" />
+                <col className="w-[12%]" />
+                <col className="w-[14%]" />
+                <col className="w-[12%]" />
+              </colgroup>
               <thead>
-                <tr className="bg-[var(--color-surface-low)] text-xs uppercase font-semibold text-[var(--color-text-muted)] border-b border-[var(--color-surface-high)]">
-                  <th className="px-4 py-3">Roll No</th>
-                  <th className="px-4 py-3">Student Name</th>
-                  <th className="px-4 py-3">Course</th>
-                  <th className="px-4 py-3">Check-in</th>
-                  <th className="px-4 py-3">Check-out</th>
-                  <th className="px-4 py-3 text-center">Status</th>
-                  <th className="px-4 py-3 text-center">Action</th>
+                <tr className="bg-[var(--color-surface-low)] text-[10px] uppercase font-semibold text-[var(--color-text-muted)] border-b border-[var(--color-surface-high)]">
+                  <th className="px-1 py-2.5">Roll No</th>
+                  <th className="px-1 py-2.5">Student Name</th>
+                  <th className="px-1 py-2.5">Course</th>
+                  <th className="px-1 py-2.5">Check-in</th>
+                  <th className="px-1 py-2.5">Check-out</th>
+                  <th className="px-1 py-2.5 text-center">Status</th>
+                  <th className="px-1 py-2.5 text-center">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--color-surface-high)] bg-[var(--color-surface)]">
@@ -407,60 +562,56 @@ export default function Dashboard() {
                       key={student.id}
                       className="transition-colors duration-[var(--duration-fast)] hover:bg-[var(--color-surface-low)]/80"
                     >
-                      <td className="px-4 py-3.5 font-mono text-xs font-bold text-[var(--color-primary)]">
-                        {student.rollNo}
+                      <td className="px-2 py-2.5 align-middle font-mono text-[12px] font-bold text-[var(--color-text)]  " title={String(student.rollNo)}>
+                        <span className="block truncate">{student.rollNo}</span>
                       </td>
-                      <td className="px-4 py-3.5 font-medium text-[var(--color-text)] whitespace-nowrap">
-                        {student.name}
+                      <td className="px-2 py-2.5 align-middle min-w-0" title={student.name}>
+                        <span className="block text-[12px] font-semibold leading-snug text-[var(--color-primary)]  line-clamp-2 break-words">
+                          {student.name}
+                        </span>
                       </td>
-                      <td className="px-4 py-3.5 text-[var(--color-text-muted)] whitespace-nowrap">
-                        {student.course}
+                      <td className="px-2 py-2.5 align-middle min-w-0 text-[var(--color-text-muted)]" title={student.course}>
+                        <span className="block text-[11px] leading-snug line-clamp-2 break-words">
+                          {student.course}
+                        </span>
                       </td>
-                      <td className="px-4 py-3.5 text-[var(--color-text-muted)] whitespace-nowrap">
-                        <span className="inline-flex items-center gap-1 font-mono text-xs">
-                          {student.checkIn !== "--" && (
-                            <Clock
-                              size={12}
-                              className="text-[var(--color-success)]"
-                            />
-                          )}
+                      <td className="px-2 py-2.5 align-middle text-[var(--color-text-muted)]">
+                        <span className="block truncate font-mono text-[11px]" title={student.checkIn}>
                           {student.checkIn}
                         </span>
                       </td>
-                      <td className="px-4 py-3.5 text-[var(--color-text-muted)] whitespace-nowrap">
-                        <span className="inline-flex items-center gap-1 font-mono text-xs">
-                          {student.checkOut !== "--" && (
-                            <Clock
-                              size={12}
-                              className="text-[var(--color-text-muted)]"
-                            />
-                          )}
+                      <td className="px-2 py-2.5 align-middle text-[var(--color-text-muted)]">
+                        <span className="block truncate font-mono text-[11px]" title={student.checkOut}>
                           {student.checkOut}
                         </span>
                       </td>
-                      <td className="px-4 py-3.5 text-center whitespace-nowrap">
+                      <td className="px-2 py-2.5 text-center align-middle">
                         <StatusBadge status={student.status} />
                       </td>
-                      <td className="px-4 py-3.5 text-center whitespace-nowrap">
+                      <td className="px-2 py-2.5 text-center align-middle">
                         {student.status !== "Present" ? (
                           <button
                             type="button"
-                            onClick={() => markStudentPresent(student.id)}
-                            className="inline-flex items-center gap-1 rounded-md bg-[var(--color-success)]/10 hover:bg-[var(--color-success)]/20 px-2.5 py-1 text-xs font-semibold text-[var(--color-success)] transition-colors"
+                            onClick={() => handleMarkStudentPresent(student.id)}
+                            title="Mark Present"
+                            aria-label="Mark Present"
+                            className="inline-flex min-w-[28px] items-center justify-center rounded-md bg-[var(--color-success)]/10 hover:bg-[var(--color-success)]/20 px-2 py-1 text-[11px] font-semibold text-[var(--color-success)] transition-colors"
                           >
-                            <CheckCircle2 size={12} /> Mark Present
+                            P
                           </button>
                         ) : student.checkOut === "--" ? (
                           <button
                             type="button"
-                            onClick={() => markStudentCheckOut(student.id)}
-                            className="inline-flex items-center gap-1 rounded-md bg-[var(--color-secondary)]/10 hover:bg-[var(--color-secondary)]/20 px-2.5 py-1 text-xs font-semibold text-[var(--color-secondary)] transition-colors"
+                            onClick={() => handleMarkStudentCheckOut(student.id)}
+                            title="Check Out"
+                            aria-label="Check Out"
+                            className="inline-flex min-w-[28px] items-center justify-center rounded-md bg-[var(--color-secondary)]/10 hover:bg-[var(--color-secondary)]/20 px-2 py-1 text-[11px] font-semibold text-[var(--color-secondary)] transition-colors"
                           >
-                            <LogOut size={12} /> Check Out
+                            CO
                           </button>
                         ) : (
-                          <span className="text-xs text-[var(--color-text-muted)] font-medium">
-                            Completed
+                          <span className="text-[10px] text-[var(--color-text-muted)] font-medium">
+                            Done
                           </span>
                         )}
                       </td>
@@ -473,55 +624,62 @@ export default function Dashboard() {
                       className="px-4 py-8 text-center text-[var(--color-text-muted)]"
                     >
                       <p className="text-sm font-medium">
-                        No student records found matching &quot;{searchQuery}
-                        &quot;
+                        {searchQuery
+                          ? `No student records found matching "${searchQuery}"`
+                          : "No attendance records found."}
                       </p>
-                      <p className="text-xs mt-1">
-                        Try searching with a different roll number, name, or
-                        course.
-                      </p>
+                      {searchQuery && (
+                        <p className="text-xs mt-1">
+                          Try searching with a different roll number, name, or
+                          course.
+                        </p>
+                      )}
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
           </div>
+          )}
         </div>
 
-        {/* Task summary */}
-        <div className="flex flex-col rounded-[var(--radius-xl)] border border-[var(--color-surface-high)] bg-[var(--color-surface)] p-[var(--spacing-lg)] shadow-[var(--shadow-sm)] transition-shadow duration-[var(--duration-normal)] hover:shadow-[var(--shadow-md)] lg:col-span-1">
-          <div className="flex items-center justify-between border-b border-[var(--color-surface-high)] pb-[var(--spacing-md)] mb-[var(--spacing-sm)]">
-            <div className="flex items-center gap-[var(--spacing-sm)]">
-              <div className="rounded-lg p-1 text-[var(--color-primary)]">
+        {/* Task summary — grows with tasks up to max height, then vertical scroll only */}
+        <div className="app-panel flex max-h-[28rem] w-full min-w-0 flex-col overflow-hidden p-4 sm:p-5 lg:col-span-1 lg:self-start">
+          <div className="mb-2 flex shrink-0 items-start justify-between gap-2 border-b border-[var(--color-surface-high)] pb-2">
+            <div className="flex min-w-0 items-center gap-[var(--spacing-sm)]">
+              <div className="shrink-0 rounded-lg p-1 text-[var(--color-primary)]">
                 <ClipboardCheck size={20} strokeWidth={2} />
               </div>
-              <h2 className="text-base font-bold text-[var(--color-text)]">
+              <h2 className="text-sm font-bold leading-snug text-[var(--color-text)] sm:text-base">
                 Today&apos;s Task Summary
               </h2>
             </div>
             <NavLink
               to="/tasks"
-              className="text-sm font-semibold text-[var(--color-primary)] hover:underline"
+              className="shrink-0 text-sm font-semibold text-[var(--color-primary)] hover:underline"
             >
               Manage
             </NavLink>
           </div>
 
-          <div className="flex-1">
-            {task.length ? (
+          <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
+            {isLoading ? (
+              <DashboardTasksSkeleton />
+            ) : task.length ? (
               task.map((item) => (
                 <TaskRow
                   key={item._id}
                   title={item.title}
-                  student={item.studentId?.name ?? "Unknown student"}
-                  rollNumber={item.studentId?.rollNumber ?? "--"}
+                  student={item.studentId.name}
+                  rollNumber={item.studentId.rollNumber ?? "--"}
+                  teamName={item.studentId.team_id?.name || null}
                   dueDate={item.dueDate ? new Date(item.dueDate).toLocaleDateString() : "--"}
                   status={item.status?.replace("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase()) ?? "Pending"}
                 />
               ))
             ) : (
-              <p className="py-6 text-center text-sm text-[var(--color-text-muted)]">
-                No tasks found.
+              <p className="py-10 text-center text-sm text-[var(--color-text-muted)]">
+                No tasks found for today.
               </p>
             )}
           </div>

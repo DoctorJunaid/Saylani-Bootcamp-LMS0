@@ -1,5 +1,10 @@
 import projectModel from "../models/project.Model.js";
 import { Team } from "../models/team.Model.js";
+import {
+  notifyProjectCreated,
+  notifyProjectStatusChanged,
+  removeNotificationByUniqueKey,
+} from "./notification.Service.js";
 
 // create project service
 export const createProjectService = async (projectData) => {
@@ -10,6 +15,10 @@ export const createProjectService = async (projectData) => {
         }
     }
     const project = await projectModel.create(projectData);
+    await notifyProjectCreated(project);
+    if (project.teamId) {
+        await removeNotificationByUniqueKey(`TEAM:no_project:${project.teamId}`);
+    }
     return project;
 }
 
@@ -44,7 +53,14 @@ export const updateProjectService = async (id, projectData) => {
             throw new Error("Referenced team does not exist");
         }
     }
+    const previous = await projectModel.findById(id);
     const project = await projectModel.findByIdAndUpdate(id, projectData, { new: true });
+    if (previous && project) {
+        await notifyProjectStatusChanged(project, previous.status);
+        if (project.teamId) {
+            await removeNotificationByUniqueKey(`TEAM:no_project:${project.teamId}`);
+        }
+    }
     return project;
 }
 

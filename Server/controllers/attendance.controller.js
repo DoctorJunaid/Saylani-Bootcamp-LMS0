@@ -1,5 +1,9 @@
-    import Attendance from "../models/attendence.Model.js";
-import { getAttencdanceByDate, getOverAllAttendanceStatus, getStudentAttendacehistory, markAttendance } from "../services/attendance.Service.js";
+import {
+    getAttencdanceByDate,
+    getOverAllAttendanceStatus,
+    getStudentAttendacehistory,
+    markAttendance,
+} from "../services/attendance.Service.js";
 
 
 // Mark Attendance
@@ -8,19 +12,19 @@ export const markAttendanceController = async(req , res) => {
          const {students , date} = req.body;
          if(!date){
             return res.status(400).json({
-                message: "Date is requried"
+                message: "Date is required"
             })
          }
          if(!students || !Array.isArray(students))
          {
             return res.status(400).json({
-                message: "Student Array is requried!"
+                message: "Student array is required!"
             })
          }
 
          const attendance = await markAttendance( students, date);
          res.status(200).json({
-            message:"Attendance Mark scuessfully",
+            message:"Attendance marked successfully",
             attendance
          })
          
@@ -40,7 +44,7 @@ export const getAttendanceByDateController = async(req, res) =>{
         const {date} = req.params;
         const attendance = await getAttencdanceByDate(date);
         res.status(200).json({
-            message: "Attendace fetched sucessfully",
+            message: "Attendance fetched successfully",
             attendance
         })
         
@@ -60,7 +64,7 @@ export const getStudentAttendanceHistoryController = async (req , res)=>{
         const attendance = await getStudentAttendacehistory(studentId);
 
         res.status(200).json({
-            message : "Student attendance  history fetcehd sucessfully",
+            message : "Student attendance history fetched successfully",
             attendance,
         })
         

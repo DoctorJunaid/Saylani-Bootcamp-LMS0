@@ -1,112 +1,150 @@
 import Attendance from "../models/attendence.Model.js";
 import Student from "../models/student.Model.js";
+import {
+  assertYmd,
+  getAttendanceDayRange,
+  toAttendanceDate,
+} from "../utils/attendanceDate.js";
+import { syncDerivedNotifications } from "./notification.Service.js";
 
-// MARK / UPDATE ATTENDANCE
-export const markAttendance = async (students , date) =>{
+// MARK / UPDATE ATTENDANCE (upsert for student_id + that calendar day only)
+export const markAttendance = async (students, date) => {
+  const ymd = assertYmd(date);
+  const dayDate = toAttendanceDate(ymd);
+  const { start, end } = getAttendanceDayRange(ymd);
+  const attendanceRecords = [];
 
-     // Date ka day check karo
-  const day = new Date(date).getDay();
+  for (const student of students) {
+    const existingStudent = await Student.findById(student.student_id);
 
-  // 0 = Sunday
-  if (day === 0) {
-    throw new Error("Attendance cannot be marked on Sunday");
+    if (!existingStudent) {
+      throw new Error(`Student not Found ${student.student_id}`);
+    }
+
+    // Prefer exact day key; also match any legacy same-day timestamps
+    let attendance = await Attendance.findOneAndUpdate(
+      {
+        student_id: student.student_id,
+        date: { $gte: start, $lt: end },
+      },
+      {
+        student_id: student.student_id,
+        date: dayDate,
+        status: student.status || "Not marked",
+        checkInTime: student.checkInTime || "",
+        checkOutTime: student.checkOutTime || "",
+        note: student.note || "",
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    if (!attendance) {
+      attendance = await Attendance.create({
+        student_id: student.student_id,
+        date: dayDate,
+        status: student.status || "Not marked",
+        checkInTime: student.checkInTime || "",
+        checkOutTime: student.checkOutTime || "",
+        note: student.note || "",
+      });
+    }
+
+    attendanceRecords.push(attendance);
   }
 
-    const attendanceRecords = [];
+  // Refresh attendance/low-attendance derived notifications from live data
+  await syncDerivedNotifications({ force: true });
 
-    for (const student of students){
-        // check student exist
-        const existingStudent = await Student.findById(student.student_id)
-        
-        if(!existingStudent) {
-            throw new Error(`Student not Found ${student.student_id}`)
-        }
+  return attendanceRecords;
+};
 
-        // create or update student 
-        const attendance = await Attendance.findOneAndUpdate({
-        student_id: student.student_id,
-        date: new Date(date)
-    },
-    {
-        student_id:student.student_id,
-        date:new Date(date),
-        status:student.status || "Not marked",
-        checkInTime:student.checkInTime || "",
-        checkOutTime:student.checkOutTime || "",
-        note:student.note || "",
-    },
-    {
-        new:  true,
-        upsert: true,
-        runValidators:true,
-    }); 
-         attendanceRecords.push(attendance);
-      };
+// GET ATTENDANCE BY DATE — only that calendar day
+export const getAttencdanceByDate = async (date) => {
+  const { start, end } = getAttendanceDayRange(date);
 
-         return attendanceRecords;
-}
+  const attendance = await Attendance.find({
+    date: { $gte: start, $lt: end },
+  })
+    .populate({
+      path: "student_id",
+      select: "rollNumber name course batch team_id",
+      populate: { path: "team_id", select: "name" },
+    })
+    .sort({ updatedAt: -1 });
 
-//  GET ATTENDANCE BY DATE
-export const getAttencdanceByDate =   async (date)=>{
-    
-    // console.log("DATE RECEIVED:", date);
-    const attendance = await Attendance.find({date : new Date(date)})
-    .populate("student_id", "rollNumber name course batch")
-    .sort({createdAt: 1})
-//  console.log("ATTENDANCE FOUND:", attendance);
-    return attendance;
-}
+  // Skip orphans + dedupe: one row per student (latest update wins)
+  const byStudent = new Map();
+  for (const record of attendance) {
+    if (!record.student_id) continue;
+    const sid = String(record.student_id._id || record.student_id);
+    if (!byStudent.has(sid)) {
+      byStudent.set(sid, record);
+    }
+  }
+  return Array.from(byStudent.values());
+};
 
 // Get Students Attendace History
-export const getStudentAttendacehistory = async(studentId)=>{
+export const getStudentAttendacehistory = async (studentId) => {
+  const student = await Student.findById(studentId);
+  if (!student) {
+    throw new Error("Student not found");
+  }
 
-    const student = await Student.findById(studentId)
-    if(!student){
-        throw new Error("Stduent not found")
-    }
+  const attendance = await Attendance.find({ student_id: studentId }).sort({
+    date: -1,
+  });
+  return attendance;
+};
 
-    const attendance = await Attendance.find({student_id : studentId})
-    .sort({date: -1});
-    return attendance;
+// get overall attendance status + Active/Inactive (threshold: >= 75% Active)
+export const getOverAllAttendanceStatus = async () => {
+  const students = await Student.find();
+  const stats = [];
+  const ACTIVE_THRESHOLD = 75;
 
-}
+  for (const student of students) {
+    const attendance = await Attendance.find({ student_id: student._id });
 
-// get overall attendance status;
-export const getOverAllAttendanceStatus =  async()=>{
-
-    const students = await Student.find();
-
-    const stats = [];
-
-    for (const student of students){
-        const attendance = await Attendance.find({student_id : student._id});
-           
-        // just Sunday ko exclude karo
     const workingDays = attendance.filter((record) => {
-      const day = new Date(record.date).getDay();
-
+      const day = new Date(record.date).getUTCDay();
       return day !== 0;
     });
-        const totalDays = workingDays.length;
+    const totalDays = workingDays.length;
 
-        const presentDays = workingDays.filter((record)=> record.status === "Present").length;
-        const absentDays = workingDays.filter((record)=> record.status === "Absent").length;
-        const leaveDays = workingDays.filter((record)=> record.status === "Leave").length;
+    const presentDays = workingDays.filter(
+      (record) => record.status === "Present",
+    ).length;
+    const absentDays = workingDays.filter(
+      (record) => record.status === "Absent",
+    ).length;
+    const leaveDays = workingDays.filter(
+      (record) => record.status === "Leave",
+    ).length;
 
-        const percentage = totalDays > 0 ? (presentDays / totalDays ) * 100 : 0;
+    const percentageRaw = totalDays > 0 ? (presentDays / totalDays) * 100 : 0;
+    const percentage = Math.round(percentageRaw);
+    // Option A: >= 75 Active, otherwise Inactive (includes 0% / no records)
+    const status = percentageRaw >= ACTIVE_THRESHOLD ? "Active" : "Inactive";
 
-        stats.push({
-              student: {
-                id: student._id,
-                rollNumber: student.rollNumber,
-                name: student.name,
-                course: student.course,
-                batch: student.batch,
-              },
-              totalDays,presentDays,absentDays,leaveDays,percentage,
-        });
-
-        
-    }
-    return stats;
-}
+    stats.push({
+      student: {
+        id: student._id,
+        rollNumber: student.rollNumber,
+        name: student.name,
+        course: student.course,
+        batch: student.batch,
+      },
+      totalDays,
+      presentDays,
+      absentDays,
+      leaveDays,
+      percentage,
+      status,
+    });
+  }
+  return stats;
+};

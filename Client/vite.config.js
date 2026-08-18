@@ -4,8 +4,12 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  build: {
+    chunkSizeWarningLimit: 700,
+  },
   test: {
     environment: 'jsdom',
+    globals: true,
   },
 
 });

@@ -1,6 +1,11 @@
 import { Team } from "../models/team.Model.js";
 import Student from "../models/student.Model.js";
 import Project from "../models/project.Model.js";
+import {
+  notifyTeamCreated,
+  notifyMemberAddedToTeam,
+  notifyStudentTeamChange,
+} from "./notification.Service.js";
 
 // @desc get all teams
 
@@ -66,6 +71,14 @@ export const createTeamService = async (teamData) => {
     if (teamData.members && teamData.members.length > 0) {
         await Student.updateMany({ _id: { $in: teamData.members } }, { team_id: team._id });
     }
+    await notifyTeamCreated(team);
+    if (teamData.members && teamData.members.length > 0) {
+        const members = await Student.find({ _id: { $in: teamData.members } }).select("name");
+        for (const member of members) {
+            await notifyMemberAddedToTeam(team, member);
+            await notifyStudentTeamChange(member, team);
+        }
+    }
     return team;
 }
 
@@ -90,13 +103,19 @@ export const deleteTeamService = async (id) => {
 
 // @desc add members to team
 export const addMemberToTeamService = async (teamId, studentId) => {
-    const student = await Student.findById(studentId);
+    const student = await Student.findById(studentId).select("name team_id");
     if (!student)
         throw new Error("Student not found");
     if (student.team_id) throw new Error("Student is already assigned to a team!");
-    student.team_id = teamId;
-    await student.save();
-    return await Team.findByIdAndUpdate(
+
+    // Only update team_id — do not re-validate unrelated fields (e.g. legacy students without email)
+    await Student.findByIdAndUpdate(
+        studentId,
+        { team_id: teamId },
+        { runValidators: false },
+    );
+
+    const team = await Team.findByIdAndUpdate(
         teamId,
         {
             $addToSet: {
@@ -109,6 +128,11 @@ export const addMemberToTeamService = async (teamId, studentId) => {
         }
     ).populate("members");
 
+    if (team) {
+        await notifyMemberAddedToTeam(team, student);
+        await notifyStudentTeamChange(student, team);
+    }
+    return team;
 };
 
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Search } from 'lucide-react';
 import CustomSelect from '../CustomSelect';
 
@@ -28,7 +27,7 @@ const StudentToolbar = ({
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search by roll number, name"
-          className="block w-full pl-10 pr-3 py-2.5 text-sm bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] placeholder-[var(--color-text-muted)] text-[var(--color-text)] transition-colors"
+          className="block w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-low)]/50 py-3 pl-10 pr-3 text-sm text-[var(--color-text)] shadow-sm transition-all placeholder-[var(--color-text-muted)] focus:border-[var(--color-primary)] focus:bg-[var(--color-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20"
         />
       </div>
 

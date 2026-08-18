@@ -1,4 +1,3 @@
-import React from "react";
 import {
   LuX,
   LuFileText,
@@ -25,7 +24,6 @@ const PriorityBadge = ({ priority }) => {
       {priority}
     </span>
   );
-  ``;
 };
 
 const formatDisplayDate = (dateStr) => {

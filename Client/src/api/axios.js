@@ -1,19 +1,33 @@
 import axios from "axios";
+import { clearAuthToken, getAuthToken } from "../utils/authToken";
 
 const api = axios.create({
-  baseURL: "https://saylani-bootcamp-lms-0.vercel.app",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
-// Automatically attach the Bearer token from localStorage to every request
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token = getAuthToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
+  (error) => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+  (response) => response,
   (error) => {
+    if (error.response?.status === 401) {
+      clearAuthToken();
+      if (
+        typeof window !== "undefined" &&
+        !window.location.pathname.startsWith("/login")
+      ) {
+        window.location.assign("/login");
+      }
+    }
     return Promise.reject(error);
   }
 );
@@ -33,13 +47,14 @@ export const getTaskData = async () => {
   return response.data;
 };
 
-export const getDashboardStats = async () => {
-  const response = await api.get("/api/dashboard/stats");
+export const getPendingTaskData = async () => {
+  const response = await api.get("/api/tasks?status=pending");
   return response.data;
 };
 
-export const getAttendanceByDate = async (date) => {
-  const response = await api.get(`/api/attendance/${date}`);
+export const getDashboardStats = async (dateStr) => {
+  const params = dateStr ? { date: dateStr } : {};
+  const response = await api.get("/api/dashboard/stats", { params });
   return response.data;
 };
 

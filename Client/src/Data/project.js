@@ -1,6 +1,6 @@
-import axios from "axios";
+import api from "../api/axios";
 
-const API_URL = "http://localhost:5000/api/projects";
+const ENDPOINT = "/api/projects";
 
 const normalizeProject = (project) => {
   return {
@@ -16,28 +16,30 @@ const normalizeProject = (project) => {
 
 export const fetchProjects = async () => {
   try {
-    const response = await axios.get(API_URL);
+    const response = await api.get(ENDPOINT);
 
-    return response.data.projects.map(normalizeProject);
+    return (response.data.projects || []).map(normalizeProject);
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
-      "Failed to fetch projects"
+      "Failed to fetch projects",
+      { cause: error },
     );
   }
 };
 
 export const fetchProjectById = async (projectId) => {
   try {
-    const response = await axios.get(
-      `${API_URL}/${projectId}`
+    const response = await api.get(
+      `${ENDPOINT}/${projectId}`
     );
 
     return normalizeProject(response.data.project);
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
-      "Failed to fetch project"
+      "Failed to fetch project",
+      { cause: error },
     );
   }
 };

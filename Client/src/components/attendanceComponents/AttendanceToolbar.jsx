@@ -1,14 +1,27 @@
-import React from 'react';
-import { Search, Download, ClipboardCheck } from 'lucide-react';
+import { Search, Download } from 'lucide-react';
 import CustomSelect from '../CustomSelect';
 
-const AttendanceToolbar = ({ searchQuery, onSearchChange, selectedDate, onDateChange, onDownloadCsv, onTakeAttendanceClick }) => {
+const AttendanceToolbar = ({
+  searchQuery,
+  onSearchChange,
+  selectedDate,
+  onDateChange,
+  onDownloadCsv,
+  viewMode = 'Daily',
+  onViewModeChange,
+  rangeLabel = '',
+}) => {
   return (
     <div className="flex flex-col gap-1.5 pb-2 pt-1 w-full -mt-1">
       
       {/* Top Row: Heading */}
-      <div className="w-full">
-        <h2 className="text-xl font-bold text-[var(--color-text)] tracking-tight leading-none">Attendance Records</h2>
+      <div className="w-full flex flex-col sm:flex-row sm:items-end sm:justify-between gap-1">
+        <h2 className="text-xl font-bold tracking-tight leading-none text-[var(--color-text)] sm:text-2xl">Attendance Records</h2>
+        {rangeLabel ? (
+          <p className="text-xs font-medium text-[var(--color-text-muted)]">
+            {viewMode}: {rangeLabel}
+          </p>
+        ) : null}
       </div>
 
       {/* Bottom Row: Date, Search, and Actions */}
@@ -20,7 +33,7 @@ const AttendanceToolbar = ({ searchQuery, onSearchChange, selectedDate, onDateCh
             type="date" 
             value={selectedDate}
             onChange={(e) => onDateChange(e.target.value)}
-            className="w-full lg:w-auto text-sm bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] text-[var(--color-text)]"
+            className="w-full lg:w-auto text-sm bg-[var(--color-surface-low)]/50 border border-[var(--color-border)] rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)] text-[var(--color-text)] shadow-sm transition-all"
           />
         </div>
 
@@ -34,24 +47,25 @@ const AttendanceToolbar = ({ searchQuery, onSearchChange, selectedDate, onDateCh
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search by name or roll number..."
-            className="block w-full pl-10 pr-3 py-2.5 text-sm bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] placeholder-[var(--color-text-muted)] text-[var(--color-text)] transition-colors"
+            className="block w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-low)]/50 py-2.5 pl-10 pr-3 text-sm text-[var(--color-text)] shadow-sm transition-all placeholder-[var(--color-text-muted)] focus:border-[var(--color-primary)] focus:bg-[var(--color-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20"
           />
         </div>
       
       {/* Right side: Filters & Actions */}
       <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto shrink-0 justify-end">
         
-        {/* Dropdown */}
+        {/* Daily / Weekly / Monthly */}
         <CustomSelect 
-          label="Filter"
-          defaultOption="Daily"
-          options={['Weekly', 'Monthly']}
+          label="View period"
+          value={viewMode}
+          onChange={onViewModeChange}
+          options={['Daily', 'Weekly', 'Monthly']}
         />
 
         {/* Download CSV Button */}
         <button 
           onClick={onDownloadCsv}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] hover:opacity-90 text-[var(--color-on-primary)] text-sm font-medium rounded-lg transition-colors shadow-sm w-full sm:w-auto"
+          className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[var(--color-primary)] px-4 py-2.5 text-sm font-semibold text-[var(--color-on-primary)] shadow-sm transition-all hover:opacity-90 hover:shadow-md sm:w-auto"
         >
           <Download className="h-4 w-4" />
           Export CSV
@@ -59,7 +73,7 @@ const AttendanceToolbar = ({ searchQuery, onSearchChange, selectedDate, onDateCh
 
       </div>
 
-      </div> {/* <-- Closes Bottom Row */}
+      </div>
     </div>
   );
 };

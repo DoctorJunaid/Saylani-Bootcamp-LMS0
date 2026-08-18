@@ -1,9 +1,8 @@
-import React from "react";
+import { useState } from "react";
 import { LuList, LuCalendar, LuPlus } from "react-icons/lu";
-import Button from "../Button";
 
 const TaskHeader = ({ onCreateClick }) => {
-  const [view, setView] = React.useState("list");
+  const [view, setView] = useState("list");
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-md mb-lg">

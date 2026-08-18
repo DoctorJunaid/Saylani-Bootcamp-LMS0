@@ -1,10 +1,61 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import toast from "react-hot-toast";
 import TaskStats from "../../components/taskComponents/TaskStats";
 import TaskTable from "../../components/taskComponents/TaskTable";
 import EditTaskModal from "../../components/taskComponents/EditTaskModal";
 import DeleteConfirmModal from "../../components/taskComponents/DeleteConfirmModal";
-import { getTasks, createTask, updateTask, deleteTask } from "../../api/task.api";
+import {
+  getTasks,
+  createTask,
+  updateTask,
+  deleteTask,
+} from "../../Services/task.services";
 import { getStudents } from "../../api/student.api";
+import { getLocalToday, toYmd } from "../../utils/localDate";
+import {
+  normalizeTaskStatus,
+  taskStatusKey,
+} from "../../utils/taskStatus";
+import PageShell, { PagePanel } from "../../components/ui/PageShell";
+import dayjs from "dayjs";
+
+function formatTaskDueDate(dueDate) {
+  if (!dueDate) return { label: "No Date", ymd: "" };
+  const d = dayjs(dueDate);
+  if (!d.isValid()) return { label: "No Date", ymd: "" };
+  return {
+    ymd: d.format("YYYY-MM-DD"),
+    label: d.format("D MMM YYYY"),
+  };
+}
+
+function mapApiTask(task) {
+  const status = normalizeTaskStatus(task.status);
+  const due = formatTaskDueDate(task.dueDate);
+  const student = task.studentId && typeof task.studentId === "object"
+    ? task.studentId
+    : null;
+  const teamName = student?.team_id?.name || "—";
+  const studentName = student?.name || "Unassigned";
+
+  return {
+    id: task._id,
+    title: task.title,
+    subtitle: task.description || "",
+    status,
+    updateStatus: status,
+    dueDate: due.label,
+    dueDateYmd: due.ymd,
+    teamName,
+    assignedTo: {
+      id: student?._id || null,
+      name: studentName,
+      avatarText: studentName.substring(0, 2).toUpperCase(),
+      avatarBg: "bg-gray-100 text-gray-700",
+      teamName,
+    },
+  };
+}
 
 const Task = () => {
   const [tasks, setTasks] = useState([]);
@@ -13,35 +64,25 @@ const Task = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [deleteConfirmState, setDeleteConfirmState] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [activeFilter, setActiveFilter] = useState("all");
 
   const fetchTasks = async () => {
     try {
       setLoading(true);
-      const res = await getTasks();
-      if (res.success) {
-        const formattedTasks = res.data.map((task) => ({
-          id: task._id,
-          title: task.title,
-          subtitle: task.description || "",
-          status: task.status,
-          assignedTo: {
-            id: task.studentId?._id,
-            name: task.studentId?.name || "Unassigned",
-            avatarText: (task.studentId?.name || "U").substring(0, 2).toUpperCase(),
-            avatarBg: "bg-gray-100 text-gray-700",
-          },
-          dueDate: task.dueDate ? new Date(task.dueDate).toLocaleDateString() : "No Date",
-          updateStatus: task.status,
-        }));
-        setTasks(formattedTasks);
+      const [res, stdRes] = await Promise.all([getTasks(), getStudents()]);
+
+      if (res?.success) {
+        setTasks((res.data || []).map(mapApiTask));
+      } else {
+        setTasks([]);
       }
-      
-      const stdRes = await getStudents();
-      if (stdRes.students) {
-        setStudents(stdRes.students);
-      }
+
+      setStudents(stdRes?.students || []);
     } catch (error) {
       console.error("Error fetching tasks or students:", error);
+      toast.error(error.response?.data?.message || "Failed to load tasks");
+      setTasks([]);
     } finally {
       setLoading(false);
     }
@@ -53,40 +94,71 @@ const Task = () => {
       setEditingTask(null);
       setCreateModalOpen(true);
     };
-    window.addEventListener('openCreateTask', handleOpen);
-    return () => window.removeEventListener('openCreateTask', handleOpen);
+    window.addEventListener("openCreateTask", handleOpen);
+    return () => window.removeEventListener("openCreateTask", handleOpen);
   }, []);
 
-  const handleSaveTask = async (taskData) => {
-    try {
-      const student = students.find((s) => s.name === taskData.assignedTo.name);
-      if (!student) {
-        alert("Please select a valid student.");
-        return;
-      }
-      const taskPayload = {
-        title: taskData.title,
-        description: taskData.subtitle,
-        status: taskData.status,
-        dueDate: taskData.dueDate,
-        studentId: student._id
-      };
+  const counts = useMemo(() => {
+    const keys = tasks.map((t) => taskStatusKey(t.status));
+    return {
+      all: tasks.length,
+      pending: keys.filter((k) => k === "pending").length,
+      in_progress: keys.filter((k) => k === "in_progress").length,
+      completed: keys.filter((k) => k === "completed").length,
+    };
+  }, [tasks]);
 
+  const filteredTasks = useMemo(() => {
+    if (activeFilter === "all") return tasks;
+    return tasks.filter((t) => taskStatusKey(t.status) === activeFilter);
+  }, [tasks, activeFilter]);
+
+  const closeModal = () => {
+    setCreateModalOpen(false);
+    setEditingTask(null);
+  };
+
+  const handleSaveTask = async (taskData) => {
+    const studentId = taskData.assignedTo?.id;
+    if (!studentId) {
+      toast.error("Please assign the task to a student");
+      throw new Error("Student required");
+    }
+
+    const taskPayload = {
+      title: taskData.title.trim(),
+      description: (taskData.subtitle || "").trim(),
+      status: normalizeTaskStatus(taskData.status),
+      dueDate: taskData.dueDate || getLocalToday(),
+      studentId,
+    };
+
+    try {
       if (editingTask) {
         await updateTask(editingTask.id, taskPayload);
+        toast.success("Task updated successfully");
       } else {
         await createTask(taskPayload);
+        toast.success("Task created successfully");
       }
-      fetchTasks();
-      setEditingTask(null);
-      setCreateModalOpen(false);
+      await fetchTasks();
+      closeModal();
     } catch (error) {
       console.error("Error saving task", error);
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to save task",
+      );
+      throw error;
     }
   };
 
   const handleEditTask = (task) => {
-    setEditingTask(task);
+    setEditingTask({
+      ...task,
+      dueDate: task.dueDateYmd || toYmd(task.dueDate) || getLocalToday(),
+    });
     setCreateModalOpen(true);
   };
 
@@ -97,77 +169,80 @@ const Task = () => {
   };
 
   const handleConfirmDelete = async () => {
-    if (!deleteConfirmState) return;
-    const { ids, resolve } = deleteConfirmState;
+    if (!deleteConfirmState || isDeleting) return;
+    const { ids, resolve, reject } = deleteConfirmState;
+    setIsDeleting(true);
     try {
-      setLoading(true);
-      await Promise.all(ids.map(id => deleteTask(id)));
-      fetchTasks();
+      await Promise.all(ids.map((id) => deleteTask(id)));
+      toast.success(
+        ids.length > 1
+          ? "Tasks deleted successfully"
+          : "Task deleted successfully",
+      );
+      setDeleteConfirmState(null);
       resolve();
+      await fetchTasks();
     } catch (error) {
       console.error("Error deleting tasks", error);
-      setLoading(false);
-    } finally {
+      toast.error(error.response?.data?.message || "Failed to delete task");
+      reject(error);
       setDeleteConfirmState(null);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   const handleCancelDelete = () => {
+    if (isDeleting) return;
     if (deleteConfirmState) {
-      deleteConfirmState.reject();
+      deleteConfirmState.reject(new Error("cancelled"));
       setDeleteConfirmState(null);
     }
   };
 
-  // Compute stats
-  const totalTasks = tasks.length;
-  const inProgress = tasks.filter((t) => t.status === "In Progress").length;
-  const completed = tasks.filter((t) => t.status === "Completed").length;
-
   const assigneeOptions = students.map((s) => ({
+    id: s._id,
     name: s.name,
-    avatarText: s.name.substring(0, 2).toUpperCase(),
-    avatarBg: "bg-gray-100 text-gray-700"
+    avatarText: (s.name || "ST").substring(0, 2).toUpperCase(),
+    avatarBg: "bg-gray-100 text-gray-700",
   }));
 
   return (
-    <div className="flex flex-col gap-6 p-4 sm:p-6 bg-[var(--color-background)] min-h-screen">
-      <TaskStats 
-        totalTasks={totalTasks}
-        inProgress={inProgress}
-        completed={completed}
+    <PageShell>
+      <TaskStats
+        counts={counts}
+        activeFilter={activeFilter}
+        onFilterChange={setActiveFilter}
+        isLoading={loading}
       />
 
-      <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-lg)] p-4 sm:p-6 shadow-[var(--shadow-sm)]">
-        <TaskTable 
-          externalTasks={tasks} 
-          loading={loading} 
-          fetchTasks={fetchTasks} 
+      <PagePanel className="p-3 sm:p-4">
+        <TaskTable
+          externalTasks={filteredTasks}
+          loading={loading}
           onEditTask={handleEditTask}
           onDeleteTasks={handleDeleteTasks}
         />
-      </div>
+      </PagePanel>
 
-      {(createModalOpen || editingTask) && (
+      {createModalOpen && (
         <EditTaskModal
           task={editingTask}
           mode={editingTask ? "edit" : "create"}
-          onClose={() => {
-            setCreateModalOpen(false);
-            setEditingTask(null);
-          }}
+          onClose={closeModal}
           onSave={handleSaveTask}
-          dynamicAssignees={assigneeOptions.length > 0 ? assigneeOptions : undefined}
+          dynamicAssignees={assigneeOptions}
         />
       )}
 
-      <DeleteConfirmModal 
+      <DeleteConfirmModal
         isOpen={!!deleteConfirmState}
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
         count={deleteConfirmState?.ids?.length || 0}
+        isDeleting={isDeleting}
       />
-    </div>
+    </PageShell>
   );
 };
 

@@ -1,102 +1,103 @@
-import React, { useState, useEffect, useRef } from "react";
-import { LuX, LuChevronDown, LuSearch, LuCheck } from "react-icons/lu";
+import { useState, useEffect } from "react";
+import { LuX, LuChevronDown } from "react-icons/lu";
+import { getLocalToday, toYmd } from "../../utils/localDate";
 
-const ASSIGNEE_OPTIONS = [
-  { name: "Faiz ur Rehman", avatarText: "FR", avatarBg: "bg-blue-100 text-blue-700" },
-  { name: "Muhammad Junaid", avatarText: "MJ", avatarBg: "bg-amber-100 text-amber-700" },
-  { name: "Sana Ullah", avatarText: "SU", avatarBg: "bg-purple-100 text-purple-700" },
-  { name: "Idrees Ud Din", avatarText: "ID", avatarBg: "bg-blue-100 text-blue-700" },
-  { name: "Bahadar Ali", avatarText: "BA", avatarBg: "bg-amber-100 text-amber-700" },
-  { name: "Shayan Ahmad", avatarText: "SA", avatarBg: "bg-emerald-100 text-emerald-700" },
-  { name: "Sir Ibrahim Khan", avatarText: "IK", avatarBg: "bg-purple-100 text-purple-700" },
-];
-
-// Removed SearchableAssigneeSelect component in favor of native select
-
-// Helper to convert date strings to YYYY-MM-DD for input type="date"
 const toDateInputValue = (dateStr) => {
   if (!dateStr) return "";
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-  if (dateStr.toLowerCase() === "tomorrow") {
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
-    return d.toISOString().split("T")[0];
-  }
-  if (dateStr.toLowerCase() === "yesterday") {
-    const d = new Date();
-    d.setDate(d.getDate() - 1);
-    return d.toISOString().split("T")[0];
-  }
   const parsed = new Date(dateStr);
-  if (!isNaN(parsed.getTime())) {
-    return parsed.toISOString().split("T")[0];
+  if (!Number.isNaN(parsed.getTime())) {
+    return toYmd(parsed);
   }
   return "";
 };
 
-const EditTaskModal = ({ task, onClose, onSave, mode = "edit", dynamicAssignees }) => {
+const EditTaskModal = ({
+  task,
+  onClose,
+  onSave,
+  mode = "edit",
+  dynamicAssignees = [],
+}) => {
   const isCreate = mode === "create" || !task;
+  const assigneeList = Array.isArray(dynamicAssignees) ? dynamicAssignees : [];
 
-  const assigneeList = dynamicAssignees || ASSIGNEE_OPTIONS;
-
-  const [title, setTitle] = useState(task?.title || "");
-  const [subtitle, setSubtitle] = useState(task?.subtitle || "");
-  const [status, setStatus] = useState(task?.status || "Pending");
-  const [assignedToName, setAssignedToName] = useState(
-    task?.assignedTo?.name || (assigneeList.length > 0 ? assigneeList[0].name : "")
-  );
-  const [dueDate, setDueDate] = useState(toDateInputValue(task?.dueDate));
+  const [title, setTitle] = useState("");
+  const [subtitle, setSubtitle] = useState("");
+  const [status, setStatus] = useState("Pending");
+  const [assignedToId, setAssignedToId] = useState("");
+  const [dueDate, setDueDate] = useState(getLocalToday());
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
 
   useEffect(() => {
     if (task) {
       setTitle(task.title || "");
       setSubtitle(task.subtitle || "");
       setStatus(task.status || "Pending");
-      setAssignedToName(task.assignedTo?.name || (assigneeList.length > 0 ? assigneeList[0].name : ""));
-      setDueDate(toDateInputValue(task.dueDate));
+      setAssignedToId(task.assignedTo?.id ? String(task.assignedTo.id) : "");
+      setDueDate(toDateInputValue(task.dueDate) || getLocalToday());
     } else {
       setTitle("");
       setSubtitle("");
       setStatus("Pending");
-      setAssignedToName(assigneeList.length > 0 ? assigneeList[0].name : "");
-      const today = new Date().toISOString().split("T")[0];
-      setDueDate(today);
+      setAssignedToId("");
+      setDueDate(getLocalToday());
     }
-  }, [task]);
+    setFormError("");
+  }, [task, isCreate]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const selectedAssignee =
-      assigneeList.find((a) => a.name === assignedToName) || {
-        name: assignedToName,
-        avatarText: assignedToName.slice(0, 2).toUpperCase(),
-        avatarBg: "bg-blue-100 text-blue-700",
-      };
+    if (isSubmitting) return;
+
+    if (!title.trim()) {
+      setFormError("Task title is required");
+      return;
+    }
+    if (!assignedToId) {
+      setFormError("Please assign this task to a student");
+      return;
+    }
+
+    const selectedAssignee = assigneeList.find(
+      (a) => String(a.id) === String(assignedToId),
+    );
+    if (!selectedAssignee) {
+      setFormError("Please select a valid student");
+      return;
+    }
 
     const taskData = {
-      id: task?.id || Date.now(),
-      title,
-      subtitle,
+      id: task?.id,
+      title: title.trim(),
+      subtitle: subtitle.trim(),
       status,
       updateStatus: status,
       assignedTo: selectedAssignee,
-      dueDate: dueDate || new Date().toISOString().split("T")[0],
+      dueDate: dueDate || getLocalToday(),
     };
 
-    onSave(taskData);
-    onClose();
+    setIsSubmitting(true);
+    setFormError("");
+    try {
+      await onSave(taskData);
+    } catch {
+      // Parent shows toast; keep modal open
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-      onClick={onClose}
+      onClick={() => !isSubmitting && onClose()}
     >
       <div
         className="bg-[var(--color-surface)] rounded-2xl shadow-2xl border border-[var(--color-border)] w-[95%] sm:w-[600px] md:w-[650px] max-h-[92vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex items-center justify-between p-6 pb-4 border-b border-[var(--color-border)] shrink-0">
           <h2 className="text-xl sm:text-2xl font-bold text-[var(--color-text)]">
             {isCreate ? "Create New Task" : "Edit Task"}
@@ -104,18 +105,20 @@ const EditTaskModal = ({ task, onClose, onSave, mode = "edit", dynamicAssignees 
           <button
             type="button"
             onClick={onClose}
+            disabled={isSubmitting}
             aria-label="Close modal"
-            className="p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-low)] rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-low)] rounded-lg transition-colors cursor-pointer disabled:opacity-50"
           >
             <LuX className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Body (Form) */}
-        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col flex-1 overflow-hidden"
+        >
           <div className="p-6 pt-5 overflow-y-auto">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {/* Task Title */}
               <div className="flex flex-col gap-1.5 sm:col-span-2">
                 <label className="text-xs sm:text-sm font-semibold text-[var(--color-text)]">
                   Task Title *
@@ -125,26 +128,26 @@ const EditTaskModal = ({ task, onClose, onSave, mode = "edit", dynamicAssignees 
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Update Syllabus: Web Dev Unit 1-4"
-                  className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] placeholder-[var(--color-text-muted)]/70 focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors"
+                  disabled={isSubmitting}
+                  placeholder="e.g. Complete Project Proposal"
+                  className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] placeholder-[var(--color-text-muted)]/70 focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors disabled:opacity-60"
                 />
               </div>
 
-              {/* Task Subtitle / Modules */}
               <div className="flex flex-col gap-1.5 sm:col-span-2">
                 <label className="text-xs sm:text-sm font-semibold text-[var(--color-text)]">
-                  Description / Subtitle
+                  Description
                 </label>
                 <input
                   type="text"
                   value={subtitle}
                   onChange={(e) => setSubtitle(e.target.value)}
-                  placeholder="Curriculum / Modules / 2 weeks / Read & instructions..."
-                  className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] placeholder-[var(--color-text-muted)]/70 focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors"
+                  disabled={isSubmitting}
+                  placeholder="Optional details for the student"
+                  className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] placeholder-[var(--color-text-muted)]/70 focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors disabled:opacity-60"
                 />
               </div>
 
-              {/* Status */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs sm:text-sm font-semibold text-[var(--color-text)]">
                   Status
@@ -153,36 +156,44 @@ const EditTaskModal = ({ task, onClose, onSave, mode = "edit", dynamicAssignees 
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors appearance-none cursor-pointer pr-10"
+                    disabled={isSubmitting}
+                    className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors appearance-none cursor-pointer pr-10 disabled:opacity-60"
                   >
-                    <option value="In Progress">In Progress</option>
                     <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
                     <option value="Completed">Completed</option>
                   </select>
                   <LuChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-text-muted)] pointer-events-none" />
                 </div>
               </div>
 
-              {/* Assigned To */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs sm:text-sm font-semibold text-[var(--color-text)]">
-                  Assigned To
+                  Assign to Student *
                 </label>
                 <div className="relative">
                   <select
-                    value={assignedToName}
-                    onChange={(e) => setAssignedToName(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors appearance-none cursor-pointer pr-10"
+                    value={assignedToId}
+                    onChange={(e) => setAssignedToId(e.target.value)}
+                    required
+                    disabled={isSubmitting || assigneeList.length === 0}
+                    className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors appearance-none cursor-pointer pr-10 disabled:opacity-60"
                   >
+                    <option value="">
+                      {assigneeList.length === 0
+                        ? "No students available"
+                        : "-- Select student --"}
+                    </option>
                     {assigneeList.map((opt) => (
-                      <option key={opt.name} value={opt.name}>{opt.name}</option>
+                      <option key={opt.id} value={opt.id}>
+                        {opt.name}
+                      </option>
                     ))}
                   </select>
                   <LuChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-text-muted)] pointer-events-none" />
                 </div>
               </div>
 
-              {/* Due Date (HTML5 Date Input with calendar picker) */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs sm:text-sm font-semibold text-[var(--color-text)]">
                   Due Date
@@ -191,26 +202,38 @@ const EditTaskModal = ({ task, onClose, onSave, mode = "edit", dynamicAssignees 
                   type="date"
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors cursor-pointer"
+                  disabled={isSubmitting}
+                  className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors cursor-pointer disabled:opacity-60"
                 />
               </div>
             </div>
+
+            {formError ? (
+              <p className="mt-4 text-sm text-[var(--color-error)]">{formError}</p>
+            ) : null}
           </div>
 
-          {/* Footer Actions */}
           <div className="flex items-center justify-end gap-3 p-6 pt-4 border-t border-[var(--color-border)] shrink-0 bg-[var(--color-surface)]">
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2.5 border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-low)] text-[var(--color-text)] text-sm font-semibold rounded-lg transition-colors shadow-sm cursor-pointer"
+              disabled={isSubmitting}
+              className="px-6 py-2.5 border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-low)] text-[var(--color-text)] text-sm font-semibold rounded-lg transition-colors shadow-sm cursor-pointer disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 bg-[var(--color-primary)] hover:opacity-90 text-[var(--color-on-primary)] text-sm font-semibold rounded-lg transition-colors shadow-sm cursor-pointer"
+              disabled={isSubmitting || assigneeList.length === 0}
+              className="px-6 py-2.5 bg-[var(--color-primary)] hover:opacity-90 text-[var(--color-on-primary)] text-sm font-semibold rounded-lg transition-colors shadow-sm cursor-pointer disabled:opacity-50"
             >
-              {isCreate ? "Create Task" : "Save"}
+              {isSubmitting
+                ? isCreate
+                  ? "Creating..."
+                  : "Saving..."
+                : isCreate
+                  ? "Create Task"
+                  : "Save"}
             </button>
           </div>
         </form>

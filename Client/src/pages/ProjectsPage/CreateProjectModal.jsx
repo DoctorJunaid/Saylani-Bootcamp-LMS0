@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import { fetchTeams } from "../../Data/teams";
 
 const EMPTY_FORM = {
@@ -16,8 +17,13 @@ export default function CreateProjectModal({ isOpen, onClose, onCreate }) {
 
   useEffect(() => {
     if (isOpen) {
-      // Fetch teams to populate the dropdown
-      fetchTeams().then(data => setTeams(data)).catch(err => console.error("Failed to load teams", err));
+      // Fetch real teams for the dropdown
+      fetchTeams()
+        .then((data) => setTeams(Array.isArray(data) ? data : []))
+        .catch((err) => {
+          console.error("Failed to load teams", err);
+          toast.error(err.message || "Failed to load teams");
+        });
     }
   }, [isOpen]);
 
@@ -29,6 +35,7 @@ export default function CreateProjectModal({ isOpen, onClose, onCreate }) {
   }
 
   function handleClose() {
+    if (isSubmitting) return;
     setFormData(EMPTY_FORM);
     setError(null);
     onClose();
@@ -37,26 +44,37 @@ export default function CreateProjectModal({ isOpen, onClose, onCreate }) {
   async function handleSubmit(e) {
     e.preventDefault();
 
+    if (isSubmitting) return;
+
     if (!formData.title.trim()) {
       setError("Project title is required.");
       return;
     }
 
+    // Matches backend Project model / createProjectController body
     const newProject = {
       title: formData.title.trim(),
       description: formData.description.trim(),
     };
-    
+
     if (formData.dueDate) newProject.dueDate = formData.dueDate;
-    if (formData.teamId) newProject.teamId = formData.teamId; // Optional team assignment
+    if (formData.teamId) newProject.teamId = formData.teamId;
 
     try {
       setIsSubmitting(true);
       setError(null);
       await onCreate(newProject);
-      handleClose();
+      toast.success("Project created successfully");
+      setFormData(EMPTY_FORM);
+      setError(null);
+      onClose();
     } catch (err) {
-      setError(err.message ?? "Failed to create project. Please try again.");
+      const message =
+        err?.message ||
+        err?.response?.data?.message ||
+        "Failed to create project. Please try again.";
+      setError(message);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -64,7 +82,7 @@ export default function CreateProjectModal({ isOpen, onClose, onCreate }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-lg"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
       onClick={handleClose}
     >
       <div
@@ -142,7 +160,8 @@ export default function CreateProjectModal({ isOpen, onClose, onCreate }) {
             <button
               type="button"
               onClick={handleClose}
-              className="px-lg py-sm rounded-lg text-sm font-weight-medium text-text-muted bg-surface-container hover:bg-surface-high transition-colors duration-fast"
+              disabled={isSubmitting}
+              className="px-lg py-sm rounded-lg text-sm font-weight-medium text-text-muted bg-surface-container hover:bg-surface-high transition-colors duration-fast disabled:opacity-60"
             >
               Cancel
             </button>
