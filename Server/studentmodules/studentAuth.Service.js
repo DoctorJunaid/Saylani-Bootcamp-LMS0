@@ -6,31 +6,45 @@ import { Task } from "../models/taskModel.js";
 import Project from "../models/project.Model.js";
 import Notification from "../models/notification.Model.js";
 
-export const loginStudent = async (email , password)=>{
-//    normalizedEmail => frontline denfanse
-// const normalizedEmail = String(email || "").trim().toLowerCase();
-    const student = await Student.findOne({email});
-    if (!student) {
-  throw new Error("Invalid email or password");
-}
-
-    const isPasswordCorrect = await bcrypt.compare(password,student.password );
-    if(!isPasswordCorrect){
-        throw new Error("Invalid Email or Password")
+export const loginStudent = async (identifier, password) => {
+    const clean = String(identifier || "").trim();
+    if (!clean || !password) {
+        throw new Error("Please enter your Roll Number or Email and Password.");
     }
+
+    const student = await Student.findOne({
+        $or: [
+            { email: clean.toLowerCase() },
+            { rollNumber: clean }
+        ]
+    }).populate("team_id", "name");
+
+    if (!student) {
+        throw new Error("Invalid Roll Number/Email or Password");
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(password, student.password);
+    if (!isPasswordCorrect) {
+        throw new Error("Invalid Roll Number/Email or Password");
+    }
+
     // generate token
-    const token = generateToken(student)
-    return{
+    const token = generateToken(student);
+    return {
         token,
-        student:{
+        student: {
             id: student._id,
+            _id: student._id,
             name: student.name,
-            email:student.email,
+            email: student.email,
+            phone: student.phone || "",
             rollNumber: student.rollNumber,
-            role:"student",
+            course: student.course,
+            batch: student.batch,
+            team: student.team_id,
+            role: "student",
         },
     };
-
 };
 
 // Mujhe current student ka data do."
@@ -200,21 +214,24 @@ export const getMyProjects = async (studentId) => {
 // gets teams
 export const getMyTeam = async(studentId)=>{
   // Student ki ID se exactly ek student find karo.
-  // Sirf team_id field chahiye.
-  const student = await Student.findById(studentId)
-  .select("team_id").populate("team_id");
+  const student = await Student.findById(studentId).select("team_id");
 
   // Agar student database mein exist nahi karta
   if(!student){
-    throw new Error("Student not found")
+    throw new Error("Student not found");
   }
-   // Student exist karta hai lekin team assign nahi hai
-    if(!student.team_id){
-      return null
-    }
-    // Student ki team return karo
-    return student.team_id;
-}
+  // Student exist karta hai lekin team assign nahi hai
+  if(!student.team_id){
+    return null;
+  }
+  // Student ki team with members and projects return karo
+  const { Team } = await import("../models/team.Model.js");
+  const team = await Team.findById(student.team_id)
+    .populate("members", "name rollNumber email phone course batch")
+    .populate("projectId");
+
+  return team;
+};
 
 // get notification
 

@@ -8,3 +8,5 @@ export * from "./StatCard";
 export * from "./Spinner";
 export * from "./EmptyState";
 export * from "./Avatar";
+export * from "./FloatingChatWidget";
+

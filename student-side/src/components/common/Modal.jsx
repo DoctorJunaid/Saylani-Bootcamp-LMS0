@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 export const Modal = ({
@@ -27,58 +28,85 @@ export const Modal = ({
 
   const widths = { sm: "420px", md: "520px", lg: "640px", xl: "800px" };
 
-  return (
+  return createPortal(
     <div style={{
-      position: "fixed", inset: 0, zIndex: 1400,
-      display: "flex", alignItems: "center", justifyContent: "center",
+      position: "fixed",
+      top: 0, left: 0, right: 0, bottom: 0,
+      zIndex: 1400,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
       padding: "1rem"
     }}>
       {/* Backdrop */}
       <div
         onClick={onClose}
         style={{
-          position: "fixed", inset: 0,
-          background: "rgba(0,0,0,0.35)",
+          position: "absolute",
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: "rgba(13, 27, 42, 0.4)",
           backdropFilter: "blur(4px)",
           WebkitBackdropFilter: "blur(4px)"
         }}
       />
 
-      {/* Dialog */}
+      {/* Modal Container */}
       <div
         style={{
-          position: "relative", zIndex: 10,
-          width: "100%", maxWidth: widths[size] || widths.md,
-          background: "var(--surface)",
-          border: "1px solid var(--border)",
-          borderRadius: "var(--radius-card)",
-          boxShadow: "0 24px 64px rgba(11,35,66,.15), 0 4px 16px rgba(0,0,0,.08)",
-          display: "flex", flexDirection: "column",
+          position: "relative",
+          width: "100%",
+          maxWidth: widths[size] || widths.md,
           maxHeight: "90vh",
+          backgroundColor: "var(--surface)",
+          borderRadius: "var(--radius-card)",
+          boxShadow: "0 25px 50px -12px rgba(13, 27, 42, 0.25), 0 0 0 1px var(--border)",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden", // Crucial: prevents content from spilling out and ruining borders
           animation: "modalIn 200ms ease-out"
         }}
       >
         {/* Header */}
         <div style={{
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-          padding: "1.5rem 1.75rem 1rem",
-          borderBottom: "1px solid var(--border)"
+          padding: "1.25rem 1.75rem",
+          borderBottom: "1px solid var(--border)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexShrink: 0
         }}>
           <h3 style={{
             fontFamily: "var(--font-display)",
-            fontSize: "1.2rem", fontWeight: 600
+            fontSize: "1.25rem",
+            fontWeight: 600,
+            margin: 0,
+            color: "var(--text)"
           }}>{title}</h3>
           <button
             onClick={onClose}
             className="modal-close"
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "var(--text-muted)",
+              padding: "0.25rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "4px",
+              transition: "background-color 0.2s"
+            }}
+            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--bg)'}
+            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           >
-            <X style={{ width: "18px", height: "18px" }} />
+            <X size={20} />
           </button>
         </div>
 
-        {/* Scrollable Content */}
+        {/* Scrollable Body */}
         <div style={{
-          padding: "1.5rem 1.75rem",
+          padding: "1.75rem",
           overflowY: "auto",
           flex: 1,
           minHeight: 0
@@ -89,12 +117,14 @@ export const Modal = ({
         {/* Footer */}
         {footer && (
           <div style={{
-            display: "flex", alignItems: "center", justifyContent: "flex-end",
-            gap: "0.65rem",
-            padding: "1rem 1.75rem",
-            background: "var(--bg)",
+            padding: "1.25rem 1.75rem",
             borderTop: "1px solid var(--border)",
-            borderRadius: "0 0 var(--radius-card) var(--radius-card)"
+            backgroundColor: "var(--bg)",
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            gap: "0.75rem",
+            flexShrink: 0
           }}>
             {footer}
           </div>
@@ -107,6 +137,7 @@ export const Modal = ({
           to { opacity: 1; transform: translateY(0) scale(1); }
         }
       `}</style>
-    </div>
+    </div>,
+    document.body
   );
 };

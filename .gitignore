@@ -3,3 +3,14 @@ node_modules/
 .DS_Store
 dist/
 build/
+
+# Scripts & seed files
+scripts/
+Server/scripts/
+
+# Student Portal
+student-side/
+student-portal/
+
+# Documentation & Security Guides
+SECURITY_AND_RATE_LIMITING_GUIDE.md

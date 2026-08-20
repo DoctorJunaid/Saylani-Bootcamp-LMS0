@@ -1,111 +1,113 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
+import { teamService } from "../../services/team.service";
+import { storage } from "../../utils/storage";
+import { showChatComingSoon } from "../../utils/chatAlert";
+import { MessageSquare, Loader2 } from "lucide-react";
 
 export const Team = () => {
+  const { user } = useAuth();
   const { setPageTitle } = useOutletContext();
+
+  // Instant SWR Cache Hydration
+  const [team, setTeam] = useState(() => storage.getCache("team") || null);
+  const [loading, setLoading] = useState(() => !storage.getCache("team"));
 
   useEffect(() => {
     setPageTitle("Team");
+    loadTeam();
   }, [setPageTitle]);
+
+  const loadTeam = async () => {
+    try {
+      if (!storage.getCache("team")) {
+        setLoading(true);
+      }
+      const data = await teamService.getMyTeam();
+      setTeam(data);
+      if (data) storage.setCache("team", data);
+    } catch (err) {
+      console.warn("Failed to load team:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const members = team?.members || [];
+  const teamName = team?.name || "Alpha Coders";
+
+  const getInitials = (name) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+  };
 
   return (
     <div className="inner-page active fade-in">
       <div className="page-header-row">
         <div>
-          <h1 className="page-headline">Alpha Coders</h1>
+          <h1 className="page-headline">{teamName}</h1>
           <p className="page-sub">
-            Team A · Batch 11 · MERN Stack Development
+            Team · Batch {user?.batch || "11"} · {user?.course || "MERN Stack Development"}
           </p>
         </div>
-        {/* Removed "+ Invite Member" — students cannot invite */}
       </div>
 
-      <div className="team-grid">
-        {/* You */}
-        <div className="team-member-card card you-card">
-          <div className="tm-avatar you">MJ</div>
-          <div className="tm-info">
-            <span className="tm-name">Muhammad Junaid <span className="you-chip">You</span></span>
-            <span className="tm-role">💻 Full Stack Developer</span>
-          </div>
-          <div className="tm-status"><span className="status-dot online"></span><span>Online</span></div>
-          <div className="tm-actions">
-            <button className="icon-btn" title="Message">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-            </button>
-          </div>
+      {loading && members.length === 0 ? (
+        <div style={{ display: "flex", justifyContent: "center", padding: "3rem" }}>
+          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--accent)" }} />
         </div>
+      ) : (
+        <div className="team-grid">
+          {members.length > 0 ? (
+            members.map((member) => {
+              const isCurrentUser =
+                (user?._id && member._id === user._id) ||
+                (user?.email && member.email === user.email) ||
+                (user?.rollNumber && member.rollNumber === user.rollNumber);
 
-        {/* Sana */}
-        <div className="team-member-card card">
-          <div className="tm-avatar" style={{ background: "var(--accent-lite)", color: "var(--accent)" }}>SA</div>
-          <div className="tm-info">
-            <span className="tm-name">Sana Ullah</span>
-            <span className="tm-role">⚙️ Team Lead & Backend</span>
-          </div>
-          <div className="tm-status"><span className="status-dot online"></span><span>Online</span></div>
-          <div className="tm-actions">
-            <button className="icon-btn" title="Message">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-            </button>
-          </div>
+              return (
+                <div
+                  key={member._id || member.email}
+                  className={`team-member-card card ${isCurrentUser ? "you-card" : ""}`}
+                >
+                  <div className={`tm-avatar ${isCurrentUser ? "you" : ""}`}>
+                    {getInitials(member.name)}
+                  </div>
+                  <div className="tm-info">
+                    <span className="tm-name">
+                      {member.name}{" "}
+                      {isCurrentUser && <span className="you-chip">You</span>}
+                    </span>
+                    <span className="tm-role">
+                      Roll: {member.rollNumber || "--"} · {member.course || "Developer"}
+                    </span>
+                  </div>
+                  <div className="tm-actions">
+                    <button
+                      type="button"
+                      className="icon-btn"
+                      title={isCurrentUser ? "Saved Messages" : `Chat with ${member.name}`}
+                      onClick={() => showChatComingSoon(isCurrentUser ? "Yourself (Saved Messages)" : member.name)}
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="card" style={{ padding: "2rem", textAlign: "center", color: "var(--text-muted)", gridColumn: "1 / -1" }}>
+              No team members assigned yet.
+            </div>
+          )}
         </div>
-
-        {/* Bahadar */}
-        <div className="team-member-card card">
-          <div className="tm-avatar" style={{ background: "#e8d5c4", color: "#6b4c2a" }}>BA</div>
-          <div className="tm-info">
-            <span className="tm-name">Bahadar Ali</span>
-            <span className="tm-role">🎨 Frontend Developer</span>
-          </div>
-          <div className="tm-status"><span className="status-dot away"></span><span>Away</span></div>
-          <div className="tm-actions">
-            <button className="icon-btn" title="Message">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        {/* Shayan */}
-        <div className="team-member-card card">
-          <div className="tm-avatar" style={{ background: "#d4e4d4", color: "#2d5a2d" }}>SH</div>
-          <div className="tm-info">
-            <span className="tm-name">Shayan Ahmad</span>
-            <span className="tm-role">🎨 Frontend Developer</span>
-          </div>
-          <div className="tm-status"><span className="status-dot offline"></span><span>Offline</span></div>
-          <div className="tm-actions">
-            <button className="icon-btn" title="Message">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        {/* Idrees */}
-        <div className="team-member-card card">
-          <div className="tm-avatar" style={{ background: "#f0ddd4", color: "#8b3a1f" }}>ID</div>
-          <div className="tm-info">
-            <span className="tm-name">Idrees Ud Din</span>
-            <span className="tm-role">🎨 Frontend Developer</span>
-          </div>
-          <div className="tm-status"><span className="status-dot online"></span><span>Online</span></div>
-          <div className="tm-actions">
-            <button className="icon-btn" title="Message">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Team Activity Feed */}
       <div className="card" style={{ marginTop: "1.5rem" }}>
@@ -121,14 +123,14 @@ export const Team = () => {
             </div>
           </div>
           <div className="activity-item">
-            <div className="activity-avatar" style={{ background: "#e8d5c4", color: "#6b4c2a" }}>BA</div>
+            <div className="activity-avatar">BA</div>
             <div className="activity-body">
               <span className="activity-text"><b>Bahadar Ali</b> completed task "Team Page UI Design"</span>
               <span className="activity-time">1 hour ago</span>
             </div>
           </div>
           <div className="activity-item">
-            <div className="activity-avatar" style={{ background: "#d4e4d4", color: "#2d5a2d" }}>SH</div>
+            <div className="activity-avatar">SH</div>
             <div className="activity-body">
               <span className="activity-text"><b>Shayan Ahmad</b> opened pull request #14</span>
               <span className="activity-time">3 hours ago</span>

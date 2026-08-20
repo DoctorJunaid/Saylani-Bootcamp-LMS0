@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { StudentSidebar } from "./StudentSidebar";
 import { StudentHeader } from "./StudentHeader";
+import { FloatingChatWidget } from "../common/FloatingChatWidget";
 
 export const StudentLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -10,19 +11,25 @@ export const StudentLayout = () => {
 
   return (
     <div className="app-shell">
-      <StudentSidebar collapsed={collapsed} />
+      <StudentSidebar
+        collapsed={collapsed}
+        onToggleSidebar={() => setCollapsed(!collapsed)}
+      />
 
       <div className="main-wrap">
         <StudentHeader
           title={pageTitle}
           collapsed={collapsed}
-          onToggleSidebar={() => setCollapsed(!collapsed)}
         />
+
 
         <main className="content-area">
           <Outlet context={{ setPageTitle }} />
         </main>
       </div>
+
+      <FloatingChatWidget />
     </div>
   );
 };
+

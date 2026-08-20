@@ -2,7 +2,8 @@
  * API Endpoints Constants
  * Centralized list of backend routes for the Student Portal.
  */
-export const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+export const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:9000/api";
 
 export const ENDPOINTS = {
   AUTH: {
@@ -12,24 +13,23 @@ export const ENDPOINTS = {
     CHANGE_PASSWORD: "/student-auth/change-password",
   },
   DASHBOARD: {
-    GET_OVERVIEW: "/student-portal/dashboard",
+    GET_OVERVIEW: "/student-auth/dashboard",
   },
   ATTENDANCE: {
-    GET_RECORDS: "/student-portal/attendance",
-    GET_SUMMARY: "/student-portal/attendance/summary",
+    GET_RECORDS: "/student-auth/attendance",
   },
   TASKS: {
-    GET_ALL: "/student-portal/tasks",
-    GET_BY_ID: (id) => `/student-portal/tasks/${id}`,
-    SUBMIT: (id) => `/student-portal/tasks/${id}/submit`,
+    GET_ALL: "/student-auth/tasks",
+    UPDATE_STATUS: "/student-auth/task/status",
+  },
+  PROJECTS: {
+    GET_MY_PROJECTS: "/student-auth/projects",
   },
   TEAM: {
-    GET_MY_TEAM: "/student-portal/team",
-    GET_PROJECT: "/student-portal/project",
-    SUBMIT_REPO: "/student-portal/project/submit-repo",
+    GET_MY_TEAM: "/student-auth/team",
   },
-  PROFILE: {
-    GET_PROFILE: "/student-portal/profile",
-    UPDATE_PROFILE: "/student-portal/profile",
+  NOTIFICATIONS: {
+    GET_ALL: "/student-auth/notifications",
+    READ_ALL: "/student-auth/read-all",
   },
 };

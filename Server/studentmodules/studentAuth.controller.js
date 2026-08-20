@@ -2,12 +2,13 @@ import { getStudentMe, loginStudent,getStudentAttendanceHistory, getStudentDashb
 
 export const loginStudentController = async (req , res)=>{
     try {
-        const {email , password} = req.body;
+        const {email, identifier, rollNumber, password} = req.body;
+        const loginIdentifier = identifier || email || rollNumber;
 
-        const data = await loginStudent(email , password);
+        const data = await loginStudent(loginIdentifier , password);
         res.status(200).json({
             success:true,
-            message:"Student Login Sucessfully",
+            message:"Student Login Successfully",
             ...data,
         }) 
     }
@@ -78,7 +79,7 @@ export const getStudentDashboardController =  async(req, res)=>{
  
     } catch (error) 
     {
-        return res.status(4014).json({
+        return res.status(500).json({
             success:false,
             message:error.message
         })
@@ -198,8 +199,8 @@ export const getMyTeamController = async(req , res)=>{
         const team = await getMyTeam(studentId)
 
         return res.status(200).json({
-            scuess:true,
-            messgae:"Student Team fetch Sucessfully",
+            success:true,
+            message:"Student Team fetched successfully",
             team,
         })
         

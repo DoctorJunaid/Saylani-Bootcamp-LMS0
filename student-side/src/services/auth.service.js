@@ -8,7 +8,6 @@ export const authService = {
   /**
    * Logs in a student using Roll Number or Email and Password
    * @param {Object} credentials - { identifier: string, password: string }
-   * @returns {Promise<{ token: string, student: Object }>}
    */
   login: async (credentials) => {
     return await axiosClient.post(ENDPOINTS.AUTH.LOGIN, credentials);
@@ -23,16 +22,16 @@ export const authService = {
 
   /**
    * Updates student account password
-   * @param {Object} payload - { currentPassword: string, newPassword: string }
+   * @param {Object} payload - { currentPassword: string, newPassword: string, confirmPassword: string }
    */
   changePassword: async (payload) => {
-    return await axiosClient.post(ENDPOINTS.AUTH.CHANGE_PASSWORD, payload);
+    return await axiosClient.patch(ENDPOINTS.AUTH.CHANGE_PASSWORD, payload);
   },
 
   /**
    * Logs out the current student session
    */
   logout: async () => {
-    return await axiosClient.post(ENDPOINTS.AUTH.LOGOUT);
+    return true;
   },
 };

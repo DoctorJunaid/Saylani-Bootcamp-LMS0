@@ -1,7 +1,8 @@
 import React from "react";
 import { Avatar } from "../common/Avatar";
 import { Badge } from "../common/Badge";
-import { Mail } from "lucide-react";
+import { Mail, MessageSquare } from "lucide-react";
+import { showChatComingSoon } from "../../utils/chatAlert";
 
 export const TeamMemberList = ({ members = [] }) => {
   return (
@@ -23,7 +24,15 @@ export const TeamMemberList = ({ members = [] }) => {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => showChatComingSoon(member.name)}
+              className="p-2 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-surface-container)] hover:text-[var(--accent)] transition-colors"
+              title={`Chat with ${member.name} (Coming Soon)`}
+            >
+              <MessageSquare className="w-4 h-4" />
+            </button>
             {member.email && (
               <a
                 href={`mailto:${member.email}`}
@@ -42,3 +51,4 @@ export const TeamMemberList = ({ members = [] }) => {
     </div>
   );
 };
+

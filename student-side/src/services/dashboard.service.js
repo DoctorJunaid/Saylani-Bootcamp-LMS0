@@ -6,7 +6,7 @@ import { ENDPOINTS } from "../constants/apiEndpoints";
  */
 export const dashboardService = {
   /**
-   * Fetches summary statistics, upcoming tasks, attendance %, and team status
+   * Fetches summary statistics, student details, and attendance metrics for dashboard
    */
   getDashboardData: async () => {
     return await axiosClient.get(ENDPOINTS.DASHBOARD.GET_OVERVIEW);

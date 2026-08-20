@@ -18,15 +18,22 @@ export const ChangePasswordModal = ({ isOpen, onClose }) => {
       toast.error("New passwords do not match.");
       return;
     }
-    if (newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters long.");
+    if (newPassword.length < 8) {
+      toast.error("Password must be at least 8 characters long.");
       return;
     }
 
     setLoading(true);
     try {
-      await authService.changePassword({ currentPassword, newPassword });
+      await authService.changePassword({
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      });
       toast.success("Password updated successfully!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
       onClose();
     } catch (err) {
       toast.error(err.message || "Failed to update password.");

@@ -42,10 +42,5 @@ export const NAV_ITEMS = [
     icon: Users,
     description: "Team roster and activity",
   },
-  {
-    title: "Profile",
-    path: "/profile",
-    icon: User,
-    description: "Student profile & security",
-  },
 ];
+

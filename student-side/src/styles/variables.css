@@ -23,13 +23,13 @@
   --clay-lite: #CCFBF1;
 
   /* Typography */
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  --font-display: 'Poppins', system-ui, sans-serif;
+  --font-body: 'Poppins', system-ui, sans-serif;
   --font-mono: 'Geist Mono', 'IBM Plex Mono', monospace;
 
   /* Spacing / shape */
-  --radius-card: 16px;
-  --radius-btn: 8px;
+  --radius-card: 12px;
+  --radius-btn: 6px;
   --radius-pill: 999px;
   
   /* Shadows */
@@ -41,7 +41,7 @@
 
   /* Layout */
   --sidebar-w: 240px;
-  --topbar-h: 64px;
+  --topbar-h: 56px;
 }
 
 /* ==========================================================================
