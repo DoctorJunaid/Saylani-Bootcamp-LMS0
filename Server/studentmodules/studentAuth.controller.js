@@ -1,4 +1,4 @@
-import { getStudentMe, loginStudent,getStudentAttendanceHistory, getStudentDashboard, getMyTasks, updateMyTaskStatus, getMyProjects, getMyTeam, getMyNotifications, changeStudentPassword } from "./studentAuth.Service.js";
+import { getStudentMe, loginStudent,getStudentAttendanceHistory, getStudentDashboard, getMyTasks, updateMyTaskStatus, getMyProjects, getMyTeam, getMyNotifications, changeStudentPassword, markAllNotificationsAsRead } from "./studentAuth.Service.js";
 
 export const loginStudentController = async (req , res)=>{
     try {

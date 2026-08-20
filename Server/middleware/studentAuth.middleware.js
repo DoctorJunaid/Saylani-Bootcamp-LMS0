@@ -58,7 +58,7 @@ export const protectStudent = async(req , res , next)=>{
      catch (error)
       {
         return res.status(401).json({
-            message:false,
+            success:false,
             message:"Invalid or expired token"
         })
     }

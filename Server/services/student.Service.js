@@ -7,6 +7,7 @@ import {
   notifyStudentCreated,
   notifyStudentTeamChange,
 } from "./notification.Service.js";
+import bcrypt from "bcrypt"
 
 
 const ACTIVE_ATTENDANCE_THRESHOLD = 75;
