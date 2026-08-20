@@ -6,10 +6,12 @@ import projectRoutes from "./routes/project.Routes.js";
 import taskRoutes from "./routes/task.Routes.js";
 import teamRoutes from "./routes/team.Routes.js";
 import adminRouter from "./routes/admin.Routes.js";
-import { protectAdmin } from "./middleware/auth.middleware.js";
+import { protectAdmin } from "./middleware/adminAuth.middleware.js";
 import attendanceRoutes from "./routes/attendance.Routes.js";
 import dashboardRouter from "./routes/dashboard.Routes.js";
 import notificationRoutes from "./routes/notification.Routes.js";
+// student portal
+import studentRouter from "./studentmodules/studentAuth.Route.js";
 
 const app = express();
 
@@ -33,7 +35,7 @@ app.use(async (req, res, next) => {
 
 // Base Route
 app.get("/", (req, res) => {
-  res.send("API is running");
+  res.send("canot get / error");
 });
 
 // App Routes
@@ -45,6 +47,8 @@ app.use("/api/projects", protectAdmin, projectRoutes);
 app.use("/api/attendance", protectAdmin, attendanceRoutes);
 app.use("/api/dashboard", protectAdmin, dashboardRouter);
 app.use("/api/notifications", protectAdmin, notificationRoutes);
+// student portal
+app.use("/api/student-auth",studentRouter)
 
 // App instance ko export karein taake server.js ya test files ise use kar sakein
 export default app;
