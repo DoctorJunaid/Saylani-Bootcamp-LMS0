@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyFlow — Student Portal</title>
+  <meta name="description"
+    content="Your personal academic portal — attendance, tasks, projects, and team in one calm, premium space." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;450;500;600&family=Geist+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ===================== LOGIN PAGE ===================== -->
+  <div id="page-login" class="page active">
+    <div class="login-layout">
+      <div class="login-photo-panel">
+        <img src="hero.jpg" alt="Student studying in library" class="login-photo" fetchpriority="high" />
+        <div class="login-photo-overlay">
+          <div class="login-photo-brand">
+            <img src="smit-logo.png" alt="SMIT Logo" class="login-overlay-logo" />
+            <blockquote class="login-quote">
+              <p>"Building Pakistan's Tech Future — one student at a time."</p>
+              <cite>— Saylani Mass IT Training</cite>
+            </blockquote>
+          </div>
+        </div>
+      </div>
+      <div class="login-form-panel">
+        <div class="login-form-inner">
+          <div class="login-logo">
+            <img src="smit-logo.png" alt="SMIT Logo" class="login-logo-img" />
+          </div>
+          <h1 class="login-headline">Welcome back.</h1>
+          <p class="login-sub">Sign in to your <strong>Saylani Bootcamp</strong> student dashboard.</p>
+
+          <div class="login-tab-group">
+            <button class="login-tab active" data-tab="student">Student</button>
+            <button class="login-tab" data-tab="admin">Admin</button>
+          </div>
+
+          <form id="login-form" class="login-form" novalidate>
+            <div class="form-field">
+              <label for="roll-input" class="field-label">Roll Number or Email</label>
+              <input id="roll-input" type="text" placeholder="100234 or you@email.com" class="field-input"
+                autocomplete="username" />
+            </div>
+            <div class="form-field">
+              <label for="pass-input" class="field-label">Password</label>
+              <div class="field-password-wrap">
+                <input id="pass-input" type="password" placeholder="••••••••" class="field-input"
+                  autocomplete="current-password" />
+                <button type="button" id="toggle-pass" class="password-toggle" aria-label="Toggle password visibility">
+                  <svg id="eye-show" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="1.5">
+                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                  <svg id="eye-hide" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="1.5" style="display:none">
+                    <path
+                      d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                    <line x1="1" y1="1" x2="23" y2="23" />
+                  </svg>
+                </button>
+              </div>
+              <a href="#" class="forgot-link">Forgot password?</a>
+            </div>
+            <button type="submit" class="btn-primary btn-full" id="login-btn">
+              <span>Sign in</span>
+            </button>
+          </form>
+
+          <div class="or-divider"><span>or</span></div>
+
+          <div class="sso-group">
+            <button class="btn-sso">
+              <svg width="18" height="18" viewBox="0 0 24 24">
+                <path
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  fill="#4285F4" />
+                <path
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  fill="#34A853" />
+                <path
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                  fill="#FBBC05" />
+                <path
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                  fill="#EA4335" />
+              </svg>
+              Continue with Google
+            </button>
+            <button class="btn-sso">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#0078D4">
+                <path
+                  d="M11.4 24H0V12.6L11.4 24zM24 24H12.6L24 12.6V24zM24 11.4V0H12.6L24 11.4zM11.4 0H0v11.4L11.4 0z" />
+              </svg>
+              Continue with Microsoft
+            </button>
+          </div>
+
+          <p class="signup-cta">New student? <a href="#">Activate your account</a> · <a href="#">Forgot password?</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== APP SHELL (all authenticated pages) ===================== -->
+  <div id="app-shell" class="app-shell hidden">
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-logo">
+        <img src="smit-logo.png" alt="SMIT" class="sidebar-smit-logo" />
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-page="dashboard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="7" height="7" rx="1" />
+          </svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-page="attendance">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+            <path d="M8 14l2 2 4-4" />
+          </svg>
+          <span>Attendance</span>
+        </button>
+        <button class="nav-item" data-page="tasks">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M9 11l3 3L22 4" />
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+          </svg>
+          <span>Tasks</span>
+        </button>
+        <button class="nav-item" data-page="project">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polygon points="12 2 2 7 12 12 22 7 12 2" />
+            <polyline points="2 17 12 22 22 17" />
+            <polyline points="2 12 12 17 22 12" />
+          </svg>
+          <span>Project</span>
+        </button>
+        <button class="nav-item" data-page="team">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          <span>Team</span>
+        </button>
+        <button class="nav-item" data-page="profile">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          <span>Profile</span>
+        </button>
+      </nav>
+      <div class="sidebar-bottom">
+        <button class="nav-item nav-logout" id="logout-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          <span>Log out</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="main-wrap">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <button id="sidebar-toggle" class="sidebar-toggle-btn" aria-label="Toggle sidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+        <h2 class="topbar-title" id="topbar-title">Dashboard</h2>
+        <div class="topbar-actions">
+          <button class="topbar-icon-btn" aria-label="Notifications" id="notif-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <span class="notif-dot"></span>
+          </button>
+          <div class="topbar-badge">Batch 11</div>
+          <button class="topbar-avatar" data-page="profile" aria-label="Go to profile">MJ</button>
+        </div>
+      </header>
+
+      <!-- PAGES -->
+      <main class="content-area">
+
+        <!-- DASHBOARD -->
+        <section id="page-dashboard" class="inner-page active">
+          <div class="welcome-banner">
+            <div class="welcome-text">
+              <p class="welcome-greeting">Good morning, Student 👋</p>
+              <h1 class="welcome-name">Muhammad Junaid</h1>
+              <p class="welcome-summary">Batch 11 · MERN Stack Development · Roll No. <span
+                  class="mono-inline">100234</span></p>
+              <p class="welcome-summary" style="margin-top:.3rem;">3 tasks due today &mdash; <span
+                  class="accent-text">92% attendance</span> this month · <span style="color:var(--success)">On track
+                  🟢</span></p>
+            </div>
+            <div class="welcome-meta">
+              <div class="welcome-date">
+                <span class="welcome-day" id="welcome-day"></span>
+                <span class="welcome-date-text" id="welcome-date-text"></span>
+              </div>
+              <div class="welcome-tags">
+                <span class="wtag">MERN Stack</span>
+                <span class="wtag">Batch 11</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat-card" data-page="attendance">
+              <span class="stat-label">Attendance Rate</span>
+              <span class="stat-number">92%</span>
+              <span class="stat-trend up">↑ 2% vs last month</span>
+            </div>
+            <div class="stat-card" data-page="tasks">
+              <span class="stat-label">Tasks Due Today</span>
+              <span class="stat-number">3</span>
+              <span class="stat-trend warn">2 pending · 1 in progress</span>
+            </div>
+            <div class="stat-card" data-page="project">
+              <span class="stat-label">Active Projects</span>
+              <span class="stat-number">2</span>
+              <span class="stat-trend up">LMS @ 65% · Portfolio @ 30%</span>
+            </div>
+            <div class="stat-card" data-page="team">
+              <span class="stat-label">Team Members</span>
+              <span class="stat-number">5</span>
+              <span class="stat-trend neutral">Alpha Coders · 3 online</span>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="dashboard-col-main">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">Today's Schedule</h3>
+                  <span class="card-badge">Monday, Aug 18</span>
+                </div>
+                <div class="schedule-timeline">
+                  <div class="schedule-item">
+                    <span class="schedule-time">09:00</span>
+                    <div class="schedule-dot active"></div>
+                    <div class="schedule-content">
+                      <span class="schedule-class">MERN Stack Development</span>
+                      <span class="schedule-room">Room 3-B · 2h</span>
+                    </div>
+                  </div>
+                  <div class="schedule-item">
+                    <span class="schedule-time">11:30</span>
+                    <div class="schedule-dot"></div>
+                    <div class="schedule-content">
+                      <span class="schedule-class">Project Review Session</span>
+                      <span class="schedule-room">Room 1-A · 1h</span>
+                    </div>
+                  </div>
+                  <div class="schedule-item">
+                    <span class="schedule-time">14:00</span>
+                    <div class="schedule-dot"></div>
+                    <div class="schedule-content">
+                      <span class="schedule-class">Team Standup</span>
+                      <span class="schedule-room">Lab 2 · 30m</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card" style="margin-top: 1.5rem;">
+                <div class="card-header">
+                  <h3 class="card-title">Upcoming Tasks</h3>
+                  <button class="card-link" data-page="tasks">View all →</button>
+                </div>
+                <div class="task-checklist">
+                  <div class="task-row">
+                    <input type="checkbox" id="t1" class="task-check" />
+                    <label for="t1" class="task-info">
+                      <span class="task-name">Build REST API endpoints</span>
+                      <div class="task-meta">
+                        <span class="tag tag-green">Backend</span>
+                        <span class="task-due">Due today</span>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="task-row">
+                    <input type="checkbox" id="t2" class="task-check" />
+                    <label for="t2" class="task-info">
+                      <span class="task-name">Submit attendance controller PR</span>
+                      <div class="task-meta">
+                        <span class="tag tag-amber">In Progress</span>
+                        <span class="task-due">Due today</span>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="task-row">
+                    <input type="checkbox" id="t3" class="task-check" />
+                    <label for="t3" class="task-info">
+                      <span class="task-name">Design student dashboard wireframe</span>
+                      <div class="task-meta">
+                        <span class="tag tag-clay">Design</span>
+                        <span class="task-due">Tomorrow</span>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="task-row">
+                    <input type="checkbox" id="t4" class="task-check" checked />
+                    <label for="t4" class="task-info completed">
+                      <span class="task-name">Set up MongoDB Atlas cluster</span>
+                      <div class="task-meta">
+                        <span class="tag tag-done">Done</span>
+                        <span class="task-due">Aug 15</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-col-side">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">Attendance</h3>
+                  <button class="card-link" data-page="attendance">Details →</button>
+                </div>
+                <div class="attendance-ring-wrap">
+                  <svg class="attendance-ring" viewBox="0 0 120 120" width="120" height="120">
+                    <circle class="ring-bg" cx="60" cy="60" r="50" />
+                    <circle class="ring-fill" cx="60" cy="60" r="50" stroke-dasharray="314" stroke-dashoffset="25" />
+                    <text class="ring-text" x="60" y="65" text-anchor="middle">92%</text>
+                  </svg>
+                  <div class="ring-legend">
+                    <div class="legend-item"><span class="legend-dot present"></span> Present <b>23</b></div>
+                    <div class="legend-item"><span class="legend-dot absent"></span> Absent <b>2</b></div>
+                    <div class="legend-item"><span class="legend-dot leave"></span> Leave <b>0</b></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card" style="margin-top:1.5rem;">
+                <div class="card-header">
+                  <h3 class="card-title">Team Activity</h3>
+                </div>
+                <div class="activity-feed">
+                  <div class="activity-item">
+                    <div class="activity-avatar">SA</div>
+                    <div class="activity-body">
+                      <span class="activity-text"><b>Sana</b> pushed 3 commits to main</span>
+                      <span class="activity-time">12m ago</span>
+                    </div>
+                  </div>
+                  <div class="activity-item">
+                    <div class="activity-avatar">BA</div>
+                    <div class="activity-body">
+                      <span class="activity-text"><b>Bahadar</b> completed "Team Page UI"</span>
+                      <span class="activity-time">1h ago</span>
+                    </div>
+                  </div>
+                  <div class="activity-item">
+                    <div class="activity-avatar">SH</div>
+                    <div class="activity-body">
+                      <span class="activity-text"><b>Shayan</b> opened a new PR</span>
+                      <span class="activity-time">3h ago</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="quick-actions">
+            <button class="quick-pill" data-page="tasks">+ Add Task</button>
+            <button class="quick-pill" data-page="attendance">📅 Attendance</button>
+            <button class="quick-pill" data-page="project">🚀 New Project</button>
+            <button class="quick-pill" data-page="team">👥 My Team</button>
+          </div>
+        </section>
+
+        <!-- ATTENDANCE -->
+        <section id="page-attendance" class="inner-page">
+          <div class="page-header-row">
+            <div>
+              <h1 class="page-headline">Attendance</h1>
+              <p class="page-sub">Your full presence record — Batch 11, MERN Stack Development · Academic Year 2026</p>
+            </div>
+            <div class="filter-bar">
+              <button class="range-pill active" data-range="week">This Week</button>
+              <button class="range-pill" data-range="month">August</button>
+              <button class="range-pill" data-range="semester">Full Semester</button>
+            </div>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat-card big">
+              <span class="stat-label">Overall Rate</span>
+              <span class="stat-number huge">92%</span>
+              <span class="stat-trend up">Safe · Min required: 75%</span>
+            </div>
+            <div class="stat-card big">
+              <span class="stat-label">Classes Attended</span>
+              <span class="stat-number huge">23</span>
+              <span class="stat-trend neutral">out of 25 total</span>
+            </div>
+            <div class="stat-card big">
+              <span class="stat-label">Classes Missed</span>
+              <span class="stat-number huge warn-text">2</span>
+              <span class="stat-trend warn">Can miss 1 more safely</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">August 2026</h3>
+            </div>
+            <div class="heatmap-grid">
+              <div class="heatmap-labels">
+                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span>
+              </div>
+              <div class="heatmap-cells" id="heatmap-cells">
+                <!-- Generated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:1.5rem;">
+            <div class="card-header">
+              <h3 class="card-title">By Subject</h3>
+            </div>
+            <div class="subject-list">
+              <div class="subject-row">
+                <div class="subject-info">
+                  <span class="subject-name">MERN Stack Development</span>
+                  <span class="subject-stat">23 / 25 classes</span>
+                </div>
+                <div class="subject-bar-wrap">
+                  <div class="subject-bar" style="--pct: 92%"></div>
+                </div>
+                <span class="tag tag-green status-pill">Safe</span>
+              </div>
+              <div class="subject-row">
+                <div class="subject-info">
+                  <span class="subject-name">Project Management</span>
+                  <span class="subject-stat">18 / 20 classes</span>
+                </div>
+                <div class="subject-bar-wrap">
+                  <div class="subject-bar" style="--pct: 90%"></div>
+                </div>
+                <span class="tag tag-green status-pill">Safe</span>
+              </div>
+              <div class="subject-row">
+                <div class="subject-info">
+                  <span class="subject-name">UI/UX Fundamentals</span>
+                  <span class="subject-stat">12 / 15 classes</span>
+                </div>
+                <div class="subject-bar-wrap">
+                  <div class="subject-bar" style="--pct: 80%"></div>
+                </div>
+                <span class="tag tag-amber status-pill">Watch</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TASKS -->
+        <section id="page-tasks" class="inner-page">
+          <div class="page-header-row">
+            <div>
+              <h1 class="page-headline">Tasks</h1>
+              <p class="page-sub">Your personal assignment tracker</p>
+            </div>
+            <div style="display:flex;gap:.75rem;align-items:center;">
+              <div class="view-toggle">
+                <button class="view-btn active" id="view-list-btn" aria-label="List view">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <line x1="8" y1="6" x2="21" y2="6" />
+                    <line x1="8" y1="12" x2="21" y2="12" />
+                    <line x1="8" y1="18" x2="21" y2="18" />
+                    <line x1="3" y1="6" x2="3.01" y2="6" />
+                    <line x1="3" y1="12" x2="3.01" y2="12" />
+                    <line x1="3" y1="18" x2="3.01" y2="18" />
+                  </svg>
+                </button>
+                <button class="view-btn" id="view-board-btn" aria-label="Board view">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="3" y="3" width="7" height="18" rx="1" />
+                    <rect x="14" y="3" width="7" height="18" rx="1" />
+                  </svg>
+                </button>
+              </div>
+              <button class="btn-primary" id="new-task-btn">+ New Task</button>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <button class="tab-btn active" data-filter="all">All</button>
+            <button class="tab-btn" data-filter="today">Today</button>
+            <button class="tab-btn" data-filter="upcoming">Upcoming</button>
+            <button class="tab-btn" data-filter="completed">Completed</button>
+          </div>
+
+          <!-- LIST VIEW -->
+          <div id="tasks-list-view">
+            <div class="task-group-label">Today</div>
+            <div class="card task-list-card">
+              <div class="task-list-row">
+                <input type="checkbox" class="task-check" id="tl1" />
+                <label for="tl1" class="task-list-label">
+                  <span class="tl-title">Build REST API endpoints for attendance</span>
+                  <div class="tl-meta">
+                    <span class="tag tag-green">Backend</span>
+                    <span class="priority-dot high" title="High priority"></span>
+                    <span class="tl-due">Due today</span>
+                    <div class="avatar xs">MJ</div>
+                  </div>
+                </label>
+              </div>
+              <div class="task-list-row">
+                <input type="checkbox" class="task-check" id="tl2" />
+                <label for="tl2" class="task-list-label">
+                  <span class="tl-title">Submit attendance controller PR</span>
+                  <div class="tl-meta">
+                    <span class="tag tag-amber">In Progress</span>
+                    <span class="priority-dot med" title="Medium priority"></span>
+                    <span class="tl-due">Due today</span>
+                    <div class="avatar xs">MJ</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div class="task-group-label" style="margin-top:1.5rem;">This Week</div>
+            <div class="card task-list-card">
+              <div class="task-list-row">
+                <input type="checkbox" class="task-check" id="tl3" />
+                <label for="tl3" class="task-list-label">
+                  <span class="tl-title">Design student dashboard wireframe</span>
+                  <div class="tl-meta">
+                    <span class="tag tag-clay">Design</span>
+                    <span class="priority-dot med"></span>
+                    <span class="tl-due">Aug 19</span>
+                    <div class="avatar xs">MJ</div>
+                  </div>
+                </label>
+              </div>
+              <div class="task-list-row">
+                <input type="checkbox" class="task-check" id="tl4" />
+                <label for="tl4" class="task-list-label">
+                  <span class="tl-title">Write unit tests for Team service</span>
+                  <div class="tl-meta">
+                    <span class="tag tag-green">Backend</span>
+                    <span class="priority-dot low"></span>
+                    <span class="tl-due">Aug 21</span>
+                    <div class="avatar xs">MJ</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div class="task-group-label" style="margin-top:1.5rem;">Completed</div>
+            <div class="card task-list-card">
+              <div class="task-list-row">
+                <input type="checkbox" class="task-check" id="tl5" checked />
+                <label for="tl5" class="task-list-label completed">
+                  <span class="tl-title">Set up MongoDB Atlas cluster</span>
+                  <div class="tl-meta">
+                    <span class="tag tag-done">Done</span>
+                    <span class="tl-due">Aug 15</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- BOARD VIEW -->
+          <div id="tasks-board-view" class="hidden">
+            <div class="kanban-board">
+              <div class="kanban-col">
+                <div class="kanban-col-header"><span>To Do</span><span class="kanban-count">2</span></div>
+                <div class="kanban-card card">
+                  <div class="kc-top"><span class="tag tag-clay">Design</span><span class="priority-dot med"></span>
+                  </div>
+                  <p class="kc-title">Design student dashboard wireframe</p>
+                  <div class="kc-bottom"><span class="kc-due">Aug 19</span>
+                    <div class="avatar xs">MJ</div>
+                  </div>
+                </div>
+                <div class="kanban-card card">
+                  <div class="kc-top"><span class="tag tag-green">Backend</span><span class="priority-dot low"></span>
+                  </div>
+                  <p class="kc-title">Write unit tests for Team service</p>
+                  <div class="kc-bottom"><span class="kc-due">Aug 21</span>
+                    <div class="avatar xs">MJ</div>
+                  </div>
+                </div>
+              </div>
+              <div class="kanban-col">
+                <div class="kanban-col-header"><span>In Progress</span><span class="kanban-count">2</span></div>
+                <div class="kanban-card card">
+                  <div class="kc-top"><span class="tag tag-green">Backend</span><span class="priority-dot high"></span>
+                  </div>
+                  <p class="kc-title">Build REST API endpoints for attendance</p>
+                  <div class="kc-bottom"><span class="kc-due">Today</span>
+                    <div class="avatar xs">MJ</div>
+                  </div>
+                </div>
+                <div class="kanban-card card">
+                  <div class="kc-top"><span class="tag tag-amber">PR Review</span><span class="priority-dot med"></span>
+                  </div>
+                  <p class="kc-title">Submit attendance controller PR</p>
+                  <div class="kc-bottom"><span class="kc-due">Today</span>
+                    <div class="avatar xs">MJ</div>
+                  </div>
+                </div>
+              </div>
+              <div class="kanban-col">
+                <div class="kanban-col-header"><span>Done</span><span class="kanban-count">1</span></div>
+                <div class="kanban-card card">
+                  <div class="kc-top"><span class="tag tag-done">Done</span></div>
+                  <p class="kc-title">Set up MongoDB Atlas cluster</p>
+                  <div class="kc-bottom"><span class="kc-due">Aug 15</span>
+                    <div class="avatar xs">MJ</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PROJECT -->
+        <section id="page-project" class="inner-page">
+          <div class="page-header-row">
+            <div>
+              <h1 class="page-headline">Project</h1>
+              <p class="page-sub">Track, build, and ship together</p>
+            </div>
+            <button class="btn-primary">+ New Project</button>
+          </div>
+
+          <div class="project-grid">
+            <div class="project-card card" id="project-card-lms">
+              <div class="project-card-top">
+                <div class="project-thumb" style="background: linear-gradient(135deg,#d8ead2,#a8c8a0)"></div>
+                <div>
+                  <span class="tag tag-green">MERN Stack</span>
+                  <h3 class="project-card-title">Saylani Bootcamp LMS</h3>
+                  <p class="project-card-desc">Full-stack Learning Management System for Saylani bootcamp — attendance,
+                    teams, tasks.</p>
+                </div>
+              </div>
+              <div class="project-progress-row">
+                <span class="project-pct">65%</span>
+                <div class="progress-bar-wrap">
+                  <div class="progress-bar" style="--pct:65%"></div>
+                </div>
+              </div>
+              <div class="project-card-bottom">
+                <div class="avatar-stack">
+                  <div class="avatar xs stack-av">SA</div>
+                  <div class="avatar xs stack-av">MJ</div>
+                  <div class="avatar xs stack-av">BA</div>
+                  <div class="avatar xs stack-av">SH</div>
+                </div>
+                <span class="project-due">Due Sep 15</span>
+              </div>
+            </div>
+
+            <div class="project-card card" id="project-card-portfolio">
+              <div class="project-card-top">
+                <div class="project-thumb" style="background: linear-gradient(135deg,#f0e4d4,#e0c8b0)"></div>
+                <div>
+                  <span class="tag tag-clay">UI/UX</span>
+                  <h3 class="project-card-title">Personal Portfolio</h3>
+                  <p class="project-card-desc">Minimalist developer portfolio showcasing projects, skills, and work
+                    experience.</p>
+                </div>
+              </div>
+              <div class="project-progress-row">
+                <span class="project-pct">30%</span>
+                <div class="progress-bar-wrap">
+                  <div class="progress-bar clay" style="--pct:30%"></div>
+                </div>
+              </div>
+              <div class="project-card-bottom">
+                <div class="avatar-stack">
+                  <div class="avatar xs stack-av">MJ</div>
+                </div>
+                <span class="project-due">Due Oct 1</span>
+              </div>
+            </div>
+
+            <div class="project-card card new-project-card">
+              <div class="new-project-inner">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                <span>New Project</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project Detail (visible when a card is clicked) -->
+          <div id="project-detail" class="project-detail hidden">
+            <button class="back-btn" id="project-back-btn">← Back to Projects</button>
+            <div class="project-detail-header">
+              <div>
+                <h2 class="project-detail-title">Saylani Bootcamp LMS</h2>
+                <div style="display:flex;gap:.5rem;align-items:center;margin-top:.5rem;">
+                  <span class="tag tag-green">MERN Stack</span>
+                  <span class="tag tag-amber">In Progress</span>
+                </div>
+              </div>
+              <div style="display:flex;gap:.75rem;">
+                <button class="btn-outline">Edit</button>
+                <button class="btn-outline">Share</button>
+              </div>
+            </div>
+
+            <div class="project-detail-progress">
+              <span class="pd-pct-label">65% complete</span>
+              <div class="progress-bar-wrap" style="margin-top:.5rem">
+                <div class="progress-bar" style="--pct:65%"></div>
+              </div>
+            </div>
+
+            <div class="tab-bar" style="margin-top:1.5rem;">
+              <button class="tab-btn active" data-detail-tab="overview">Overview</button>
+              <button class="tab-btn" data-detail-tab="tasks">Tasks</button>
+              <button class="tab-btn" data-detail-tab="team">Team</button>
+              <button class="tab-btn" data-detail-tab="activity">Activity</button>
+            </div>
+
+            <div id="detail-tab-overview" class="detail-tab active card" style="margin-top:1rem;padding:1.75rem;">
+              <p class="detail-desc">Full-stack Learning Management System built for Saylani SMIT bootcamp. Includes
+                student registration, attendance tracking, team formation, task assignment, and project monitoring.</p>
+              <div class="detail-dates">
+                <div class="detail-date-item"><span class="detail-date-label">Start Date</span><span
+                    class="detail-date-val">July 1, 2026</span></div>
+                <div class="detail-date-item"><span class="detail-date-label">Due Date</span><span
+                    class="detail-date-val">September 15, 2026</span></div>
+                <div class="detail-date-item"><span class="detail-date-label">Course</span><span
+                    class="detail-date-val">MERN Stack Development</span></div>
+              </div>
+              <div class="milestone-list">
+                <div class="milestone-item done"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="m9 12 2 2 4-4" />
+                  </svg> Backend API Architecture</div>
+                <div class="milestone-item done"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="m9 12 2 2 4-4" />
+                  </svg> Admin Authentication</div>
+                <div class="milestone-item active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                  </svg> Student Portal</div>
+                <div class="milestone-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                  </svg> Deployment & Testing</div>
+              </div>
+            </div>
+            <div id="detail-tab-tasks" class="detail-tab card hidden" style="margin-top:1rem;padding:1.75rem;">
+              <p class="detail-desc" style="color:var(--text-muted)">Tasks scoped to this project...</p>
+            </div>
+            <div id="detail-tab-team" class="detail-tab card hidden" style="margin-top:1rem;padding:1.75rem;">
+              <p class="detail-desc" style="color:var(--text-muted)">Team members on this project...</p>
+            </div>
+            <div id="detail-tab-activity" class="detail-tab card hidden" style="margin-top:1rem;padding:1.75rem;">
+              <p class="detail-desc" style="color:var(--text-muted)">Project activity feed...</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TEAM -->
+        <section id="page-team" class="inner-page">
+          <div class="page-header-row">
+            <div>
+              <h1 class="page-headline">Alpha Coders</h1>
+              <p class="page-sub">Team A · Batch 11 · MERN Stack Development</p>
+            </div>
+            <button class="btn-primary">+ Invite Member</button>
+          </div>
+
+          <div class="team-grid">
+            <div class="team-member-card card">
+              <div class="tm-avatar">SA</div>
+              <div class="tm-info">
+                <span class="tm-name">Sana Ullah</span>
+                <span class="tm-role">⚙️ Team Lead & Backend</span>
+              </div>
+              <div class="tm-status"><span class="status-dot online"></span><span>Online</span></div>
+              <div class="tm-actions">
+                <button class="icon-btn" title="Message"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg></button>
+                <button class="icon-btn" data-page="profile" title="View profile"><svg width="15" height="15"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg></button>
+              </div>
+            </div>
+            <div class="team-member-card card you-card">
+              <div class="tm-avatar you">MJ</div>
+              <div class="tm-info">
+                <span class="tm-name">Muhammad Junaid <span class="you-chip">You</span></span>
+                <span class="tm-role">💻 Full Stack Developer</span>
+              </div>
+              <div class="tm-status"><span class="status-dot online"></span><span>Online</span></div>
+              <div class="tm-actions">
+                <button class="icon-btn" title="Message"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg></button>
+                <button class="icon-btn" data-page="profile" title="View profile"><svg width="15" height="15"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg></button>
+              </div>
+            </div>
+            <div class="team-member-card card">
+              <div class="tm-avatar" style="background:#e8d5c4;color:#6b4c2a">BA</div>
+              <div class="tm-info">
+                <span class="tm-name">Bahadar Ali</span>
+                <span class="tm-role">🎨 Frontend Developer</span>
+              </div>
+              <div class="tm-status"><span class="status-dot away"></span><span>Away</span></div>
+              <div class="tm-actions">
+                <button class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg></button>
+                <button class="icon-btn" data-page="profile"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg></button>
+              </div>
+            </div>
+            <div class="team-member-card card">
+              <div class="tm-avatar" style="background:#d4e4d4;color:#2d5a2d">SH</div>
+              <div class="tm-info">
+                <span class="tm-name">Shayan Ahmad</span>
+                <span class="tm-role">🎨 Frontend Developer</span>
+              </div>
+              <div class="tm-status"><span class="status-dot offline"></span><span>Offline</span></div>
+              <div class="tm-actions">
+                <button class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg></button>
+                <button class="icon-btn" data-page="profile"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg></button>
+              </div>
+            </div>
+            <div class="team-member-card card">
+              <div class="tm-avatar" style="background:#f0ddd4;color:#8b3a1f">ID</div>
+              <div class="tm-info">
+                <span class="tm-name">Idrees Ud Din</span>
+                <span class="tm-role">🎨 Frontend Developer</span>
+              </div>
+              <div class="tm-status"><span class="status-dot online"></span><span>Online</span></div>
+              <div class="tm-actions">
+                <button class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg></button>
+                <button class="icon-btn" data-page="profile"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:1.5rem;">
+            <div class="card-header">
+              <h3 class="card-title">Team Activity</h3>
+            </div>
+            <div class="activity-feed">
+              <div class="activity-item">
+                <div class="activity-avatar">SA</div>
+                <div class="activity-body">
+                  <span class="activity-text"><b>Sana Ullah</b> pushed 3 commits to main branch</span>
+                  <span class="activity-time">12 minutes ago</span>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-avatar">BA</div>
+                <div class="activity-body">
+                  <span class="activity-text"><b>Bahadar Ali</b> completed task "Team Page UI Design"</span>
+                  <span class="activity-time">1 hour ago</span>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-avatar">SH</div>
+                <div class="activity-body">
+                  <span class="activity-text"><b>Shayan Ahmad</b> opened pull request #14</span>
+                  <span class="activity-time">3 hours ago</span>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-avatar you">MJ</div>
+                <div class="activity-body">
+                  <span class="activity-text"><b>You</b> merged pull request #13 — "Attendance API"</span>
+                  <span class="activity-time">Yesterday</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PROFILE -->
+        <section id="page-profile" class="inner-page">
+          <div class="page-header-row">
+            <div>
+              <h1 class="page-headline">My Profile</h1>
+              <p class="page-sub">Saylani SMIT Bootcamp · Student Account</p>
+            </div>
+            <button class="btn-outline" id="edit-profile-btn">✏️ Edit Profile</button>
+          </div>
+          <div class="profile-cover">
+            <div class="profile-cover-smit">
+              <img src="smit-logo.png" alt="SMIT" class="profile-cover-logo" />
+            </div>
+            <div class="profile-header-row">
+              <div class="profile-avatar-lg">MJ</div>
+              <div class="profile-identity">
+                <h2 class="profile-name">Muhammad Junaid</h2>
+                <p class="profile-meta">MERN Stack Development · Batch 11 · Roll No. 100234</p>
+                <p class="profile-meta" style="opacity:.7;font-size:13px;">junaid@bootcamp.dev · 🟢 Active Student</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-row profile-stats">
+            <div class="stat-card">
+              <span class="stat-label">Attendance</span>
+              <span class="stat-number">92%</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Tasks Done</span>
+              <span class="stat-number">14</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Active Projects</span>
+              <span class="stat-number">2</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Team</span>
+              <span class="stat-number" style="font-size:1.1rem;font-family:var(--font-body)">Alpha Coders</span>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <button class="tab-btn active" data-profile-tab="about">About</button>
+            <button class="tab-btn" data-profile-tab="academic">Academic</button>
+            <button class="tab-btn" data-profile-tab="settings">Settings</button>
+          </div>
+
+          <div id="profile-tab-about" class="profile-tab active card" style="margin-top:1rem;padding:1.75rem;">
+            <div class="about-grid">
+              <div>
+                <h4 class="about-section-title">Bio</h4>
+                <p class="about-bio">Full stack developer passionate about building clean, scalable web applications.
+                  Currently learning MERN Stack at Saylani SMIT Bootcamp, Batch 11.</p>
+              </div>
+              <div>
+                <h4 class="about-section-title">Contact</h4>
+                <div class="contact-list">
+                  <div class="contact-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.5">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                      <polyline points="22,6 12,13 2,6" />
+                    </svg>
+                    junaid@bootcamp.dev
+                  </div>
+                  <div class="contact-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.5">
+                      <path
+                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.6a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 3h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 10a16 16 0 0 0 5.91 5.91l.82-.82a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                    </svg>
+                    +92-300-1234567
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h4 class="about-section-title">Skills</h4>
+                <div class="skills-wrap">
+                  <span class="tag tag-green">Node.js</span>
+                  <span class="tag tag-green">React</span>
+                  <span class="tag tag-green">MongoDB</span>
+                  <span class="tag tag-clay">Express</span>
+                  <span class="tag tag-clay">REST APIs</span>
+                  <span class="tag tag-amber">JWT Auth</span>
+                </div>
+              </div>
+              <div>
+                <h4 class="about-section-title">Links</h4>
+                <div class="contact-list">
+                  <div class="contact-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.5">
+                      <path
+                        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+                    </svg>
+                    github.com/DoctorJunaid
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="profile-tab-academic" class="profile-tab card hidden" style="margin-top:1rem;padding:1.75rem;">
+            <div class="academic-grid">
+              <div class="academic-item"><span class="academic-label">Course</span><span class="academic-val">MERN Stack
+                  Development</span></div>
+              <div class="academic-item"><span class="academic-label">Batch</span><span class="academic-val">Batch 11
+                  (2026)</span></div>
+              <div class="academic-item"><span class="academic-label">Roll Number</span><span
+                  class="academic-val">100234</span></div>
+              <div class="academic-item"><span class="academic-label">Overall Attendance</span><span
+                  class="academic-val">92% — <span class="tag tag-green" style="display:inline">Safe</span></span></div>
+            </div>
+            <div class="badges-wrap" style="margin-top:1.5rem;">
+              <h4 class="about-section-title">Achievements</h4>
+              <div class="badge-grid">
+                <div class="badge-card"><span class="badge-icon">🏆</span><span class="badge-name">First PR
+                    Merged</span></div>
+                <div class="badge-card"><span class="badge-icon">🔥</span><span class="badge-name">7-day Streak</span>
+                </div>
+                <div class="badge-card"><span class="badge-icon">⭐</span><span class="badge-name">Task Master</span>
+                </div>
+                <div class="badge-card"><span class="badge-icon">👥</span><span class="badge-name">Team Player</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="profile-tab-settings" class="profile-tab card hidden" style="margin-top:1rem;padding:1.75rem;">
+            <div class="settings-list">
+              <div class="settings-row">
+                <div class="settings-label-group">
+                  <span class="settings-label">Email Notifications</span>
+                  <span class="settings-desc">Get emailed when tasks are assigned</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked />
+                  <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+              </div>
+              <div class="settings-row">
+                <div class="settings-label-group">
+                  <span class="settings-label">Attendance Alerts</span>
+                  <span class="settings-desc">Notify when attendance drops below 80%</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked />
+                  <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+              </div>
+              <div class="settings-row">
+                <div class="settings-label-group">
+                  <span class="settings-label">Team Activity Feed</span>
+                  <span class="settings-desc">Show team updates in your dashboard</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" />
+                  <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="danger-zone">
+              <button class="danger-link" id="logout-btn-profile">Log out of all devices</button>
+              <span class="danger-sep">·</span>
+              <button class="danger-link delete">Delete account</button>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- NEW TASK MODAL -->
+  <dialog id="new-task-modal" closedby="any" aria-labelledby="modal-title">
+    <div class="modal-inner">
+      <div class="modal-header">
+        <h3 id="modal-title">New Task</h3>
+        <button class="modal-close" id="modal-close-btn" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <form class="modal-form" id="new-task-form">
+        <div class="form-field">
+          <label class="field-label">Task Title</label>
+          <input type="text" class="field-input" placeholder="What needs to be done?" />
+        </div>
+        <div class="form-field">
+          <label class="field-label">Subject / Category</label>
+          <select class="field-input field-select">
+            <option>Backend</option>
+            <option>Frontend</option>
+            <option>Design</option>
+            <option>Testing</option>
+          </select>
+        </div>
+        <div class="modal-row">
+          <div class="form-field">
+            <label class="field-label">Due Date</label>
+            <input type="date" class="field-input" />
+          </div>
+          <div class="form-field">
+            <label class="field-label">Priority</label>
+            <select class="field-input field-select">
+              <option>High</option>
+              <option>Medium</option>
+              <option>Low</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-field">
+          <label class="field-label">Description</label>
+          <textarea class="field-input field-textarea" placeholder="Optional details..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-outline" id="modal-cancel-btn">Cancel</button>
+          <button type="submit" class="btn-primary">Add Task</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+
+</html>

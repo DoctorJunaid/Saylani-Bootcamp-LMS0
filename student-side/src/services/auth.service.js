@@ -1,0 +1,38 @@
+import axiosClient from "../api/axiosClient";
+import { ENDPOINTS } from "../constants/apiEndpoints";
+
+/**
+ * Authentication Service for Student Portal
+ */
+export const authService = {
+  /**
+   * Logs in a student using Roll Number or Email and Password
+   * @param {Object} credentials - { identifier: string, password: string }
+   * @returns {Promise<{ token: string, student: Object }>}
+   */
+  login: async (credentials) => {
+    return await axiosClient.post(ENDPOINTS.AUTH.LOGIN, credentials);
+  },
+
+  /**
+   * Retrieves currently authenticated student details
+   */
+  getCurrentStudent: async () => {
+    return await axiosClient.get(ENDPOINTS.AUTH.ME);
+  },
+
+  /**
+   * Updates student account password
+   * @param {Object} payload - { currentPassword: string, newPassword: string }
+   */
+  changePassword: async (payload) => {
+    return await axiosClient.post(ENDPOINTS.AUTH.CHANGE_PASSWORD, payload);
+  },
+
+  /**
+   * Logs out the current student session
+   */
+  logout: async () => {
+    return await axiosClient.post(ENDPOINTS.AUTH.LOGOUT);
+  },
+};
