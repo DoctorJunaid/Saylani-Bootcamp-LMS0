@@ -221,7 +221,7 @@ export const getMyNotificationsController = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Student notifications fetched successfully",
-      notifications: notifications.length,
+      notification: notifications.length,
       notifications,
     });
   } catch (error) {
