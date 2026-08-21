@@ -10,5 +10,10 @@ build/
 scripts/
 Server/scripts/
 
-# Documentation & Security Guides
-SECURITY_AND_RATE_LIMITING_GUIDE.md
+# Legacy static portal
+student-portal/
+
+# Markdown documentation files except README
+*.md
+!README.md
+!**/README.md
