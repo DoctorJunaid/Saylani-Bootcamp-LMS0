@@ -1,12 +1,9 @@
 /**
  * Enterprise API Security Shield Middleware
  *
- * 1. Blocks raw browser address-bar direct navigation to API endpoints.
- * 2. Hides API endpoints behind a fake standard Nginx 403 Forbidden HTML error.
- * 3. Allows valid client AJAX/Fetch requests to pass through cleanly.
+ * 1. Blocks direct browser address-bar direct navigation to API root.
+ * 2. Never interferes with application API requests.
  */
-
-const CLIENT_APP_SECRET = "saylani-lms-client-v1";
 
 const FAKE_FORBIDDEN_HTML = `<!DOCTYPE html>
 <html>
@@ -20,21 +17,19 @@ const FAKE_FORBIDDEN_HTML = `<!DOCTYPE html>
 </html>`;
 
 export const apiShield = (req, res, next) => {
-  // Allow preflight OPTIONS requests for CORS
-  if (req.method === "OPTIONS") {
+  // Allow all preflight and non-GET requests (POST, PUT, PATCH, DELETE, OPTIONS)
+  if (req.method !== "GET") {
     return next();
   }
 
   const secFetchMode = req.headers["sec-fetch-mode"];
   const secFetchDest = req.headers["sec-fetch-dest"];
   const acceptHeader = req.headers["accept"] || "";
-  const clientHeader = req.headers["x-app-client"];
 
-  // 1. Detect Direct Browser Address Bar Navigation
+  // Only intercept raw browser address bar HTML page navigation
   const isDirectBrowserNav =
-    secFetchMode === "navigate" ||
-    secFetchDest === "document" ||
-    (req.method === "GET" && acceptHeader.includes("text/html") && !clientHeader);
+    (secFetchMode === "navigate" || secFetchDest === "document") &&
+    acceptHeader.includes("text/html");
 
   if (isDirectBrowserNav) {
     res.setHeader("Content-Type", "text/html; charset=utf-8");
