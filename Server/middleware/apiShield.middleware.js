@@ -2,8 +2,8 @@
  * Enterprise API Security Shield Middleware
  *
  * 1. Blocks raw browser address-bar direct navigation to API endpoints.
- * 2. Enforces Client Signature handshake header (X-App-Client).
- * 3. Hides API endpoints behind a fake standard Nginx / Apache 403 Forbidden HTML error.
+ * 2. Hides API endpoints behind a fake standard Nginx 403 Forbidden HTML error.
+ * 3. Allows valid client AJAX/Fetch requests to pass through cleanly.
  */
 
 const CLIENT_APP_SECRET = "saylani-lms-client-v1";
@@ -39,14 +39,6 @@ export const apiShield = (req, res, next) => {
   if (isDirectBrowserNav) {
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     return res.status(403).send(FAKE_FORBIDDEN_HTML);
-  }
-
-  // 2. Validate Client Signature for /api requests
-  if (req.originalUrl.startsWith("/api")) {
-    if (!clientHeader || clientHeader !== CLIENT_APP_SECRET) {
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      return res.status(403).send(FAKE_FORBIDDEN_HTML);
-    }
   }
 
   next();

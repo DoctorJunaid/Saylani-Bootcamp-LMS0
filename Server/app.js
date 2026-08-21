@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
 import { apiShield } from "./middleware/apiShield.middleware.js";
-import { globalApiLimiter, authLimiter } from "./middleware/rateLimiter.middleware.js";
+import { globalApiLimiter } from "./middleware/rateLimiter.middleware.js";
 import studentRoutes from "./routes/student.Routes.js";
 import projectRoutes from "./routes/project.Routes.js";
 import taskRoutes from "./routes/task.Routes.js";
@@ -50,7 +50,7 @@ app.use(
 // Payload size limit
 app.use(express.json({ limit: "1mb" }));
 
-// Active API Security Shield: Blocks direct browser navigation & enforces client header
+// Active API Security Shield: Blocks direct browser navigation
 app.use(apiShield);
 
 // Global Sliding Window Rate Limiter (300 requests per 15 min per IP)
@@ -73,10 +73,11 @@ app.get("/", (req, res) => {
   res.status(403).send(FAKE_NGINX_HTML);
 });
 
-// App Routes with Auth Rate Limiter
-app.use("/api/admin", authLimiter, adminRouter);
-app.use("/api/student-auth", authLimiter, studentRouter);
+// Public / Auth App Routes
+app.use("/api/admin", adminRouter);
+app.use("/api/student-auth", studentRouter);
 
+// Protected Admin App Routes
 app.use("/api/student", protectAdmin, studentRoutes);
 app.use("/api/tasks", protectAdmin, taskRoutes);
 app.use("/api/teams", protectAdmin, teamRoutes);
