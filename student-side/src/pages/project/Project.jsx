@@ -223,13 +223,7 @@ export const Project = () => {
                     <p className="project-card-desc">{project.description}</p>
                   </div>
                 </div>
-                <div className="project-progress-row">
-                  <span className="project-pct">{progress}%</span>
-                  <div className="subject-bar-wrap" style={{ flex: 1, height: "6px", marginLeft: "10px" }}>
-                    <div className="subject-bar" style={{ width: `${progress}%`, background: "var(--accent)" }}></div>
-                  </div>
-                </div>
-                <div className="project-card-bottom">
+                <div className="project-card-bottom" style={{ marginTop: "1rem" }}>
                   <div className="avatar-stack">
                     {teamMembers.slice(0, 4).map((member, idx) => (
                       <div key={idx} className="avatar xs stack-av" title={member.name}>
