@@ -59,56 +59,138 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-dvh lg:h-dvh lg:grid lg:grid-cols-2 lg:overflow-hidden bg-[var(--bg)]">
+    <div
+      style={{
+        display: "flex",
+        minHeight: "100vh",
+        width: "100%",
+        background: "var(--bg)",
+      }}
+    >
       {/* Left Brand Panel — Same Rich Visual Panel as Admin */}
-      <div className="relative hidden h-full min-h-0 flex-col overflow-hidden bg-[#004a75] p-8 text-white lg:flex xl:p-12">
+      <div
+        className="login-left-panel"
+        style={{
+          flex: "1 1 50%",
+          background: "#004a75",
+          padding: "3rem",
+          color: "#ffffff",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
         <div
-          className="pointer-events-none absolute inset-0 opacity-40"
           style={{
+            position: "absolute",
+            inset: 0,
+            opacity: 0.35,
+            pointerEvents: "none",
             background:
-              "radial-gradient(ellipse at 20% 20%, rgba(41,169,255,0.35), transparent 55%), radial-gradient(ellipse at 80% 80%, rgba(0,99,155,0.5), transparent 50%)",
+              "radial-gradient(ellipse at 20% 20%, rgba(41,169,255,0.4), transparent 55%), radial-gradient(ellipse at 80% 80%, rgba(0,99,155,0.6), transparent 50%)",
           }}
-          aria-hidden="true"
         />
 
-        <div className="relative z-10 mx-auto flex h-full min-h-0 w-full max-w-[540px] flex-col gap-5 justify-between">
+        <div
+          style={{
+            position: "relative",
+            zIndex: 1,
+            maxWidth: "520px",
+            margin: "0 auto",
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
           {/* Top Headline */}
-          <div className="shrink-0">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-100/70">
+          <div>
+            <p
+              style={{
+                fontSize: "12px",
+                fontWeight: "700",
+                textTransform: "uppercase",
+                letterSpacing: "0.18em",
+                color: "rgba(224, 242, 254, 0.8)",
+                margin: "0 0 8px 0",
+              }}
+            >
               Saylani Mass IT Training
             </p>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight xl:text-4xl text-white">
+            <h1
+              style={{
+                fontSize: "2.25rem",
+                fontWeight: "800",
+                letterSpacing: "-0.02em",
+                color: "#ffffff",
+                margin: 0,
+              }}
+            >
               Student Portal
-            </h2>
+            </h1>
           </div>
 
           {/* Center Brand Illustration */}
-          <div className="flex min-h-80 flex-1 items-center justify-center -my-4">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "2rem 0",
+            }}
+          >
             <img
               src="/smit-hero-logo.png"
               alt="SMIT Hero Logo"
-              className="max-h-full w-auto max-w-full object-contain drop-shadow-2xl"
+              style={{
+                maxHeight: "260px",
+                maxWidth: "100%",
+                width: "auto",
+                objectFit: "contain",
+                filter: "drop-shadow(0 20px 30px rgba(0,0,0,0.35))",
+              }}
               onError={(e) => {
-                // fallback to smit-logo if needed
                 e.currentTarget.src = "/smit-logo.png";
               }}
             />
           </div>
 
           {/* Bottom Highlights */}
-          <div className="shrink-0 space-y-4">
-            <p className="text-base font-medium leading-relaxed text-blue-50/95 xl:text-lg">
+          <div>
+            <p
+              style={{
+                fontSize: "15px",
+                fontWeight: "500",
+                lineHeight: "1.6",
+                color: "rgba(240, 249, 255, 0.95)",
+                marginBottom: "1.25rem",
+              }}
+            >
               Track your attendance, build team projects, submit assignments, and
-              accelerate your tech career with Saylani.
+              collaborate with mentors from one unified system.
             </p>
-
-            <div className="flex flex-wrap gap-2">
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
               {HIGHLIGHTS.map(({ label, icon: Icon }) => (
                 <span
                   key={label}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-blue-50 backdrop-blur-sm"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    borderRadius: "9999px",
+                    border: "1px solid rgba(255, 255, 255, 0.18)",
+                    background: "rgba(255, 255, 255, 0.12)",
+                    padding: "6px 14px",
+                    fontSize: "12px",
+                    fontWeight: "500",
+                    color: "#f0f9ff",
+                    backdropFilter: "blur(4px)",
+                  }}
                 >
-                  <Icon size={14} strokeWidth={2} />
+                  <Icon size={14} />
                   {label}
                 </span>
               ))}
@@ -118,90 +200,197 @@ export const Login = () => {
       </div>
 
       {/* Right Login Form */}
-      <div className="flex min-h-dvh flex-col justify-center bg-[var(--bg)] px-6 py-8 sm:px-12 lg:min-h-0 lg:px-16 xl:px-24">
-        <div className="mx-auto w-full max-w-[440px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-lg sm:p-8">
-          <div className="flex items-center justify-between mb-6">
+      <div
+        style={{
+          flex: "1 1 50%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "2.5rem 1.5rem",
+          background: "var(--bg)",
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "420px",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
+            borderRadius: "16px",
+            padding: "2.25rem",
+            boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.05)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: "1.5rem",
+            }}
+          >
             <img
               src="/smit-logo.png"
               alt="Saylani SMIT"
-              className="h-9 object-contain"
+              style={{ height: "36px", objectFit: "contain" }}
             />
-            <span className="text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-50 text-[var(--accent)] border border-blue-100">
-              Student
+            <span
+              style={{
+                fontSize: "11px",
+                fontWeight: "700",
+                textTransform: "uppercase",
+                letterSpacing: "0.8px",
+                padding: "3px 10px",
+                borderRadius: "9999px",
+                background: "rgba(27, 117, 187, 0.1)",
+                color: "var(--accent)",
+                border: "1px solid rgba(27, 117, 187, 0.2)",
+              }}
+            >
+              Student Portal
             </span>
           </div>
 
-          <h2 className="text-2xl font-bold tracking-tight text-[var(--text)] sm:text-3xl">
+          <h2
+            style={{
+              fontSize: "1.65rem",
+              fontWeight: "700",
+              color: "var(--text)",
+              margin: "0 0 6px 0",
+              letterSpacing: "-0.02em",
+            }}
+          >
             Welcome back.
           </h2>
-          <p className="mt-1.5 text-sm text-[var(--text-muted)]">
+          <p
+            style={{
+              fontSize: "14px",
+              color: "var(--text-muted)",
+              margin: "0 0 1.75rem 0",
+            }}
+          >
             Sign in to open your bootcamp student portal.
           </p>
 
-          <form onSubmit={handleLogin} className="mt-6 flex flex-col gap-4">
+          <form
+            onSubmit={handleLogin}
+            style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}
+          >
             <div>
               <label
-                htmlFor="student-identifier"
-                className="mb-1.5 block text-[13px] font-medium text-[var(--text)]"
+                style={{
+                  display: "block",
+                  fontSize: "13px",
+                  fontWeight: "600",
+                  color: "var(--text)",
+                  marginBottom: "6px",
+                }}
               >
                 Roll Number or Email
               </label>
               <input
-                id="student-identifier"
-                name="identifier"
                 type="text"
+                name="identifier"
                 value={formData.identifier}
                 onChange={handleChange}
                 placeholder="e.g. 100234 or student@smitlms.com"
                 required
                 autoComplete="username"
-                className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3.5 py-2.5 text-sm text-[var(--text)] placeholder-[var(--text-muted)]/60 transition-all focus:border-[var(--accent)] focus:bg-[var(--surface)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20"
+                style={{
+                  width: "100%",
+                  padding: "0.75rem 1rem",
+                  borderRadius: "10px",
+                  border: "1px solid var(--border)",
+                  background: "var(--bg)",
+                  fontSize: "14px",
+                  color: "var(--text)",
+                  outline: "none",
+                  transition: "border-color 0.2s",
+                }}
               />
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1.5">
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "6px",
+                }}
+              >
                 <label
-                  htmlFor="student-password"
-                  className="block text-[13px] font-medium text-[var(--text)]"
+                  style={{
+                    fontSize: "13px",
+                    fontWeight: "600",
+                    color: "var(--text)",
+                  }}
                 >
                   Password
                 </label>
                 <button
                   type="button"
                   onClick={() =>
-                    toast("Please contact your campus instructor or admin to reset your password.", {
-                      icon: "ℹ️",
-                    })
+                    toast(
+                      "Please contact your campus instructor or admin to reset your password.",
+                      {
+                        icon: "ℹ️",
+                      }
+                    )
                   }
-                  className="text-xs text-[var(--accent)] hover:underline cursor-pointer"
+                  style={{
+                    fontSize: "12px",
+                    color: "var(--accent)",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
                 >
                   Forgot password?
                 </button>
               </div>
-              <div className="relative flex items-center">
+              <div
+                style={{
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
                 <input
-                  id="student-password"
-                  name="password"
                   type={showPassword ? "text" : "password"}
+                  name="password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••"
                   required
                   autoComplete="current-password"
-                  className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] py-2.5 pr-10 pl-3.5 text-sm text-[var(--text)] placeholder-[var(--text-muted)]/60 transition-all focus:border-[var(--accent)] focus:bg-[var(--surface)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20"
+                  style={{
+                    width: "100%",
+                    padding: "0.75rem 2.5rem 0.75rem 1rem",
+                    borderRadius: "10px",
+                    border: "1px solid var(--border)",
+                    background: "var(--bg)",
+                    fontSize: "14px",
+                    color: "var(--text)",
+                    outline: "none",
+                  }}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-3 cursor-pointer text-[var(--text-muted)] hover:text-[var(--text)]"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: "absolute",
+                    right: "12px",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "var(--text-muted)",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? (
-                    <EyeOff size={16} strokeWidth={2} />
-                  ) : (
-                    <Eye size={16} strokeWidth={2} />
-                  )}
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
@@ -209,11 +398,28 @@ export const Login = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="mt-2 w-full cursor-pointer rounded-lg bg-[var(--accent)] py-3 text-sm font-semibold text-white transition-all hover:opacity-90 hover:shadow-md active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70 flex items-center justify-center gap-2"
+              style={{
+                marginTop: "0.5rem",
+                width: "100%",
+                padding: "0.85rem",
+                borderRadius: "10px",
+                background: "var(--accent)",
+                color: "#ffffff",
+                fontSize: "14.5px",
+                fontWeight: "600",
+                border: "none",
+                cursor: isLoading ? "not-allowed" : "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                transition: "opacity 0.2s, transform 0.1s",
+                boxShadow: "0 4px 12px rgba(27, 117, 187, 0.25)",
+              }}
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 size={16} className="animate-spin" />
                   <span>Signing in...</span>
                 </>
               ) : (
@@ -222,11 +428,23 @@ export const Login = () => {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-xs text-[var(--text-muted)]">
+          <p
+            style={{
+              fontSize: "12.5px",
+              color: "var(--text-muted)",
+              textAlign: "center",
+              marginTop: "1.75rem",
+              marginBottom: 0,
+            }}
+          >
             Need help?{" "}
             <a
               href="mailto:support@saylaniwelfare.com"
-              className="text-[var(--accent)] font-medium hover:underline"
+              style={{
+                color: "var(--accent)",
+                fontWeight: "500",
+                textDecoration: "none",
+              }}
             >
               Contact Support
             </a>
