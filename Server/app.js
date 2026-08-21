@@ -1,8 +1,6 @@
 import express from "express";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
-import { apiShield } from "./middleware/apiShield.middleware.js";
-import { globalApiLimiter } from "./middleware/rateLimiter.middleware.js";
 import studentRoutes from "./routes/student.Routes.js";
 import projectRoutes from "./routes/project.Routes.js";
 import taskRoutes from "./routes/task.Routes.js";
@@ -17,21 +15,10 @@ import studentRouter from "./studentmodules/studentAuth.Route.js";
 
 const app = express();
 
-const FAKE_NGINX_HTML = `<!DOCTYPE html>
-<html>
-<head><title>403 Forbidden</title></head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #fff; color: #000; margin: 40px auto; max-width: 650px; padding: 0 20px;">
-<h1 style="font-size: 28px; font-weight: 500; border-bottom: 1px solid #ccc; padding-bottom: 10px;">403 Forbidden</h1>
-<p style="font-size: 14px; color: #333;">You don't have permission to access this resource.</p>
-<hr style="border: 0; border-top: 1px solid #e0e0e0; margin-top: 20px;">
-<p style="font-size: 12px; color: #777;">nginx</p>
-</body>
-</html>`;
-
 // Disable information leakage headers
 app.disable("x-powered-by");
 
-// CORS Configuration with custom client header support
+// CORS Configuration with universal support
 app.use(
   cors({
     origin: true,
@@ -50,12 +37,6 @@ app.use(
 // Payload size limit
 app.use(express.json({ limit: "1mb" }));
 
-// Active API Security Shield: Blocks direct browser navigation only
-app.use(apiShield);
-
-// Global Sliding Window Rate Limiter (300 requests per 15 min per IP)
-app.use("/api", globalApiLimiter);
-
 // Middleware to ensure DB connection on serverless environments like Vercel
 app.use(async (req, res, next) => {
   try {
@@ -63,22 +44,28 @@ app.use(async (req, res, next) => {
     next();
   } catch (error) {
     console.error("DB connection error:", error.message);
-    res.status(503).json({
+    res.status(500).json({
       success: false,
-      message: "Database connection failed. Please check network connectivity.",
+      message: "Database connection failed. Please try again.",
     });
   }
 });
 
-// Generic Root Route (Hides internal system status from direct visitors)
+// Root Route
 app.get("/", (req, res) => {
-  res.setHeader("Content-Type", "text/html; charset=utf-8");
-  res.status(403).send(FAKE_NGINX_HTML);
+  res.status(200).json({
+    status: "active",
+    message: "Saylani SMIT LMS API Server is running",
+  });
 });
 
-// Public / Auth App Routes
-app.use("/api/admin", adminRouter);
+// Student Portal Routes (Mounted on BOTH /api/student-auth and /student-auth for 100% compatibility)
 app.use("/api/student-auth", studentRouter);
+app.use("/student-auth", studentRouter);
+
+// Admin Routes (Mounted on both /api/admin and /admin)
+app.use("/api/admin", adminRouter);
+app.use("/admin", adminRouter);
 
 // Protected Admin App Routes
 app.use("/api/student", protectAdmin, studentRoutes);
@@ -88,6 +75,15 @@ app.use("/api/projects", protectAdmin, projectRoutes);
 app.use("/api/attendance", protectAdmin, attendanceRoutes);
 app.use("/api/dashboard", protectAdmin, dashboardRouter);
 app.use("/api/notifications", protectAdmin, notificationRoutes);
+
+// Fallback without /api prefix
+app.use("/student", protectAdmin, studentRoutes);
+app.use("/tasks", protectAdmin, taskRoutes);
+app.use("/teams", protectAdmin, teamRoutes);
+app.use("/projects", protectAdmin, projectRoutes);
+app.use("/attendance", protectAdmin, attendanceRoutes);
+app.use("/dashboard", protectAdmin, dashboardRouter);
+app.use("/notifications", protectAdmin, notificationRoutes);
 
 // Global JSON Error Handler
 app.use((err, req, res, next) => {
@@ -100,13 +96,9 @@ app.use((err, req, res, next) => {
 
 // 404 Catch-all handler
 app.use((req, res) => {
-  if (req.accepts("html")) {
-    res.setHeader("Content-Type", "text/html; charset=utf-8");
-    return res.status(403).send(FAKE_NGINX_HTML);
-  }
   res.status(404).json({
     success: false,
-    message: "Endpoint not found",
+    message: `Route ${req.method} ${req.originalUrl} not found`,
   });
 });
 

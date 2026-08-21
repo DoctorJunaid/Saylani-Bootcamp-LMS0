@@ -2,8 +2,15 @@
  * API Endpoints Constants
  * Centralized list of backend routes for the Student Portal.
  */
-export const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:9000/api";
+
+const getBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (!envUrl) return "http://localhost:9000/api";
+  const clean = envUrl.replace(/\/+$/, "");
+  return clean.endsWith("/api") ? clean : `${clean}/api`;
+};
+
+export const API_BASE_URL = getBaseUrl();
 
 export const ENDPOINTS = {
   AUTH: {
