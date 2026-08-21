@@ -27,34 +27,35 @@ export const Login = () => {
 
   const [formData, setFormData] = useState({ identifier: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.identifier.trim() || !formData.password.trim()) {
       toast.error("Please enter your Roll Number or Email and Password.");
       return;
     }
 
-    setIsLoading(true);
+    setLoading(true);
 
     try {
       await login(formData.identifier.trim(), formData.password);
-      toast.success("Login successful!");
+      toast.success("Successfully logged in!");
       navigate("/dashboard", { replace: true });
-    } catch (error) {
+    } catch (err) {
+      console.error(err);
       toast.error(
-        error.response?.data?.message ||
-          error.message ||
-          "Invalid Roll Number/Email or password."
+        err.response?.data?.message ||
+          err.message ||
+          "Invalid credentials. Please try again."
       );
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -67,13 +68,13 @@ export const Login = () => {
         background: "var(--bg)",
       }}
     >
-      {/* Left Brand Panel — Same Rich Visual Panel as Admin */}
+      {/* Left Brand Panel — Saylani Deep Blue with Hero Logo & Highlights */}
       <div
         className="login-left-panel"
         style={{
-          flex: "1 1 50%",
+          flex: "1 1 52%",
           background: "#004a75",
-          padding: "3rem",
+          padding: "3.5rem",
           color: "#ffffff",
           display: "flex",
           flexDirection: "column",
@@ -133,7 +134,7 @@ export const Login = () => {
             </h1>
           </div>
 
-          {/* Center Brand Illustration */}
+          {/* Center Illustration */}
           <div
             style={{
               display: "flex",
@@ -146,7 +147,7 @@ export const Login = () => {
               src="/smit-hero-logo.png"
               alt="SMIT Hero Logo"
               style={{
-                maxHeight: "260px",
+                maxHeight: "270px",
                 maxWidth: "100%",
                 width: "auto",
                 objectFit: "contain",
@@ -199,227 +200,134 @@ export const Login = () => {
         </div>
       </div>
 
-      {/* Right Login Form */}
+      {/* Right Login Form Panel — Restored Previous Clean Native Theme Form */}
       <div
+        className="login-form-panel"
         style={{
-          flex: "1 1 50%",
+          flex: "1 1 48%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          padding: "2.5rem 1.5rem",
-          background: "var(--bg)",
+          padding: "3.5rem 3rem",
+          background: "var(--surface)",
         }}
       >
         <div
-          style={{
-            width: "100%",
-            maxWidth: "420px",
-            background: "var(--surface)",
-            border: "1px solid var(--border)",
-            borderRadius: "16px",
-            padding: "2.25rem",
-            boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.05)",
-          }}
+          className="login-form-inner"
+          style={{ width: "100%", maxWidth: "390px" }}
         >
           <div
+            className="login-logo"
             style={{
               display: "flex",
               alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "1.5rem",
+              gap: "0.5rem",
+              marginBottom: "2rem",
             }}
           >
             <img
               src="/smit-logo.png"
-              alt="Saylani SMIT"
-              style={{ height: "36px", objectFit: "contain" }}
+              alt="SMIT Logo"
+              style={{ height: "38px", objectFit: "contain" }}
             />
-            <span
-              style={{
-                fontSize: "11px",
-                fontWeight: "700",
-                textTransform: "uppercase",
-                letterSpacing: "0.8px",
-                padding: "3px 10px",
-                borderRadius: "9999px",
-                background: "rgba(27, 117, 187, 0.1)",
-                color: "var(--accent)",
-                border: "1px solid rgba(27, 117, 187, 0.2)",
-              }}
-            >
-              Student Portal
-            </span>
           </div>
 
-          <h2
-            style={{
-              fontSize: "1.65rem",
-              fontWeight: "700",
-              color: "var(--text)",
-              margin: "0 0 6px 0",
-              letterSpacing: "-0.02em",
-            }}
-          >
-            Welcome back.
-          </h2>
-          <p
-            style={{
-              fontSize: "14px",
-              color: "var(--text-muted)",
-              margin: "0 0 1.75rem 0",
-            }}
-          >
-            Sign in to open your bootcamp student portal.
+          <h1 className="login-headline">Welcome back.</h1>
+          <p className="login-sub">
+            Sign in to your <strong>Saylani Bootcamp</strong> student portal.
           </p>
 
-          <form
-            onSubmit={handleLogin}
-            style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}
-          >
-            <div>
-              <label
-                style={{
-                  display: "block",
-                  fontSize: "13px",
-                  fontWeight: "600",
-                  color: "var(--text)",
-                  marginBottom: "6px",
-                }}
-              >
+          <form onSubmit={handleSubmit} className="login-form" noValidate>
+            <div className="form-field">
+              <label htmlFor="identifier" className="field-label">
                 Roll Number or Email
               </label>
               <input
-                type="text"
+                id="identifier"
                 name="identifier"
+                type="text"
+                placeholder="e.g. 100234 or student@smitlms.com"
+                className="field-input"
+                autoComplete="username"
                 value={formData.identifier}
                 onChange={handleChange}
-                placeholder="e.g. 100234 or student@smitlms.com"
+                disabled={loading}
                 required
-                autoComplete="username"
-                style={{
-                  width: "100%",
-                  padding: "0.75rem 1rem",
-                  borderRadius: "10px",
-                  border: "1px solid var(--border)",
-                  background: "var(--bg)",
-                  fontSize: "14px",
-                  color: "var(--text)",
-                  outline: "none",
-                  transition: "border-color 0.2s",
-                }}
               />
             </div>
 
-            <div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "6px",
-                }}
-              >
-                <label
-                  style={{
-                    fontSize: "13px",
-                    fontWeight: "600",
-                    color: "var(--text)",
-                  }}
-                >
-                  Password
-                </label>
-                <button
-                  type="button"
-                  onClick={() =>
-                    toast(
-                      "Please contact your campus instructor or admin to reset your password.",
-                      {
-                        icon: "ℹ️",
-                      }
-                    )
-                  }
-                  style={{
-                    fontSize: "12px",
-                    color: "var(--accent)",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  Forgot password?
-                </button>
-              </div>
-              <div
-                style={{
-                  position: "relative",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
+            <div className="form-field">
+              <label htmlFor="password" className="field-label">
+                Password
+              </label>
+              <div className="field-password-wrap">
                 <input
-                  type={showPassword ? "text" : "password"}
+                  id="password"
                   name="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  className="field-input"
+                  autoComplete="current-password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="••••••••"
+                  disabled={loading}
                   required
-                  autoComplete="current-password"
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem 2.5rem 0.75rem 1rem",
-                    borderRadius: "10px",
-                    border: "1px solid var(--border)",
-                    background: "var(--bg)",
-                    fontSize: "14px",
-                    color: "var(--text)",
-                    outline: "none",
-                  }}
                 />
                 <button
                   type="button"
+                  className="password-toggle"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: "absolute",
-                    right: "12px",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    color: "var(--text-muted)",
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-label="Toggle password visibility"
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
+              <button
+                type="button"
+                className="forgot-link"
+                style={{
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                  textAlign: "right",
+                  display: "block",
+                  width: "100%",
+                }}
+                onClick={() =>
+                  toast(
+                    "Please contact your campus administrator to reset your password.",
+                    {
+                      icon: "ℹ️",
+                    }
+                  )
+                }
+              >
+                Forgot password?
+              </button>
             </div>
 
             <button
               type="submit"
-              disabled={isLoading}
+              className="btn-primary btn-full"
+              disabled={loading}
               style={{
-                marginTop: "0.5rem",
-                width: "100%",
-                padding: "0.85rem",
-                borderRadius: "10px",
-                background: "var(--accent)",
-                color: "#ffffff",
-                fontSize: "14.5px",
-                fontWeight: "600",
-                border: "none",
-                cursor: isLoading ? "not-allowed" : "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: "8px",
-                transition: "opacity 0.2s, transform 0.1s",
-                boxShadow: "0 4px 12px rgba(27, 117, 187, 0.25)",
+                width: "100%",
+                padding: "0.85rem",
+                marginTop: "0.5rem",
               }}
             >
-              {isLoading ? (
+              {loading ? (
                 <>
-                  <Loader2 size={16} className="animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   <span>Signing in...</span>
                 </>
               ) : (
@@ -428,23 +336,11 @@ export const Login = () => {
             </button>
           </form>
 
-          <p
-            style={{
-              fontSize: "12.5px",
-              color: "var(--text-muted)",
-              textAlign: "center",
-              marginTop: "1.75rem",
-              marginBottom: 0,
-            }}
-          >
+          <p className="signup-cta" style={{ marginTop: "2rem" }}>
             Need help?{" "}
             <a
               href="mailto:support@saylaniwelfare.com"
-              style={{
-                color: "var(--accent)",
-                fontWeight: "500",
-                textDecoration: "none",
-              }}
+              style={{ color: "var(--accent)", fontWeight: 500 }}
             >
               Contact Support
             </a>
