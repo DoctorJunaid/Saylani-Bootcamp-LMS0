@@ -10,6 +10,7 @@ import { protectAdmin } from "./middleware/adminAuth.middleware.js";
 import attendanceRoutes from "./routes/attendance.Routes.js";
 import dashboardRouter from "./routes/dashboard.Routes.js";
 import notificationRoutes from "./routes/notification.Routes.js";
+import { apiShield } from "./middleware/apiShield.middleware.js";
 // student portal
 import studentRouter from "./studentmodules/studentAuth.Route.js";
 
@@ -33,6 +34,9 @@ app.use(
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   })
 );
+
+// Block direct browser address-bar access
+app.use(apiShield);
 
 // Payload size limit
 app.use(express.json({ limit: "1mb" }));
