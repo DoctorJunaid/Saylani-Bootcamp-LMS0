@@ -15,6 +15,7 @@ export const API_BASE_URL = getBaseUrl();
 export const ENDPOINTS = {
   AUTH: {
     LOGIN: "/student-auth/login",
+    ADMIN_LOGIN: "/admin/login",
     ME: "/student-auth/me",
     LOGOUT: "/student-auth/logout",
     CHANGE_PASSWORD: "/student-auth/change-password",

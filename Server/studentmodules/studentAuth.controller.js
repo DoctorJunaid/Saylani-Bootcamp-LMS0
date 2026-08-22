@@ -1,22 +1,31 @@
 import { getStudentMe, loginStudent,getStudentAttendanceHistory, getStudentDashboard, getMyTasks, updateMyTaskStatus, getMyProjects, getMyTeam, getMyNotifications, changeStudentPassword, markAllNotificationsAsRead } from "./studentAuth.Service.js";
+import { unifiedLogin } from "../services/unifiedAuth.Service.js";
 
 export const loginStudentController = async (req , res)=>{
     try {
         const {email, identifier, rollNumber, password} = req.body;
         const loginIdentifier = identifier || email || rollNumber;
 
-        const data = await loginStudent(loginIdentifier , password);
-        res.status(200).json({
-            success:true,
-            message:"Student Login Successfully",
+        if (!loginIdentifier || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Roll Number/Email and password are required!",
+            });
+        }
+
+        const data = await unifiedLogin(loginIdentifier, password);
+        return res.status(200).json({
+            success: true,
+            message: `${data.role === "admin" ? "Admin" : "Student"} Login Successfully`,
             ...data,
-        }) 
+        });
     }
      catch (error)
       {
         return res.status(401).json({
-            message: error.message,
-        })
+            success: false,
+            message: error.message || "Invalid credentials",
+        });
     }
 }
 

@@ -14,6 +14,14 @@ export const authService = {
   },
 
   /**
+   * Logs in an admin from the student login page
+   * @param {Object} credentials - { email: string, password: string }
+   */
+  loginAdmin: async (credentials) => {
+    return await axiosClient.post(ENDPOINTS.AUTH.ADMIN_LOGIN, credentials);
+  },
+
+  /**
    * Retrieves currently authenticated student details
    */
   getCurrentStudent: async () => {

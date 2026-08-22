@@ -10,7 +10,17 @@ export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => storage.getUser() || null);
-  const [token, setToken] = useState(() => storage.getToken() || null);
+  const [token, setToken] = useState(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      const urlToken = searchParams.get("token");
+      if (urlToken) {
+        storage.setToken(urlToken);
+        return urlToken;
+      }
+    }
+    return storage.getToken() || null;
+  });
   const [loading, setLoading] = useState(false);
 
   // Background Data Prefetcher: primes the cache for instant 0ms transitions
@@ -51,7 +61,18 @@ export const AuthProvider = ({ children }) => {
   // Sync / verify current user session on mount
   useEffect(() => {
     const initAuth = async () => {
-      const savedToken = storage.getToken();
+      let savedToken = storage.getToken();
+      if (typeof window !== "undefined") {
+        const searchParams = new URLSearchParams(window.location.search);
+        const urlToken = searchParams.get("token");
+        if (urlToken) {
+          storage.setToken(urlToken);
+          savedToken = urlToken;
+          setToken(urlToken);
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      }
+
       if (savedToken) {
         // Immediately start background prefetch to warm cache
         prefetchStudentData();

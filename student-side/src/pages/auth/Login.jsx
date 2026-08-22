@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { authService } from "../../services/auth.service";
+import { getAdminPortalUrl } from "../../utils/portalUrls";
 import toast from "react-hot-toast";
 import {
   Eye,
@@ -11,6 +13,8 @@ import {
   FolderKanban,
   ListTodo,
   Loader2,
+  ShieldCheck,
+  GraduationCap,
 } from "lucide-react";
 
 const HIGHLIGHTS = [
@@ -25,6 +29,7 @@ export const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
+  const [role, setRole] = useState("student"); // 'student' | 'admin'
   const [formData, setFormData] = useState({ identifier: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -37,16 +42,43 @@ export const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.identifier.trim() || !formData.password.trim()) {
-      toast.error("Please enter your Roll Number or Email and Password.");
+      toast.error(
+        role === "student"
+          ? "Please enter your Roll Number or Email and Password."
+          : "Please enter your Admin Email and Password."
+      );
       return;
     }
 
     setLoading(true);
 
     try {
-      await login(formData.identifier.trim(), formData.password);
-      toast.success("Successfully logged in!");
-      navigate("/dashboard", { replace: true });
+      if (role === "student") {
+        await login(formData.identifier.trim(), formData.password);
+        toast.success("Successfully logged in!");
+        navigate("/dashboard", { replace: true });
+      } else {
+        // Logging in as Admin from Student Portal
+        const res = await authService.loginAdmin({
+          email: formData.identifier.trim(),
+          password: formData.password,
+        });
+
+        const token = res?.token;
+        if (!token) {
+          throw new Error("Admin login succeeded but token was missing.");
+        }
+
+        toast.success("Admin verified! Redirecting to Admin Portal...");
+        const targetUrl = `${getAdminPortalUrl()}/login?token=${encodeURIComponent(
+          token
+        )}&role=admin`;
+
+        // Smooth brief transition then silent redirection
+        setTimeout(() => {
+          window.location.href = targetUrl;
+        }, 500);
+      }
     } catch (err) {
       console.error(err);
       toast.error(
@@ -130,7 +162,7 @@ export const Login = () => {
                 margin: 0,
               }}
             >
-              Student Portal
+              Bootcamp Portal
             </h1>
           </div>
 
@@ -200,7 +232,7 @@ export const Login = () => {
         </div>
       </div>
 
-      {/* Right Login Form Panel — Restored Previous Clean Native Theme Form */}
+      {/* Right Login Form Panel */}
       <div
         className="login-form-panel"
         style={{
@@ -222,7 +254,7 @@ export const Login = () => {
               display: "flex",
               alignItems: "center",
               gap: "0.5rem",
-              marginBottom: "2rem",
+              marginBottom: "1.75rem",
             }}
           >
             <img
@@ -232,21 +264,98 @@ export const Login = () => {
             />
           </div>
 
-          <h1 className="login-headline">Welcome back.</h1>
+          {/* Role Switcher Slider */}
+          <div
+            style={{
+              display: "flex",
+              background: "var(--bg)",
+              border: "1px solid var(--border)",
+              borderRadius: "12px",
+              padding: "4px",
+              marginBottom: "1.5rem",
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => {
+                setRole("student");
+                setFormData({ identifier: "", password: "" });
+              }}
+              style={{
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "6px",
+                padding: "8px 12px",
+                fontSize: "13px",
+                fontWeight: "600",
+                borderRadius: "8px",
+                border: "none",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                background: role === "student" ? "var(--primary)" : "transparent",
+                color: role === "student" ? "#ffffff" : "var(--text-muted)",
+                boxShadow:
+                  role === "student" ? "0 2px 8px rgba(0,0,0,0.12)" : "none",
+              }}
+            >
+              <GraduationCap size={15} />
+              Student Login
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setRole("admin");
+                setFormData({ identifier: "", password: "" });
+              }}
+              style={{
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "6px",
+                padding: "8px 12px",
+                fontSize: "13px",
+                fontWeight: "600",
+                borderRadius: "8px",
+                border: "none",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                background: role === "admin" ? "var(--primary)" : "transparent",
+                color: role === "admin" ? "#ffffff" : "var(--text-muted)",
+                boxShadow:
+                  role === "admin" ? "0 2px 8px rgba(0,0,0,0.12)" : "none",
+              }}
+            >
+              <ShieldCheck size={15} />
+              Admin Login
+            </button>
+          </div>
+
+          <h1 className="login-headline">
+            {role === "student" ? "Welcome back." : "Admin Access."}
+          </h1>
           <p className="login-sub">
-            Sign in to your <strong>Saylani Bootcamp</strong> student portal.
+            {role === "student"
+              ? "Sign in to your Saylani Bootcamp student portal."
+              : "Sign in to open your bootcamp command center."}
           </p>
 
           <form onSubmit={handleSubmit} className="login-form" noValidate>
             <div className="form-field">
               <label htmlFor="identifier" className="field-label">
-                Roll Number or Email
+                {role === "student" ? "Roll Number or Email" : "Admin Email"}
               </label>
               <input
                 id="identifier"
                 name="identifier"
-                type="text"
-                placeholder="e.g. 100234 or student@smitlms.com"
+                type={role === "admin" ? "email" : "text"}
+                placeholder={
+                  role === "student"
+                    ? "e.g. 100234 or student@smitlms.com"
+                    : "admin@smitlms.com"
+                }
                 className="field-input"
                 autoComplete="username"
                 value={formData.identifier}
@@ -328,10 +437,18 @@ export const Login = () => {
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Signing in...</span>
+                  <span>
+                    {role === "student"
+                      ? "Signing in to Student..."
+                      : "Authenticating Admin..."}
+                  </span>
                 </>
               ) : (
-                <span>Sign in</span>
+                <span>
+                  {role === "student"
+                    ? "Sign in as Student"
+                    : "Sign in as Admin"}
+                </span>
               )}
             </button>
           </form>

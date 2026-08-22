@@ -1,25 +1,36 @@
 import express from "express";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
+import authRouter from "./routes/auth.Routes.js";
+import adminRouter from "./routes/admin.Routes.js";
+import studentRouter from "./studentmodules/studentAuth.Route.js";
 import studentRoutes from "./routes/student.Routes.js";
 import projectRoutes from "./routes/project.Routes.js";
 import taskRoutes from "./routes/task.Routes.js";
 import teamRoutes from "./routes/team.Routes.js";
-import adminRouter from "./routes/admin.Routes.js";
-import { protectAdmin } from "./middleware/adminAuth.middleware.js";
 import attendanceRoutes from "./routes/attendance.Routes.js";
 import dashboardRouter from "./routes/dashboard.Routes.js";
 import notificationRoutes from "./routes/notification.Routes.js";
+import { protectAdmin } from "./middleware/adminAuth.middleware.js";
 import { apiShield } from "./middleware/apiShield.middleware.js";
-// student portal
-import studentRouter from "./studentmodules/studentAuth.Route.js";
 
 const app = express();
 
-// Disable information leakage headers
+// ==========================================
+// 1. SECURITY HEADERS
+// ==========================================
 app.disable("x-powered-by");
 
-// CORS Configuration with universal support
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  next();
+});
+
+// ==========================================
+// 2. CORS CONFIGURATION
+// ==========================================
 app.use(
   cors({
     origin: true,
@@ -35,13 +46,21 @@ app.use(
   })
 );
 
-// Block direct browser address-bar access
+// ==========================================
+// 3. API SHIELD (Direct Browser Access Blocker)
+// Returns generic 404 for direct address bar visits
+// ==========================================
 app.use(apiShield);
 
-// Payload size limit
+// ==========================================
+// 4. BODY PARSING & PAYLOAD LIMITS
+// ==========================================
 app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 
-// Middleware to ensure DB connection on serverless environments like Vercel
+// ==========================================
+// 5. DATABASE CONNECTION (Serverless / Persistent)
+// ==========================================
 app.use(async (req, res, next) => {
   try {
     await connectDB();
@@ -50,12 +69,14 @@ app.use(async (req, res, next) => {
     console.error("DB connection error:", error.message);
     res.status(500).json({
       success: false,
-      message: "Database connection failed. Please try again.",
+      message: "Service temporarily unavailable. Please try again later.",
     });
   }
 });
 
-// Root Route
+// ==========================================
+// 6. PUBLIC HEALTH / ROOT ROUTE
+// ==========================================
 app.get("/", (req, res) => {
   res.status(200).json({
     status: "active",
@@ -63,15 +84,24 @@ app.get("/", (req, res) => {
   });
 });
 
-// Student Portal Routes (Mounted on BOTH /api/student-auth and /student-auth for 100% compatibility)
+// ==========================================
+// 7. PUBLIC AUTHENTICATION ROUTES
+// ==========================================
+// Unified Auth Route (POST /api/auth/login and /auth/login)
+app.use("/api/auth", authRouter);
+app.use("/auth", authRouter);
+
+// Student Portal Auth Routes
 app.use("/api/student-auth", studentRouter);
 app.use("/student-auth", studentRouter);
 
-// Admin Routes (Mounted on both /api/admin and /admin)
+// Admin Auth Routes
 app.use("/api/admin", adminRouter);
 app.use("/admin", adminRouter);
 
-// Protected Admin App Routes
+// ==========================================
+// 8. PROTECTED ADMIN APP ROUTES
+// ==========================================
 app.use("/api/student", protectAdmin, studentRoutes);
 app.use("/api/tasks", protectAdmin, taskRoutes);
 app.use("/api/teams", protectAdmin, teamRoutes);
@@ -80,7 +110,7 @@ app.use("/api/attendance", protectAdmin, attendanceRoutes);
 app.use("/api/dashboard", protectAdmin, dashboardRouter);
 app.use("/api/notifications", protectAdmin, notificationRoutes);
 
-// Fallback without /api prefix
+// Fallback aliases without /api prefix
 app.use("/student", protectAdmin, studentRoutes);
 app.use("/tasks", protectAdmin, taskRoutes);
 app.use("/teams", protectAdmin, teamRoutes);
@@ -89,20 +119,40 @@ app.use("/attendance", protectAdmin, attendanceRoutes);
 app.use("/dashboard", protectAdmin, dashboardRouter);
 app.use("/notifications", protectAdmin, notificationRoutes);
 
-// Global JSON Error Handler
-app.use((err, req, res, next) => {
-  console.error("Server Error:", err.message);
-  res.status(err.status || 500).json({
+// ==========================================
+// 9. 404 CATCH-ALL HANDLER (Generic, No Info Leaked)
+// ==========================================
+app.use((req, res) => {
+  if (req.accepts("html") && !req.accepts("json")) {
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    return res.status(404).send(`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>404 Not Found</title></head>
+<body><h1>404 Not Found</h1><p>The requested resource was not found on this server.</p></body>
+</html>`);
+  }
+
+  return res.status(404).json({
     success: false,
-    message: err.message || "An unexpected server error occurred",
+    message: "Resource not found",
   });
 });
 
-// 404 Catch-all handler
-app.use((req, res) => {
-  res.status(404).json({
+// ==========================================
+// 10. GLOBAL PRODUCTION ERROR HANDLER (Safe JSON)
+// ==========================================
+app.use((err, req, res, next) => {
+  console.error(`[Server Error] ${req.method} ${req.originalUrl}:`, err.message || err);
+
+  const statusCode = err.status || err.statusCode || 500;
+  const clientMessage =
+    statusCode < 500
+      ? err.message || "Request could not be processed"
+      : "An unexpected internal server error occurred";
+
+  res.status(statusCode).json({
     success: false,
-    message: `Route ${req.method} ${req.originalUrl} not found`,
+    message: clientMessage,
   });
 });
 
